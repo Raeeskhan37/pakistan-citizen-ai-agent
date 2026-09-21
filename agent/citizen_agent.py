@@ -6,11 +6,15 @@ from agent.router import detect_department
 from agent.verifier import verify_sources
 
 
-def format_evidence(sources):
+def format_evidence(
+    sources
+):
 
     if not sources:
 
-        return "No reliable evidence was retrieved."
+        return (
+            "No authoritative evidence was retrieved."
+        )
 
     evidence_parts = []
 
@@ -37,7 +41,9 @@ Information:
 """
         )
 
-    return "\n".join(evidence_parts)
+    return "\n".join(
+        evidence_parts
+    )
 
 
 def ask_citizen_agent(
@@ -56,7 +62,10 @@ def ask_citizen_agent(
         department,
     )
 
-    sources = research["sources"]
+    sources = research.get(
+        "sources",
+        [],
+    )
 
     verification = verify_sources(
         sources
@@ -66,16 +75,30 @@ def ask_citizen_agent(
         "verified"
     ]
 
+    # --------------------------------------------------------
+    # IMPORTANT:
+    # Only verified evidence goes to the AI.
+    # --------------------------------------------------------
+
     evidence = format_evidence(
         verified_sources
     )
 
-    answer = generate_answer(
-        question=question,
-        department=department,
-        evidence=evidence,
-        language=language,
-    )
+    if not verified_sources:
+
+        answer = (
+            "I could not verify this information "
+            "from an authoritative government source."
+        )
+
+    else:
+
+        answer = generate_answer(
+            question=question,
+            department=department,
+            evidence=evidence,
+            language=language,
+        )
 
     official_count = sum(
         1
@@ -84,13 +107,32 @@ def ask_citizen_agent(
     )
 
     return {
+
         "department": department,
+
         "answer": answer,
+
         "sources": verified_sources,
-        "source_count": len(verified_sources),
-        "official_source_count": official_count,
-        "checked_date": datetime.now().strftime(
-            "%d %B %Y"
+
+        "source_count": len(
+            verified_sources
         ),
-        "warning": verification["warning"],
+
+        "official_source_count": official_count,
+
+        "research_attempts": research.get(
+            "attempts",
+            1,
+        ),
+
+        "checked_date":
+            datetime.now().strftime(
+                "%d %B %Y"
+            ),
+
+        "warning":
+            verification.get(
+                "warning",
+                "",
+            ),
     }
