@@ -1,0 +1,83 @@
+{
+  "NADRA": {
+    "official_domains": [
+      "nadra.gov.pk"
+    ],
+    "official_homepage": "https://www.nadra.gov.pk/"
+  },
+
+  "Passport": {
+    "official_domains": [
+      "dgip.gov.pk"
+    ],
+    "official_homepage": "https://dgip.gov.pk/"
+  },
+
+  "Union Council / Local Government": {
+    "official_domains": [
+      "gov.pk",
+      "punjab.gov.pk",
+      "sindh.gov.pk",
+      "kp.gov.pk",
+      "balochistan.gov.pk"
+    ]
+  },
+
+  "Driving Licence": {
+    "official_domains": [
+      "gov.pk",
+      "punjab.gov.pk",
+      "sindh.gov.pk",
+      "kp.gov.pk",
+      "balochistan.gov.pk",
+      "islamabad.gov.pk"
+    ]
+  },
+
+  "Arms Licence": {
+    "official_domains": [
+      "gov.pk",
+      "punjab.gov.pk",
+      "sindh.gov.pk",
+      "kp.gov.pk",
+      "balochistan.gov.pk"
+    ]
+  },
+
+  "Police Clearance": {
+    "official_domains": [
+      "gov.pk",
+      "punjabpolice.gov.pk",
+      "sindhpolice.gov.pk",
+      "kppolice.gov.pk",
+      "balochistanpolice.gov.pk",
+      "islamabadpolice.gov.pk"
+    ]
+  },
+
+  "Protector for Visa": {
+    "official_domains": [
+      "beoe.gov.pk"
+    ],
+    "official_homepage": "https://beoe.gov.pk/"
+  },
+
+  "Vaccination for Travelling Abroad": {
+    "official_domains": [
+      "nhsrc.gov.pk",
+      "nih.org.pk",
+      "gov.pk",
+      "who.int"
+    ]
+  },
+
+  "Domicile": {
+    "official_domains": [
+      "gov.pk",
+      "punjab.gov.pk",
+      "sindh.gov.pk",
+      "kp.gov.pk",
+      "balochistan.gov.pk"
+    ]
+  }
+}
