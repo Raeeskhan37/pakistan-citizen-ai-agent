@@ -12,6 +12,10 @@ st.set_page_config(
 )
 
 
+# ============================================================
+# HEADER
+# ============================================================
+
 st.title("🇵🇰 Pakistan Citizen AI Agent")
 st.subheader("پاکستان سٹیزن AI ایجنٹ")
 
@@ -19,79 +23,130 @@ st.write(
     "Government services information assistant for Pakistani citizens."
 )
 
-st.info(
-    "The agent searches current online information and prioritizes "
-    "official government sources. Always verify important matters "
-    "with the relevant government department."
-)
 
+# ============================================================
+# SIDEBAR
+# ============================================================
 
 with st.sidebar:
 
-    st.header("🔎 Citizen Assistant")
+    st.header("🏛️ Government Services")
 
-    language = st.radio(
-        "Answer language",
-        ["English", "اردو"],
-    )
+    st.caption("Select a department")
 
-    department_names = [
-        "Automatic"
-    ] + list(DEPARTMENTS.keys())
-
-    selected_department = st.selectbox(
-        "Department / Service",
-        department_names,
-    )
-
-    st.divider()
-
-    st.markdown("### Departments")
+    if "selected_department" not in st.session_state:
+        st.session_state.selected_department = "NADRA"
 
     for department in DEPARTMENTS:
 
-        st.write(
-            f"• {department}"
-        )
+        if st.button(
+            department,
+            key=f"department_{department}",
+            use_container_width=True,
+        ):
+
+            st.session_state.selected_department = department
+
+            # Clear previous answer when changing department
+            st.session_state.pop("last_result", None)
+
+            st.rerun()
 
     st.divider()
 
     st.caption(
-        f"Version {APP_VERSION}"
+        f"Selected: {st.session_state.selected_department}"
+    )
+
+    st.divider()
+
+    st.caption(f"Version {APP_VERSION}")
+
+
+selected_department = st.session_state.selected_department
+
+
+# ============================================================
+# RIGHT PANE
+# ============================================================
+
+st.markdown(
+    f"## 🏛️ {selected_department} Citizen Assistant"
+)
+
+
+if selected_department == "NADRA":
+
+    st.info(
+        "Ask any question about NADRA services such as "
+        "CNIC, Smart CNIC, NICOP, POC, CRC, FRC, PakID, "
+        "renewal, modification, duplicate/lost card, fees, "
+        "requirements and application procedures."
+    )
+
+else:
+
+    st.info(
+        f"The {selected_department} research assistant is "
+        "being prepared. NADRA is currently the first fully "
+        "implemented department."
     )
 
 
-st.markdown(
-    "### Ask your question"
+# ============================================================
+# LANGUAGE
+# ============================================================
+
+language = st.radio(
+    "Answer language",
+    ["English", "اردو"],
+    horizontal=True,
 )
 
+
+# ============================================================
+# QUESTION
+# ============================================================
+
 question = st.text_area(
-    "Describe your problem or question:",
-    height=140,
+    "Type your question:",
+    height=150,
     placeholder=(
         "Example:\n"
         "How can I renew my CNIC?\n\n"
         "یا\n"
-        "میرا CNIC expire ہو گیا ہے، میں اسے کیسے renew کر سکتا ہوں؟"
+        "میرا شناختی کارڈ گم ہو گیا ہے، میں نیا کارڈ کیسے حاصل کروں؟"
     ),
 )
 
 
+# ============================================================
+# ASK AGENT
+# ============================================================
+
 if st.button(
     "🔍 Find Verified Answer",
     type="primary",
+    use_container_width=True,
 ):
 
     if not question.strip():
 
         st.warning(
-            "Please enter your question first."
+            "Please type your question first."
+        )
+
+    elif selected_department != "NADRA":
+
+        st.warning(
+            f"{selected_department} is not implemented yet. "
+            "We are building NADRA first."
         )
 
     else:
 
         with st.spinner(
-            "Searching current information and verifying sources..."
+            "NADRA Agent is researching official sources..."
         ):
 
             try:
@@ -102,81 +157,7 @@ if st.button(
                     language=language,
                 )
 
-                st.markdown(
-                    "### 🏛️ Department"
-                )
-
-                st.write(
-                    result["department"]
-                )
-
-                st.markdown(
-                    "### 💬 Answer"
-                )
-
-                st.markdown(
-                    result["answer"]
-                )
-
-                st.markdown(
-                    "### 🔗 Sources"
-                )
-
-                sources = result.get(
-                    "sources",
-                    [],
-                )
-
-                if sources:
-
-                    for source in sources:
-
-                        title = source.get(
-                            "title",
-                            "Source",
-                        )
-
-                        url = source.get(
-                            "url",
-                            "",
-                        )
-
-                        if url:
-
-                            st.markdown(
-                                f"- [{title}]({url})"
-                            )
-
-                else:
-
-                    st.warning(
-                        "No verified source links were returned."
-                    )
-
-                with st.expander(
-                    "ℹ️ Search and verification details"
-                ):
-
-                    st.write(
-                        f"Sources reviewed: "
-                        f"{result.get('source_count', 0)}"
-                    )
-
-                    st.write(
-                        f"Official sources found: "
-                        f"{result.get('official_source_count', 0)}"
-                    )
-
-                    st.write(
-                        f"Information checked: "
-                        f"{result.get('checked_date', '')}"
-                    )
-
-                    if result.get("warning"):
-
-                        st.warning(
-                            result["warning"]
-                        )
+                st.session_state.last_result = result
 
             except Exception as exc:
 
@@ -187,12 +168,101 @@ if st.button(
                 st.exception(exc)
 
 
+# ============================================================
+# DISPLAY ANSWER
+# ============================================================
+
+if "last_result" in st.session_state:
+
+    result = st.session_state.last_result
+
+    st.divider()
+
+    st.markdown("### 💬 Answer")
+
+    st.markdown(
+        result.get("answer", "")
+    )
+
+    st.markdown("### 🔗 Official Sources")
+
+    sources = result.get("sources", [])
+
+    if sources:
+
+        for source in sources:
+
+            title = source.get(
+                "title",
+                "Official Source",
+            )
+
+            url = source.get(
+                "url",
+                "",
+            )
+
+            if url:
+
+                st.markdown(
+                    f"- [{title}]({url})"
+                )
+
+    else:
+
+        st.warning(
+            "No authoritative source could be verified."
+        )
+
+    # --------------------------------------------------------
+    # Research details
+    # --------------------------------------------------------
+
+    with st.expander(
+        "🔎 Research details"
+    ):
+
+        st.write(
+            "Department:",
+            result.get(
+                "department",
+                "",
+            ),
+        )
+
+        st.write(
+            "Research attempts:",
+            result.get(
+                "research_attempts",
+                0,
+            ),
+        )
+
+        st.write(
+            "Official sources found:",
+            result.get(
+                "official_source_count",
+                0,
+            ),
+        )
+
+        if result.get("warning"):
+
+            st.warning(
+                result["warning"]
+            )
+
+
+# ============================================================
+# FOOTER
+# ============================================================
+
 st.divider()
 
 st.caption(
-    "Pakistan Citizen AI Agent • "
-    "Always confirm critical information with the "
-    "relevant official government authority."
+    "The agent does not invent government information. "
+    "If authoritative evidence cannot be verified, "
+    "it will say so."
 )
 
 st.caption(
