@@ -4,17 +4,18 @@ from ai.answer_generator import generate_answer
 from agent.researcher import research_question
 from agent.router import detect_department
 from agent.verifier import verify_sources
+from rag.nadra_retriever import build_nadra_evidence
 
 
-def format_evidence(
-    sources
-):
+# ============================================================
+# WEB EVIDENCE
+# ============================================================
+
+def format_web_evidence(sources):
 
     if not sources:
 
-        return (
-            "No authoritative evidence was retrieved."
-        )
+        return "No authoritative web evidence was retrieved."
 
     evidence_parts = []
 
@@ -25,7 +26,7 @@ def format_evidence(
 
         evidence_parts.append(
             f"""
-SOURCE {index}
+WEB SOURCE {index}
 
 Title:
 {source.get("title", "")}
@@ -46,45 +47,128 @@ Information:
     )
 
 
+# ============================================================
+# MAIN CITIZEN AGENT
+# ============================================================
+
 def ask_citizen_agent(
     question,
     selected_department,
     language,
 ):
 
+    # --------------------------------------------------------
+    # DETECT DEPARTMENT
+    # --------------------------------------------------------
+
     department = detect_department(
         question,
         selected_department,
     )
 
+
+    # --------------------------------------------------------
+    # RESEARCH
+    # --------------------------------------------------------
+
     research = research_question(
         question,
         department,
+        language,
     )
 
-    sources = research.get(
+
+    web_sources = research.get(
         "sources",
         [],
     )
 
+    rag_results = research.get(
+        "rag_results",
+        [],
+    )
+
+
+    # --------------------------------------------------------
+    # VERIFY WEB SOURCES
+    # --------------------------------------------------------
+
     verification = verify_sources(
-        sources
+        web_sources
     )
 
     verified_sources = verification[
         "verified"
     ]
 
+
     # --------------------------------------------------------
-    # IMPORTANT:
-    # Only verified evidence goes to the AI.
+    # BUILD NADRA POLICY EVIDENCE
     # --------------------------------------------------------
 
-    evidence = format_evidence(
+    if department == "NADRA":
+
+        policy_evidence = (
+            build_nadra_evidence(
+                rag_results
+            )
+        )
+
+    else:
+
+        policy_evidence = (
+            "No department-specific RAG "
+            "evidence was used."
+        )
+
+
+    # --------------------------------------------------------
+    # BUILD WEB EVIDENCE
+    # --------------------------------------------------------
+
+    web_evidence = format_web_evidence(
         verified_sources
     )
 
-    if not verified_sources:
+
+    # --------------------------------------------------------
+    # COMBINE ALL EVIDENCE
+    # --------------------------------------------------------
+
+    combined_evidence = f"""
+============================================================
+NADRA / GOVERNMENT POLICY EVIDENCE
+============================================================
+
+{policy_evidence}
+
+
+============================================================
+VERIFIED OFFICIAL WEB EVIDENCE
+============================================================
+
+{web_evidence}
+"""
+
+
+    # --------------------------------------------------------
+    # CHECK WHETHER ANY VERIFIED EVIDENCE EXISTS
+    # --------------------------------------------------------
+
+    has_policy_evidence = bool(
+        rag_results
+    )
+
+    has_web_evidence = bool(
+        verified_sources
+    )
+
+
+    # --------------------------------------------------------
+    # GENERATE ANSWER
+    # --------------------------------------------------------
+
+    if not has_policy_evidence and not has_web_evidence:
 
         answer = (
             "I could not verify this information "
@@ -96,9 +180,14 @@ def ask_citizen_agent(
         answer = generate_answer(
             question=question,
             department=department,
-            evidence=evidence,
+            evidence=combined_evidence,
             language=language,
         )
+
+
+    # --------------------------------------------------------
+    # COUNT OFFICIAL SOURCES
+    # --------------------------------------------------------
 
     official_count = sum(
         1
@@ -106,8 +195,12 @@ def ask_citizen_agent(
         if source.get("official")
     )
 
-    return {
 
+    # --------------------------------------------------------
+    # FINAL RESPONSE
+    # --------------------------------------------------------
+
+    return {
         "department": department,
 
         "answer": answer,
@@ -118,21 +211,29 @@ def ask_citizen_agent(
             verified_sources
         ),
 
-        "official_source_count": official_count,
-
-        "research_attempts": research.get(
-            "attempts",
-            1,
+        "official_source_count": (
+            official_count
         ),
 
-        "checked_date":
+        "research_attempts": (
+            research.get(
+                "attempts",
+                1,
+            )
+        ),
+
+        "rag_result_count": len(
+            rag_results
+        ),
+
+        "checked_date": (
             datetime.now().strftime(
                 "%d %B %Y"
-            ),
+            )
+        ),
 
-        "warning":
-            verification.get(
-                "warning",
-                "",
-            ),
+        "warning": verification.get(
+            "warning",
+            "",
+        ),
     }
