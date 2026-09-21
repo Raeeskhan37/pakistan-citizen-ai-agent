@@ -10,6 +10,8 @@ def search_ddgs(
 
         results = DDGS().text(
             query,
+            region="wt-wt",
+            safesearch="moderate",
             max_results=max_results,
         )
 
