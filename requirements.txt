@@ -4,3 +4,6 @@ ddgs>=9.5.0
 requests>=2.32.0
 beautifulsoup4>=4.13.0
 lxml>=6.0.0
+sentence-transformers
+faiss-cpu
+numpy
