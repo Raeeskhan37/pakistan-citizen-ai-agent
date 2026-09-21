@@ -4,12 +4,9 @@ from ai.prompts import (
     build_system_prompt,
     build_user_prompt,
 )
+
 from config.settings import GROQ_MODEL
 
-
-# ============================================================
-# GROQ CLIENT
-# ============================================================
 
 def get_client():
 
@@ -19,10 +16,6 @@ def get_client():
         api_key=st.secrets["GROQ_API_KEY"]
     )
 
-
-# ============================================================
-# GENERATE ANSWER
-# ============================================================
 
 def generate_answer(
     question,
