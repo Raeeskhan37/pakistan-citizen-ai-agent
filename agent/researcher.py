@@ -864,5 +864,22 @@ def research_question(
         or "رجسٹریشن" in question_lower
     )
 
-    if (
-        department == "Union Council / Local Government
+            department == "Union Council / Local Government"
+        and is_kp
+        and is_birth_question
+        and is_certificate_or_registration
+    ):
+        return research_kp_birth_registration(
+            question,
+            language,
+        )
+
+    # ========================================================
+    # GENERAL DEPARTMENT
+    # ========================================================
+
+    return research_department(
+        question,
+        department,
+        language,
+    )
