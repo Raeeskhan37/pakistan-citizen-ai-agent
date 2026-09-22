@@ -7,38 +7,157 @@ from rag.nadra_retriever import (
 )
 
 
-NADRA_SEARCH_DOMAINS = [
-    "nadra.gov.pk",
-]
+PROVINCE_TERMS = {
+
+    "Punjab": [
+        "punjab",
+        "پنجاب",
+    ],
+
+    "Sindh": [
+        "sindh",
+        "سندھ",
+    ],
+
+    "Khyber Pakhtunkhwa": [
+        "khyber pakhtunkhwa",
+        "kpk",
+        "kp",
+        "خیبر پختونخوا",
+    ],
+
+    "Balochistan": [
+        "balochistan",
+        "بلوچستان",
+    ],
+
+    "Islamabad": [
+        "islamabad",
+        "ict",
+        "اسلام آباد",
+    ],
+}
 
 
-def get_department_domains(
-    department,
+PROVINCE_DOMAINS = {
+
+    "Punjab": [
+        "punjab.gov.pk",
+        "lgcd.punjab.gov.pk",
+        "trafficpolice.punjab.gov.pk",
+        "dlims.punjab.gov.pk",
+        "punjabpolice.gov.pk",
+    ],
+
+    "Sindh": [
+        "sindh.gov.pk",
+        "sindhpolice.gov.pk",
+    ],
+
+    "Khyber Pakhtunkhwa": [
+        "kp.gov.pk",
+        "lgkp.gov.pk",
+        "kppolice.gov.pk",
+    ],
+
+    "Balochistan": [
+        "balochistan.gov.pk",
+        "lgd.balochistan.gov.pk",
+        "balochistanpolice.gov.pk",
+    ],
+
+    "Islamabad": [
+        "ictadministration.gov.pk",
+        "islamabadpolice.gov.pk",
+    ],
+}
+
+
+def detect_jurisdiction(
+    question,
 ):
 
-    return DEPARTMENTS.get(
+    question_lower = question.lower()
+
+    for jurisdiction, terms in PROVINCE_TERMS.items():
+
+        for term in terms:
+
+            if term.lower() in question_lower:
+
+                return jurisdiction
+
+    return None
+
+
+def get_search_domains(
+    department,
+    jurisdiction=None,
+):
+
+    department_data = DEPARTMENTS.get(
         department,
         {},
-    ).get(
+    )
+
+    department_domains = department_data.get(
         "official_domains",
         ["gov.pk"],
     )
+
+    if jurisdiction:
+
+        jurisdiction_domains = PROVINCE_DOMAINS.get(
+            jurisdiction,
+            [],
+        )
+
+        selected = []
+
+        for domain in (
+            jurisdiction_domains
+            + department_domains
+        ):
+
+            if domain not in selected:
+
+                selected.append(
+                    domain
+                )
+
+        return selected
+
+    return department_domains
 
 
 def build_department_queries(
     question,
     department,
     attempt,
+    jurisdiction=None,
 ):
 
-    domains = get_department_domains(
-        department
+    domains = get_search_domains(
+        department,
+        jurisdiction,
     )
 
     queries = []
 
     # --------------------------------------------------------
-    # Attempt 1 — direct question
+    # Explicit jurisdiction
+    # --------------------------------------------------------
+
+    jurisdiction_text = ""
+
+    if jurisdiction:
+
+        jurisdiction_text = (
+            f" {jurisdiction}"
+        )
+
+    # --------------------------------------------------------
+    # Attempt 1
     # --------------------------------------------------------
 
     if attempt == 1:
@@ -46,15 +165,13 @@ def build_department_queries(
         for domain in domains:
 
             queries.append(
-                f"site:{domain} {question}"
-            )
-
-            queries.append(
-                f"site:{domain} {question} requirements"
+                f"site:{domain} "
+                f"{question}"
+                f"{jurisdiction_text}"
             )
 
     # --------------------------------------------------------
-    # Attempt 2 — procedure/documents/fees
+    # Attempt 2
     # --------------------------------------------------------
 
     elif attempt == 2:
@@ -62,19 +179,21 @@ def build_department_queries(
         for domain in domains:
 
             queries.append(
-                f"site:{domain} {question} procedure"
+                f"site:{domain} "
+                f"{question} "
+                f"procedure documents"
+                f"{jurisdiction_text}"
             )
 
             queries.append(
-                f"site:{domain} {question} documents"
-            )
-
-            queries.append(
-                f"site:{domain} {question} fee"
+                f"site:{domain} "
+                f"{question} "
+                f"requirements"
+                f"{jurisdiction_text}"
             )
 
     # --------------------------------------------------------
-    # Attempt 3 — official/FAQ/rules
+    # Attempt 3
     # --------------------------------------------------------
 
     else:
@@ -82,46 +201,19 @@ def build_department_queries(
         for domain in domains:
 
             queries.append(
-                f"site:{domain} {question} official"
+                f"site:{domain} "
+                f"{question} "
+                f"official rules"
+                f"{jurisdiction_text}"
             )
 
             queries.append(
-                f"site:{domain} {question} FAQ"
-            )
-
-            queries.append(
-                f"site:{domain} {question} rules"
+                f"site:{domain} "
+                f"{question} FAQ"
+                f"{jurisdiction_text}"
             )
 
     return queries
-
-
-def build_nadra_queries(
-    question,
-    attempt,
-):
-
-    if attempt == 1:
-
-        return [
-            f"site:nadra.gov.pk {question}",
-            f"site:nadra.gov.pk {question} requirements",
-        ]
-
-    if attempt == 2:
-
-        return [
-            f"site:nadra.gov.pk {question} procedure",
-            f"site:nadra.gov.pk {question} documents",
-            f"site:nadra.gov.pk {question} requirements fee",
-        ]
-
-    return [
-        f"site:nadra.gov.pk {question} FAQ",
-        f"site:nadra.gov.pk {question} official",
-        f"site:nadra.gov.pk {question} application",
-        f"site:nadra.gov.pk {question} policy",
-    ]
 
 
 def add_unique_sources(
@@ -139,12 +231,10 @@ def add_unique_sources(
         if not url:
             continue
 
-        already_exists = any(
-            existing.get("url") == url
-            for existing in destination
-        )
-
-        if not already_exists:
+        if not any(
+            item.get("url") == url
+            for item in destination
+        ):
 
             destination.append(
                 source
@@ -164,10 +254,6 @@ def research_nadra(
 
         attempts = attempt
 
-        # ----------------------------------------------------
-        # RAG search
-        # ----------------------------------------------------
-
         try:
 
             current_rag = retrieve_nadra(
@@ -186,20 +272,36 @@ def research_nadra(
                 current_rag
             )
 
-        # ----------------------------------------------------
-        # Official NADRA web search
-        # ----------------------------------------------------
+        if attempt == 1:
 
-        queries = build_nadra_queries(
-            question,
-            attempt,
-        )
+            queries = [
+                f"site:nadra.gov.pk {question}",
+                f"site:nadra.gov.pk {question} requirements",
+            ]
+
+        elif attempt == 2:
+
+            queries = [
+                f"site:nadra.gov.pk {question} procedure",
+                f"site:nadra.gov.pk {question} documents",
+                f"site:nadra.gov.pk {question} requirements fee",
+            ]
+
+        else:
+
+            queries = [
+                f"site:nadra.gov.pk {question} official",
+                f"site:nadra.gov.pk {question} FAQ",
+                f"site:nadra.gov.pk {question} policy",
+            ]
 
         try:
 
             sources = perform_search(
                 queries=queries,
-                official_domains=NADRA_SEARCH_DOMAINS,
+                official_domains=[
+                    "nadra.gov.pk",
+                ],
                 max_results=8,
             )
 
@@ -218,27 +320,17 @@ def research_nadra(
             if source.get("official")
         ]
 
-        useful_rag = has_useful_evidence(
-            current_rag
-        )
-
-        # ----------------------------------------------------
-        # Stop when BOTH evidence layers are useful
-        # ----------------------------------------------------
-
         if (
-            useful_rag
+            has_useful_evidence(
+                current_rag
+            )
             and official_sources
         ):
 
             break
 
-    # --------------------------------------------------------
-    # Remove duplicate RAG results
-    # --------------------------------------------------------
-
     unique_rag = []
-    seen_rag = set()
+    seen = set()
 
     for item in rag_results:
 
@@ -246,10 +338,10 @@ def research_nadra(
             "index"
         )
 
-        if index_number in seen_rag:
+        if index_number in seen:
             continue
 
-        seen_rag.add(
+        seen.add(
             index_number
         )
 
@@ -269,6 +361,7 @@ def research_nadra(
         "sources": all_sources,
         "rag_results": unique_rag[:6],
         "attempts": attempts,
+        "jurisdiction": None,
     }
 
 
@@ -276,6 +369,10 @@ def research_department(
     question,
     department,
 ):
+
+    jurisdiction = detect_jurisdiction(
+        question
+    )
 
     all_sources = []
     attempts = 0
@@ -285,17 +382,19 @@ def research_department(
         attempts = attempt
 
         queries = build_department_queries(
-            question,
-            department,
-            attempt,
+            question=question,
+            department=department,
+            attempt=attempt,
+            jurisdiction=jurisdiction,
         )
 
         try:
 
             sources = perform_search(
                 queries=queries,
-                official_domains=get_department_domains(
-                    department
+                official_domains=get_search_domains(
+                    department,
+                    jurisdiction,
                 ),
                 max_results=8,
             )
@@ -315,10 +414,6 @@ def research_department(
             if source.get("official")
         ]
 
-        # ----------------------------------------------------
-        # Stop once an official source is found
-        # ----------------------------------------------------
-
         if official_sources:
 
             break
@@ -327,6 +422,7 @@ def research_department(
         "sources": all_sources,
         "rag_results": [],
         "attempts": attempts,
+        "jurisdiction": jurisdiction,
     }
 
 
@@ -354,4 +450,5 @@ def research_question(
         "sources": [],
         "rag_results": [],
         "attempts": 3,
-        }
+        "jurisdiction": None,
+    }
