@@ -13,7 +13,8 @@ def get_client():
     import streamlit as st
 
     return Groq(
-        api_key=st.secrets["GROQ_API_KEY"]
+        api_key=st.secrets["GROQ_API_KEY"],
+        timeout=30.0,
     )
 
 
@@ -30,6 +31,14 @@ def generate_answer(
         language=language,
     )
 
+    # Keep the evidence reasonably small.
+    # This prevents very large government webpages
+    # from overwhelming the AI request.
+    max_evidence_chars = 30000
+
+    if len(evidence) > max_evidence_chars:
+        evidence = evidence[:max_evidence_chars]
+
     user_prompt = build_user_prompt(
         question=question,
         department=department,
@@ -38,6 +47,7 @@ def generate_answer(
     )
 
     try:
+
         response = client.chat.completions.create(
             model=GROQ_MODEL,
             messages=[
@@ -54,19 +64,46 @@ def generate_answer(
             max_tokens=1000,
         )
 
-        return response.choices[0].message.content.strip()
+        answer = response.choices[
+            0
+        ].message.content
+
+        if not answer:
+            return (
+                "The official sources were found, "
+                "but the AI could not generate an answer. "
+                "Please try again."
+            )
+
+        return answer.strip()
 
     except RateLimitError:
+
         return (
-            "The AI answer service has temporarily reached "
-            "its usage limit. The official government sources "
-            "were successfully searched, but the final AI "
-            "response could not be generated right now. "
+            "The AI answer service has temporarily "
+            "reached its usage limit. The official "
+            "government sources were found, but the "
+            "answer could not be generated right now. "
             "Please try again later."
         )
 
-    except Exception:
+    except Exception as exc:
+
+        error_text = str(exc).lower()
+
+        if (
+            "timeout" in error_text
+            or "timed out" in error_text
+        ):
+
+            return (
+                "The AI request took too long to complete. "
+                "The official government sources were found. "
+                "Please try the question again."
+            )
+
         return (
-            "The AI answer could not be generated at this time. "
-            "Please try again later."
+            "The AI answer could not be generated at this "
+            "time. The official government sources were "
+            "found. Please try again."
         )
