@@ -105,9 +105,8 @@ def detect_jurisdiction(question):
     return None
 
 
-def get_department_domains(
-    department,
-):
+def get_department_domains(department):
+
     department_data = DEPARTMENTS.get(
         department,
         {},
@@ -123,6 +122,7 @@ def get_search_domains(
     department,
     jurisdiction=None,
 ):
+
     department_domains = get_department_domains(
         department
     )
@@ -154,6 +154,57 @@ def build_department_queries(
     attempt,
     jurisdiction=None,
 ):
+
+    # ========================================================
+    # PROTECTOR FOR VISA
+    # ========================================================
+
+    if department == "Protector for Visa":
+
+        if attempt == 1:
+
+            return [
+                f"site:beoe.gov.pk "
+                f"{question}",
+
+                "site:beoe.gov.pk "
+                "How to get Emigrant's Protection",
+
+                "site:beoe.gov.pk "
+                "Protector of Emigrants required documents",
+            ]
+
+        elif attempt == 2:
+
+            return [
+                "site:beoe.gov.pk "
+                "emigrant protection documents passport CNIC",
+
+                "site:beoe.gov.pk "
+                "protector registration employment contract",
+
+                "site:beoe.gov.pk "
+                "e-Protector online registration documents",
+            ]
+
+        else:
+
+            return [
+                "site:beoe.gov.pk "
+                "procedure for overseas employment protector",
+
+                "site:beoe.gov.pk "
+                "emigration registration documents",
+
+                "site:beoe.gov.pk "
+                "Emigration Rules Protector of Emigrants",
+            ]
+
+
+    # ========================================================
+    # OTHER DEPARTMENTS
+    # ========================================================
+
     queries = []
 
     if jurisdiction:
@@ -214,9 +265,10 @@ def build_department_queries(
 
         return queries
 
-    # ---------------------------------------------------------
+
+    # ========================================================
     # GENERAL PAKISTAN QUESTION
-    # ---------------------------------------------------------
+    # ========================================================
 
     domains = get_department_domains(
         department
@@ -262,7 +314,6 @@ def build_department_queries(
                 f"{question} FAQ Pakistan"
             )
 
-        # Search major jurisdictions individually
         for jurisdiction in GENERAL_JURISDICTIONS:
 
             jurisdiction_domains = (
@@ -287,6 +338,7 @@ def add_unique_sources(
     destination,
     sources,
 ):
+
     existing_urls = {
         item.get("url")
         for item in destination
@@ -324,6 +376,7 @@ def research_nadra(
     question,
     language="English",
 ):
+
     all_sources = []
     rag_results = []
     attempts = 0
@@ -366,8 +419,10 @@ def research_nadra(
             queries = [
                 f"site:nadra.gov.pk "
                 f"{question} procedure",
+
                 f"site:nadra.gov.pk "
                 f"{question} documents",
+
                 f"site:nadra.gov.pk "
                 f"{question} requirements fee",
             ]
@@ -377,8 +432,10 @@ def research_nadra(
             queries = [
                 f"site:nadra.gov.pk "
                 f"{question} official",
+
                 f"site:nadra.gov.pk "
                 f"{question} FAQ",
+
                 f"site:nadra.gov.pk "
                 f"{question} policy",
             ]
@@ -456,6 +513,7 @@ def research_department(
     question,
     department,
 ):
+
     jurisdiction = detect_jurisdiction(
         question
     )
@@ -519,6 +577,7 @@ def research_question(
     department,
     language="English",
 ):
+
     if department == "NADRA":
 
         return research_nadra(
