@@ -1,21 +1,17 @@
 from urllib.parse import urlparse
 
 
-def get_domain(url):
-
+def get_domain(
+    url,
+):
     try:
 
-        parsed = urlparse(
-            url
-        )
+        parsed = urlparse(url)
 
         return (
             parsed.netloc
             .lower()
-            .replace(
-                "www.",
-                "",
-            )
+            .replace("www.", "")
             .split(":")[0]
         )
 
@@ -28,10 +24,7 @@ def domain_matches(
     url,
     official_domains,
 ):
-
-    domain = get_domain(
-        url
-    )
+    domain = get_domain(url)
 
     if not domain:
         return False
@@ -41,10 +34,7 @@ def domain_matches(
         official = (
             official
             .lower()
-            .replace(
-                "www.",
-                "",
-            )
+            .replace("www.", "")
             .strip()
         )
 
@@ -63,7 +53,6 @@ def filter_and_rank_sources(
     results,
     official_domains,
 ):
-
     cleaned = []
 
     for result in results:
@@ -85,7 +74,7 @@ def filter_and_rank_sources(
 
         title = (
             result.get("title")
-            or "Official Government Source"
+            or "Government Source"
         )
 
         body = (
@@ -112,10 +101,6 @@ def filter_and_rank_sources(
                 "official": is_official,
             }
         )
-
-    # --------------------------------------------------------
-    # Official sources first
-    # --------------------------------------------------------
 
     cleaned.sort(
         key=lambda item: (
