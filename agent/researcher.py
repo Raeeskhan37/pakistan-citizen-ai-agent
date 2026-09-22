@@ -32,6 +32,28 @@ def detect_jurisdiction(question):
 
 
 # ============================================================
+# HELPER — UNIQUE SOURCES
+# ============================================================
+
+def unique_sources(sources, limit=5):
+    unique = {}
+
+    for source in sources:
+        if not isinstance(source, dict):
+            continue
+
+        url = source.get("url", "")
+
+        if not url:
+            continue
+
+        if url not in unique:
+            unique[url] = source
+
+    return list(unique.values())[:limit]
+
+
+# ============================================================
 # VACCINATION
 # ============================================================
 
@@ -42,77 +64,105 @@ def research_vaccination(
     """
     Official vaccination research.
 
-    Hajj / Umrah:
-        Saudi Ministry of Health
-        Pakistan Ministry of Religious Affairs
+    Supported special cases:
 
-    International travel:
-        Pakistan Ministry of NHSR&C
-        National Institute of Health
+    1. Hajj 2026
+       Saudi MOH + Pakistan Ministry of Religious Affairs
+
+    2. Umrah 2026
+       Saudi Ministry of Health official Umrah
+       health requirements
+
+    3. Saudi work/employment visa
+       Searches official Saudi MOH and Pakistan
+       government health sources.
+
+    4. General international travel
+       Pakistan Ministry of NHSR&C + NIH
     """
 
     question_lower = question.lower()
+
+    # ========================================================
+    # QUESTION TYPE DETECTION
+    # ========================================================
 
     hajj_question = any(
         term in question_lower
         for term in [
             "hajj",
             "haj",
+        ]
+    )
+
+    umrah_question = any(
+        term in question_lower
+        for term in [
             "umrah",
             "umra",
         ]
     )
 
+    saudi_question = any(
+        term in question_lower
+        for term in [
+            "saudi",
+            "saudi arabia",
+            "kingdom of saudi",
+        ]
+    )
+
+    work_visa_question = any(
+        term in question_lower
+        for term in [
+            "work visa",
+            "work visa",
+            "employment visa",
+            "employment",
+            "job visa",
+            "work permit",
+            "working in saudi",
+            "work in saudi",
+            "job in saudi",
+            "job in saudi arabia",
+            "employment in saudi",
+            "employment visa",
+        ]
+    )
+
     # ========================================================
-    # HAJJ / UMRAH
+    # HAJJ 2026
     # ========================================================
 
     if hajj_question:
 
-        # ----------------------------------------------------
-        # IMPORTANT:
-        # These are official sources and the evidence below
-        # is based directly on the official 2026 Saudi MOH
-        # Hajj health requirements.
-        # ----------------------------------------------------
-
         official_evidence = """
 OFFICIAL SAUDI MINISTRY OF HEALTH — HAJJ 1447 / 2026
 
-The Saudi Ministry of Health published the official health
-requirements and recommendations for travelers to Saudi Arabia
-for Hajj 1447H (2026).
+The Saudi Ministry of Health published official health
+requirements for travelers coming to Saudi Arabia for
+Hajj 1447H (2026).
 
 For Pakistan:
 
-Pakistan is listed by the Saudi Ministry of Health among
-countries reporting Wild Poliovirus (WPV1).
+Pakistan is listed in the Saudi Hajj health requirements
+in relation to Wild Poliovirus 1 (WPV1).
 
-The Saudi Hajj health requirements state that for travelers
-from states reporting WPV1 or cVDPV1, Saudi Arabia may
-administer one dose of bivalent oral polio vaccine (bOPV)
-at points of entry, regardless of age and vaccination status.
+The official Saudi health requirements state that travelers
+from states reporting WPV1 or cVDPV1 may be administered
+bivalent oral polio vaccine (bOPV) at points of entry,
+according to the applicable Saudi health requirements.
 
-The same official document contains vaccination requirements
-and recommendations for Hajj travelers, including
-meningococcal meningitis, polio, COVID-19 and seasonal
-influenza.
-
-The Saudi Ministry of Health also issued a 2026 Hajj
-vaccination campaign announcement stating that the
+The Saudi Ministry of Health also states that the
 meningococcal (Neisseria) vaccine is mandatory for pilgrims
-who have not received the vaccine within the previous five
-years.
+who have not received it within the previous five years.
 
-IMPORTANT:
-Do not state that every vaccine mentioned above is mandatory
-for every Pakistani Hajj pilgrim unless the official evidence
-specifically establishes that requirement.
+Seasonal influenza and COVID-19 vaccination are described
+as recommendations in the relevant 2026 Hajj material.
 
-For Pakistan, the polio requirement and the applicable
-certificate/proof requirements should be described according
-to the official Saudi health document and Pakistan's official
-Hajj instructions.
+Do not describe every vaccine mentioned in the document
+as mandatory for every Pakistani pilgrim unless the
+official evidence specifically establishes that.
 """
 
         direct_sources = [
@@ -134,8 +184,7 @@ Hajj instructions.
             },
             {
                 "title": (
-                    "Saudi MOH — Pilgrim's Health / "
-                    "Hajj Health Requirements"
+                    "Saudi MOH — Pilgrim's Health"
                 ),
                 "url": (
                     "https://www.moh.gov.sa/"
@@ -161,17 +210,14 @@ Hajj instructions.
                 "official": True,
                 "page_text": (
                     """
-OFFICIAL SAUDI MINISTRY OF HEALTH — 27 FEBRUARY 2026
+Saudi Ministry of Health — 27 February 2026
 
-The Saudi Ministry of Health announced the Hajj 1447H
-vaccination campaign.
+The meningococcal (Neisseria) vaccine is mandatory
+for pilgrims who have not received it within the
+previous five years.
 
-The meningococcal (Neisseria) vaccine is mandatory for
-pilgrims who have not received the vaccine within the past
-five years.
-
-The Ministry also discussed seasonal influenza and COVID-19
-vaccination recommendations.
+Seasonal influenza and COVID-19 vaccination were
+also discussed as recommendations.
 """
                 ),
                 "snippet": (
@@ -194,14 +240,9 @@ vaccination recommendations.
                 "official": True,
                 "page_text": (
                     """
-OFFICIAL PAKISTAN MINISTRY OF RELIGIOUS AFFAIRS
+Pakistan Ministry of Religious Affairs
 
-Title:
-Saudi Government Health Instructions for Hajj - 2026
-
-This is the official Pakistan Ministry of Religious Affairs
-page carrying Saudi Government health instructions for
-Hajj 2026.
+Saudi Government Health Instructions for Hajj - 2026.
 """
                 ),
                 "snippet": (
@@ -211,33 +252,21 @@ Hajj 2026.
             },
         ]
 
-        # ----------------------------------------------------
-        # Search official sites as well, so additional current
-        # official material can be included.
-        # ----------------------------------------------------
-
-        queries = [
-            (
-                "site:moh.gov.sa "
-                "Hajj 1447 2026 Pakistan polio"
-            ),
-            (
-                "site:moh.gov.sa "
-                "Hajj 2026 meningococcal vaccine"
-            ),
-            (
-                "site:mora.gov.pk "
-                "Saudi Government Health Instructions "
-                "Hajj 2026"
-            ),
-            (
-                "site:mora.gov.pk "
-                "Hajj 2026 vaccination"
-            ),
-        ]
-
         searched_sources = perform_search(
-            queries=queries,
+            queries=[
+                (
+                    "site:moh.gov.sa "
+                    "Hajj 1447 2026 Pakistan polio"
+                ),
+                (
+                    "site:moh.gov.sa "
+                    "Hajj 2026 meningococcal vaccine"
+                ),
+                (
+                    "site:mora.gov.pk "
+                    "Hajj 2026 health instructions"
+                ),
+            ],
             official_domains=[
                 "moh.gov.sa",
                 "mora.gov.pk",
@@ -245,12 +274,251 @@ Hajj 2026.
             max_results=8,
         )
 
+        for source in searched_sources:
+            if not source.get("official"):
+                continue
+
+            domain = (
+                source.get("domain", "")
+                .lower()
+                .replace("www.", "")
+            )
+
+            if domain not in {
+                "moh.gov.sa",
+                "mora.gov.pk",
+            }:
+                continue
+
+            direct_sources.append(source)
+
+        return {
+            "sources": unique_sources(
+                direct_sources,
+                limit=5,
+            ),
+            "rag_results": [],
+            "jurisdiction": None,
+            "attempts": 1,
+        }
+
+    # ========================================================
+    # UMRAH 1447H / 2026
+    # ========================================================
+
+    if umrah_question:
+
         # ----------------------------------------------------
-        # Add useful searched official sources without
-        # allowing them to replace our guaranteed evidence.
+        # This is the official Saudi MOH Umrah 1447H/2026
+        # document. It specifically lists Pakistan under
+        # WPV1 countries.
         # ----------------------------------------------------
 
+        official_evidence = """
+OFFICIAL SAUDI MINISTRY OF HEALTH
+HEALTH REQUIREMENTS FOR UMRAH — 1447H / 2026
+
+The Saudi Ministry of Health's official document is titled:
+
+"Health Requirements and Recommendations for Travelers
+to Saudi Arabia for Umrah - 1447H (2026)"
+
+Meningococcal meningitis:
+
+All individuals intending to perform Umrah from all
+countries are required to receive an approved meningococcal
+vaccine before travelling to Saudi Arabia.
+
+Approved options include:
+
+1. Meningococcal quadrivalent (ACYW) conjugate vaccine
+   or pentavalent (ACYWX) conjugate vaccine, received
+   within the last 5 years and at least 10 days before
+   arrival.
+
+2. Meningococcal quadrivalent (ACYW) polysaccharide
+   vaccine, received within the last 3 years and at least
+   10 days before arrival.
+
+The vaccine name and administration date should be shown
+on the vaccination certificate. If the vaccine type is
+not indicated, the certificate is considered valid for
+3 years from the administration date.
+
+Polio:
+
+Pakistan is specifically listed under countries reporting
+WPV1.
+
+Individuals arriving from Pakistan are required to have
+at least one dose of either bivalent oral polio vaccine
+(bOPV) or inactivated polio vaccine (IPV) before travelling
+to Saudi Arabia.
+
+This requirement applies regardless of age or previous
+vaccination status according to the 1447H/2026 Umrah
+health document.
+
+COVID-19:
+
+Certain higher-risk Umrah travelers are required to have
+proof of COVID-19 vaccination or immunity before travel.
+The groups specified by Saudi MOH include people over
+65 years of age, pregnant women, and people with certain
+chronic diseases or immunodeficiency.
+
+Yellow fever:
+
+This applies to travelers arriving from countries listed
+by Saudi MOH as areas at risk of yellow fever transmission.
+Pakistan is not listed in that yellow-fever table.
+
+Routine vaccinations are also recommended to be up to date.
+"""
+
+        direct_sources = [
+            {
+                "title": (
+                    "Saudi MOH — Health Requirements and "
+                    "Recommendations for Travelers to "
+                    "Saudi Arabia for Umrah - 1447H (2026)"
+                ),
+                "url": (
+                    "https://www.moh.gov.sa/"
+                    "en/HealthAwareness/Pilgrims-Health/"
+                    "Documents/Health-Regulations-Umrah-EN.pdf"
+                ),
+                "domain": "moh.gov.sa",
+                "official": True,
+                "page_text": official_evidence,
+                "snippet": official_evidence,
+            },
+            {
+                "title": (
+                    "Saudi MOH — Pilgrim's Health"
+                ),
+                "url": (
+                    "https://www.moh.gov.sa/"
+                    "en/healthawareness/pilgrims-health/"
+                    "pages/default.aspx"
+                ),
+                "domain": "moh.gov.sa",
+                "official": True,
+                "page_text": official_evidence,
+                "snippet": (
+                    "Saudi Ministry of Health Pilgrim's "
+                    "Health page containing the official "
+                    "Umrah 1447H/2026 health requirements."
+                ),
+            },
+        ]
+
+        searched_sources = perform_search(
+            queries=[
+                (
+                    "site:moh.gov.sa "
+                    "Umrah 1447 2026 "
+                    "Health Regulations Pakistan polio"
+                ),
+                (
+                    "site:moh.gov.sa "
+                    "Umrah 2026 meningococcal vaccine"
+                ),
+                (
+                    "site:moh.gov.sa "
+                    "Umrah 2026 Pakistan vaccination"
+                ),
+            ],
+            official_domains=[
+                "moh.gov.sa",
+            ],
+            max_results=8,
+        )
+
         for source in searched_sources:
+
+            if not source.get("official"):
+                continue
+
+            domain = (
+                source.get("domain", "")
+                .lower()
+                .replace("www.", "")
+            )
+
+            if domain != "moh.gov.sa":
+                continue
+
+            direct_sources.append(source)
+
+        return {
+            "sources": unique_sources(
+                direct_sources,
+                limit=5,
+            ),
+            "rag_results": [],
+            "jurisdiction": None,
+            "attempts": 1,
+        }
+
+    # ========================================================
+    # SAUDI WORK / EMPLOYMENT VISA
+    # ========================================================
+
+    if saudi_question and work_visa_question:
+
+        queries = [
+            (
+                "site:moh.gov.sa "
+                "Saudi Arabia work visa "
+                "vaccination Pakistan"
+            ),
+            (
+                "site:moh.gov.sa "
+                "employment visa vaccination "
+                "Saudi Arabia"
+            ),
+            (
+                "site:moh.gov.sa "
+                "medical examination foreign workers "
+                "Saudi Arabia"
+            ),
+            (
+                "site:gov.sa "
+                "work visa vaccination "
+                "Saudi Arabia Pakistan"
+            ),
+            (
+                "site:mofa.gov.sa "
+                "employment visa health "
+                "requirements Pakistan"
+            ),
+            (
+                "site:beoe.gov.pk "
+                "Saudi Arabia medical vaccination "
+                "work visa"
+            ),
+            (
+                "site:nhsrc.gov.pk "
+                "Saudi Arabia work visa vaccination"
+            ),
+        ]
+
+        sources = perform_search(
+            queries=queries,
+            official_domains=[
+                "moh.gov.sa",
+                "gov.sa",
+                "mofa.gov.sa",
+                "beoe.gov.pk",
+                "nhsrc.gov.pk",
+            ],
+            max_results=8,
+        )
+
+        official_sources = []
+
+        for source in sources:
 
             if not source.get("official"):
                 continue
@@ -267,55 +535,102 @@ Hajj 2026.
                 )
             )
 
-            if domain not in {
+            allowed_domains = {
                 "moh.gov.sa",
-                "mora.gov.pk",
-            }:
+                "gov.sa",
+                "mofa.gov.sa",
+                "beoe.gov.pk",
+                "nhsrc.gov.pk",
+            }
+
+            if domain not in allowed_domains:
                 continue
 
-            url = source.get(
-                "url",
-                "",
+            combined_text = (
+                str(
+                    source.get(
+                        "title",
+                        "",
+                    )
+                )
+                + " "
+                + str(
+                    source.get(
+                        "snippet",
+                        "",
+                    )
+                )
+                + " "
+                + str(
+                    source.get(
+                        "page_text",
+                        "",
+                    )
+                )
+            ).lower()
+
+            relevant_terms = [
+                "work",
+                "employment",
+                "visa",
+                "medical",
+                "vaccin",
+                "health",
+                "saudi",
+                "worker",
+            ]
+
+            relevance = sum(
+                1
+                for term in relevant_terms
+                if term in combined_text
             )
 
-            if not url:
-                continue
+            if relevance >= 2:
 
-            if any(
-                existing.get("url") == url
-                for existing in direct_sources
-            ):
-                continue
+                source["relevance"] = (
+                    relevance
+                )
 
-            direct_sources.append(source)
+                official_sources.append(
+                    source
+                )
+
+        official_sources.sort(
+            key=lambda source: source.get(
+                "relevance",
+                0,
+            ),
+            reverse=True,
+        )
 
         # ----------------------------------------------------
-        # Remove duplicates
+        # IMPORTANT:
+        # Do not manufacture a work-visa vaccination rule
+        # if official current evidence is not available.
         # ----------------------------------------------------
 
-        unique = {}
+        if not official_sources:
 
-        for source in direct_sources:
-
-            url = source.get(
-                "url",
-                "",
-            )
-
-            if url and url not in unique:
-                unique[url] = source
+            return {
+                "sources": [],
+                "rag_results": [],
+                "jurisdiction": None,
+                "attempts": 3,
+            }
 
         return {
-            "sources": list(
-                unique.values()
-            )[:5],
+            "sources": unique_sources(
+                official_sources,
+                limit=5,
+            ),
             "rag_results": [],
             "jurisdiction": None,
             "attempts": 1,
         }
 
     # ========================================================
-    # INTERNATIONAL TRAVEL VACCINATION
+    # GENERAL INTERNATIONAL TRAVEL VACCINATION
     # ========================================================
 
     official_domains = [
@@ -466,22 +781,11 @@ Hajj 2026.
         reverse=True,
     )
 
-    unique = {}
-
-    for source in official_sources:
-
-        url = source.get(
-            "url",
-            "",
-        )
-
-        if url and url not in unique:
-            unique[url] = source
-
     return {
-        "sources": list(
-            unique.values()
-        )[:5],
+        "sources": unique_sources(
+            official_sources,
+            limit=5,
+        ),
         "rag_results": [],
         "jurisdiction": None,
         "attempts": 1,
@@ -516,17 +820,17 @@ def research_nadra(
         max_results=8,
     )
 
-    official_sources = []
-
-    for source in sources:
-
-        if source.get("official"):
-            official_sources.append(
-                source
-            )
+    official_sources = [
+        source
+        for source in sources
+        if source.get("official")
+    ]
 
     return {
-        "sources": official_sources[:5],
+        "sources": unique_sources(
+            official_sources,
+            limit=5,
+        ),
         "rag_results": rag_results,
         "jurisdiction": None,
         "attempts": 1,
@@ -596,22 +900,11 @@ def research_protector(
             source
         )
 
-    unique = {}
-
-    for source in official_sources:
-
-        url = source.get(
-            "url",
-            "",
-        )
-
-        if url and url not in unique:
-            unique[url] = source
-
     return {
-        "sources": list(
-            unique.values()
-        )[:5],
+        "sources": unique_sources(
+            official_sources,
+            limit=5,
+        ),
         "rag_results": [],
         "jurisdiction": None,
         "attempts": 1,
@@ -695,19 +988,19 @@ def research_department(
             max_results=8,
         )
 
-        official_sources = []
-
-        for source in sources:
-
-            if source.get("official"):
-                official_sources.append(
-                    source
-                )
+        official_sources = [
+            source
+            for source in sources
+            if source.get("official")
+        ]
 
         if official_sources:
 
             return {
-                "sources": official_sources[:5],
+                "sources": unique_sources(
+                    official_sources,
+                    limit=5,
+                ),
                 "rag_results": [],
                 "jurisdiction": jurisdiction,
                 "attempts": attempt,
