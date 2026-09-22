@@ -127,7 +127,7 @@ def ask_citizen_agent(
     # --------------------------------------------------------
 
     web_evidence = format_web_evidence(
-        verified_sources
+    verified_sources[:3]
     )
 
 
