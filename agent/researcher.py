@@ -12,12 +12,11 @@ NADRA_SEARCH_DOMAINS = [
 ]
 
 
-def build_department_queries(
-    question,
+def get_department_domains(
     department,
-    attempt,
 ):
-    official_domains = DEPARTMENTS.get(
+
+    return DEPARTMENTS.get(
         department,
         {},
     ).get(
@@ -25,42 +24,92 @@ def build_department_queries(
         ["gov.pk"],
     )
 
-    domain = official_domains[0]
+
+def build_department_queries(
+    question,
+    department,
+    attempt,
+):
+
+    domains = get_department_domains(
+        department
+    )
+
+    queries = []
+
+    # --------------------------------------------------------
+    # Attempt 1 — direct question
+    # --------------------------------------------------------
 
     if attempt == 1:
-        return [
-            f"site:{domain} {question}",
-            f"site:{domain} {question} requirements",
-            f"site:{domain} {question} procedure",
-        ]
 
-    if attempt == 2:
-        return [
-            f"site:{domain} {question} documents",
-            f"site:{domain} {question} fee",
-            f"site:{domain} {question} application",
-            f"site:{domain} {question} process",
-        ]
+        for domain in domains:
 
-    return [
-        f"site:{domain} {question} official",
-        f"site:{domain} {question} FAQ",
-        f"site:{domain} {question} rules",
-        f"site:{domain} {question} policy",
-    ]
+            queries.append(
+                f"site:{domain} {question}"
+            )
+
+            queries.append(
+                f"site:{domain} {question} requirements"
+            )
+
+    # --------------------------------------------------------
+    # Attempt 2 — procedure/documents/fees
+    # --------------------------------------------------------
+
+    elif attempt == 2:
+
+        for domain in domains:
+
+            queries.append(
+                f"site:{domain} {question} procedure"
+            )
+
+            queries.append(
+                f"site:{domain} {question} documents"
+            )
+
+            queries.append(
+                f"site:{domain} {question} fee"
+            )
+
+    # --------------------------------------------------------
+    # Attempt 3 — official/FAQ/rules
+    # --------------------------------------------------------
+
+    else:
+
+        for domain in domains:
+
+            queries.append(
+                f"site:{domain} {question} official"
+            )
+
+            queries.append(
+                f"site:{domain} {question} FAQ"
+            )
+
+            queries.append(
+                f"site:{domain} {question} rules"
+            )
+
+    return queries
 
 
 def build_nadra_queries(
     question,
     attempt,
 ):
+
     if attempt == 1:
+
         return [
             f"site:nadra.gov.pk {question}",
             f"site:nadra.gov.pk {question} requirements",
         ]
 
     if attempt == 2:
+
         return [
             f"site:nadra.gov.pk {question} procedure",
             f"site:nadra.gov.pk {question} documents",
@@ -75,10 +124,38 @@ def build_nadra_queries(
     ]
 
 
+def add_unique_sources(
+    destination,
+    sources,
+):
+
+    for source in sources:
+
+        url = source.get(
+            "url",
+            "",
+        )
+
+        if not url:
+            continue
+
+        already_exists = any(
+            existing.get("url") == url
+            for existing in destination
+        )
+
+        if not already_exists:
+
+            destination.append(
+                source
+            )
+
+
 def research_nadra(
     question,
     language="English",
 ):
+
     all_sources = []
     rag_results = []
     attempts = 0
@@ -87,20 +164,31 @@ def research_nadra(
 
         attempts = attempt
 
+        # ----------------------------------------------------
+        # RAG search
+        # ----------------------------------------------------
+
         try:
+
             current_rag = retrieve_nadra(
                 question=question,
                 language=language,
                 top_k=6,
             )
 
-            if current_rag:
-                rag_results.extend(
-                    current_rag
-                )
-
         except Exception:
+
             current_rag = []
+
+        if current_rag:
+
+            rag_results.extend(
+                current_rag
+            )
+
+        # ----------------------------------------------------
+        # Official NADRA web search
+        # ----------------------------------------------------
 
         queries = build_nadra_queries(
             question,
@@ -108,6 +196,7 @@ def research_nadra(
         )
 
         try:
+
             sources = perform_search(
                 queries=queries,
                 official_domains=NADRA_SEARCH_DOMAINS,
@@ -115,25 +204,13 @@ def research_nadra(
             )
 
         except Exception:
+
             sources = []
 
-        for source in sources:
-
-            url = source.get(
-                "url",
-                "",
-            )
-
-            if not url:
-                continue
-
-            if not any(
-                existing.get("url") == url
-                for existing in all_sources
-            ):
-                all_sources.append(
-                    source
-                )
+        add_unique_sources(
+            all_sources,
+            sources,
+        )
 
         official_sources = [
             source
@@ -141,13 +218,24 @@ def research_nadra(
             if source.get("official")
         ]
 
+        useful_rag = has_useful_evidence(
+            current_rag
+        )
+
+        # ----------------------------------------------------
+        # Stop when BOTH evidence layers are useful
+        # ----------------------------------------------------
+
         if (
-            has_useful_evidence(
-                current_rag
-            )
+            useful_rag
             and official_sources
         ):
+
             break
+
+    # --------------------------------------------------------
+    # Remove duplicate RAG results
+    # --------------------------------------------------------
 
     unique_rag = []
     seen_rag = set()
@@ -188,6 +276,7 @@ def research_department(
     question,
     department,
 ):
+
     all_sources = []
     attempts = 0
 
@@ -202,36 +291,23 @@ def research_department(
         )
 
         try:
+
             sources = perform_search(
                 queries=queries,
-                official_domains=DEPARTMENTS[
+                official_domains=get_department_domains(
                     department
-                ][
-                    "official_domains"
-                ],
+                ),
                 max_results=8,
             )
 
         except Exception:
+
             sources = []
 
-        for source in sources:
-
-            url = source.get(
-                "url",
-                "",
-            )
-
-            if not url:
-                continue
-
-            if not any(
-                existing.get("url") == url
-                for existing in all_sources
-            ):
-                all_sources.append(
-                    source
-                )
+        add_unique_sources(
+            all_sources,
+            sources,
+        )
 
         official_sources = [
             source
@@ -239,7 +315,12 @@ def research_department(
             if source.get("official")
         ]
 
+        # ----------------------------------------------------
+        # Stop once an official source is found
+        # ----------------------------------------------------
+
         if official_sources:
+
             break
 
     return {
