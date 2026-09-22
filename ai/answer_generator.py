@@ -65,16 +65,12 @@ def generate_answer(
             max_tokens=1000,
         )
 
-        return response.choices[0].message.content.strip()
-
-    except RateLimitError:
-
         return (
-            "The AI answer service has temporarily reached "
-            "its usage limit. The NADRA policy and official "
-            "sources were successfully searched, but the "
-            "final AI response could not be generated right now. "
-            "Please try again later."
+    "The AI answer service has temporarily reached "
+    "its usage limit. The official sources were "
+    "successfully searched, but the final AI response "
+    "could not be generated right now. "
+    "Please try again later."
         )
 
     except Exception as exc:
