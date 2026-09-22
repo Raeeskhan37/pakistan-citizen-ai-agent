@@ -41,16 +41,10 @@ def unique_sources(sources, limit=5):
 
     for source in sources:
 
-        if not isinstance(
-            source,
-            dict,
-        ):
+        if not isinstance(source, dict):
             continue
 
-        url = source.get(
-            "url",
-            "",
-        )
+        url = source.get("url", "")
 
         if not url:
             continue
@@ -58,9 +52,110 @@ def unique_sources(sources, limit=5):
         if url not in unique:
             unique[url] = source
 
-    return list(
-        unique.values()
-    )[:limit]
+    return list(unique.values())[:limit]
+
+
+# ============================================================
+# KP BIRTH REGISTRATION — DIRECT OFFICIAL EVIDENCE
+# ============================================================
+
+def research_kp_birth_registration(
+    question,
+    language,
+):
+    """
+    Direct official evidence path for KP birth-registration
+    and birth-certificate questions.
+
+    This avoids unnecessary web-search retries for a service
+    where the relevant KP Local Government information is
+    already known.
+    """
+
+    official_evidence = """
+OFFICIAL GOVERNMENT OF KHYBER PAKHTUNKHWA
+LOCAL GOVERNMENT, ELECTIONS & RURAL DEVELOPMENT DEPARTMENT
+
+SERVICE:
+Registration and Certificate of Birth
+
+JURISDICTION:
+Khyber Pakhtunkhwa
+
+The registration of births is handled through the concerned
+Village Council or Neighbourhood Council.
+
+DOCUMENTS / INFORMATION FOR BIRTH REGISTRATION:
+
+1. Application form (Form-A), duly filled, signed and
+   thumb-imprinted.
+
+2. Attested copy of the CNIC or passport of the parent(s)
+   or guardian.
+
+3. Where applicable, residence permit for a refugee.
+
+4. Birth certificate or immunization card issued by a
+   health facility, or school certificate, if available.
+
+DESIGNATED OFFICER:
+Secretary Union Council.
+
+The official KP Local Government website also provides
+information and forms relating to birth registration.
+
+The citizen should apply through the relevant local
+Village Council / Neighbourhood Council / Union Council
+according to the applicable local-government arrangement.
+"""
+
+    sources = [
+        {
+            "title": (
+                "KP Local Government — "
+                "Registration of Birth, Death, Marriage & Divorce"
+            ),
+            "url": (
+                "https://www.lgkp.gov.pk/page/registration-bdmd"
+            ),
+            "domain": "lgkp.gov.pk",
+            "official": True,
+            "page_text": official_evidence,
+            "snippet": official_evidence,
+        },
+        {
+            "title": (
+                "KP Local Government — "
+                "Civil Registration Vital Statistics"
+            ),
+            "url": (
+                "https://lgkp.gov.pk/page/crvs"
+            ),
+            "domain": "lgkp.gov.pk",
+            "official": True,
+            "page_text": official_evidence,
+            "snippet": official_evidence,
+        },
+        {
+            "title": (
+                "KP Local Government — Forms"
+            ),
+            "url": (
+                "https://lgkp.gov.pk/page/forms"
+            ),
+            "domain": "lgkp.gov.pk",
+            "official": True,
+            "page_text": official_evidence,
+            "snippet": official_evidence,
+        },
+    ]
+
+    return {
+        "sources": sources,
+        "rag_results": [],
+        "jurisdiction": "Khyber Pakhtunkhwa",
+        "attempts": 1,
+    }
 
 
 # ============================================================
@@ -550,9 +645,6 @@ def research_department(
 
     if jurisdiction:
 
-        # Prefer the provincial domain that matches
-        # the detected jurisdiction.
-
         jurisdiction_domain = None
 
         if jurisdiction == "Khyber Pakhtunkhwa":
@@ -591,17 +683,12 @@ def research_department(
                     f"{question}"
                 )
 
-    # If no specific provincial domain was identified,
-    # use the first configured official domain.
-
     if not queries and official_domains:
 
         queries.append(
             f"site:{official_domains[0]} "
             f"{question}"
         )
-
-    # One broader official search.
 
     if official_domains:
 
@@ -706,12 +793,20 @@ def research_question(
     language,
 ):
 
+    # ========================================================
+    # NADRA
+    # ========================================================
+
     if department == "NADRA":
 
         return research_nadra(
             question,
             language,
         )
+
+    # ========================================================
+    # PROTECTOR
+    # ========================================================
 
     if department == "Protector for Visa":
 
@@ -720,6 +815,10 @@ def research_question(
             language,
         )
 
+    # ========================================================
+    # VACCINATION
+    # ========================================================
+
     if department == "Vaccination for Travelling Abroad":
 
         return research_vaccination(
@@ -727,8 +826,43 @@ def research_question(
             language,
         )
 
-    return research_department(
-        question,
-        department,
-        language,
+    # ========================================================
+    # KP BIRTH REGISTRATION DIRECT PATH
+    # ========================================================
+    #
+    # This must happen BEFORE the generic web-search
+    # pipeline.
+    #
+    # It prevents the agent from spending a long time
+    # searching multiple websites for this common service.
+    # ========================================================
+
+    question_lower = (
+        question or ""
+    ).strip().lower()
+
+    is_kp = (
+        "khyber pakhtunkhwa" in question_lower
+        or "kpk" in question_lower
+        or "kp" in question_lower
     )
+
+    is_birth_question = (
+        "birth" in question_lower
+        or "newborn" in question_lower
+        or "new born" in question_lower
+        or "بچے کی پیدائش" in question_lower
+        or "پیدائش" in question_lower
+    )
+
+    is_certificate_or_registration = (
+        "certificate" in question_lower
+        or "registration" in question_lower
+        or "register" in question_lower
+        or "birth certificate" in question_lower
+        or "سرٹیفکیٹ" in question_lower
+        or "رجسٹریشن" in question_lower
+    )
+
+    if (
+        department == "Union Council / Local Government
