@@ -511,53 +511,46 @@ def build_nadra_evidence(
 ):
 
     if not results:
-
         return (
             "No relevant NADRA Registration Policy "
             "evidence was retrieved."
         )
 
-    evidence = []
+    evidence = [
+        "SOURCE: NADRA Registration Policy",
+        "VERSION: RP-6.0.2",
+        "EFFECTIVE DATE: 21 September 2026",
+        "",
+        "RELEVANT POLICY EVIDENCE:",
+    ]
 
-    evidence.append(
-        "SOURCE: NADRA Registration Policy"
-    )
-
-    evidence.append(
-        "VERSION: RP-6.0.2"
-    )
-
-    evidence.append(
-        "EFFECTIVE DATE: 21 September 2026"
-    )
-
-    evidence.append(
-        ""
-    )
-
-    evidence.append(
-        "RETRIEVED POLICY EVIDENCE:"
-    )
+    # Only send the strongest 3 results
+    selected_results = results[:3]
 
     for number, item in enumerate(
-        results,
+        selected_results,
         start=1,
     ):
+
+        text = item.get(
+            "text",
+            "",
+        )
+
+        # Limit each chunk to avoid excessive tokens
+        text = text[:5000]
 
         evidence.append(
             f"""
 [EVIDENCE {number}]
 Page: {item.get("page", "N/A")}
 Section: {item.get("section", "")}
-Similarity: {item.get("score", 0):.4f}
 
-{item.get("text", "")}
+{text}
 """
         )
 
-    return "\n".join(
-        evidence
-    )
+    return "\n".join(evidence)
 
 
 # ============================================================
