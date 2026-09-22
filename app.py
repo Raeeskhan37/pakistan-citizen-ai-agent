@@ -180,8 +180,10 @@ if "last_result" in st.session_state:
 
     st.markdown("### 💬 Answer")
 
+    # Render Markdown/HTML returned by the AI correctly
     st.markdown(
-        result.get("answer", "")
+        result.get("answer", ""),
+        unsafe_allow_html=True,
     )
 
     st.markdown("### 🔗 Official Sources")
