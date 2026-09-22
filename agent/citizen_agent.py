@@ -7,7 +7,12 @@ from agent.verifier import verify_sources
 from rag.nadra_retriever import build_nadra_evidence
 
 
+# ============================================================
+# WEB EVIDENCE FORMATTER
+# ============================================================
+
 def format_web_evidence(sources):
+
     if not sources:
         return "No authoritative web evidence was retrieved."
 
@@ -53,110 +58,144 @@ Information from official government page:
 
 
 # ============================================================
-# DIRECT HAJJ 2026 ANSWER
+# DETECT HAJJ / UMRAH
 # ============================================================
 
-def build_hajj_2026_answer(
+def is_hajj_or_umrah_question(
+    question,
+    department,
+):
+    """
+    Identify Hajj / Umrah questions only for the
+    Vaccination department.
+
+    This special path does NOT affect:
+    - NADRA
+    - Passport
+    - Protector
+    - other departments
+    """
+
+    if (
+        department
+        != "Vaccination for Travelling Abroad"
+    ):
+        return False
+
+    question_lower = question.lower()
+
+    return any(
+        term in question_lower
+        for term in [
+            "hajj",
+            "haj",
+            "umrah",
+            "umra",
+        ]
+    )
+
+
+# ============================================================
+# HAJJ 2026 FINAL ANSWER
+# ============================================================
+
+def build_hajj_answer(
     question,
     language,
 ):
     """
-    Deterministic answer for Hajj 1447H / 2026
-    based on official Saudi MOH health requirements.
+    Final answer for Hajj / Umrah vaccination questions.
 
-    This avoids relying on the general LLM answer
-    generation step for a highly specific health
-    requirement.
+    This uses only documented official information.
+
+    Important:
+    Saudi requirements are identified as Saudi requirements.
+    They are NOT presented as Pakistani domestic policy.
     """
 
-    question_lower = question.lower()
-
-    # --------------------------------------------------------
-    # ENGLISH
-    # --------------------------------------------------------
-
-    if language == "English":
+    if language == "اردو":
 
         return """
-For Hajj 2026 (1447H), official Saudi Ministry of Health
-requirements apply to pilgrims arriving in Saudi Arabia.
+### حج 2026 کے لیے ویکسینیشن
 
-For pilgrims coming from Pakistan:
+حج 1447ھ / 2026 کے لیے سعودی عرب کی وزارتِ صحت نے
+سرکاری صحت کی ضروریات جاری کی ہیں۔
 
-• Pakistan is identified in the Saudi Ministry of Health
-  Hajj 1447/2026 health requirements in relation to
-  poliovirus circulation.
+**میننجوکوکل (Meningococcal / Neisseria) ویکسین**
 
-• Saudi health authorities may administer a single dose of
-  bivalent oral polio vaccine (bOPV) at the point of entry,
-  based on a risk assessment, regardless of age or previous
-  vaccination history.
+سعودی وزارتِ صحت کے مطابق یہ ویکسین ان تمام عازمین کے
+لیے لازمی ہے جنہوں نے گزشتہ پانچ سال کے اندر یہ ویکسین
+نہیں لگوائی۔
 
-• The Saudi Ministry of Health also states that the
-  meningococcal (Neisseria) vaccine is mandatory for Hajj
-  pilgrims who have not received it within the previous
-  five years.
+**پولیو**
 
-• Vaccination status for the meningococcal vaccine can be
-  verified through the Saudi Sehhaty system.
+سعودی وزارتِ صحت کی حج 2026 کی سرکاری Health Requirements
+میں پولیو سے متعلق مخصوص ممالک اور داخلے کی صحت کی
+ضروریات بھی بیان کی گئی ہیں۔ پاکستان سے آنے والے مسافروں
+کے لیے متعلقہ پولیو شرائط اسی سرکاری دستاویز کے مطابق
+دیکھی جانی چاہئیں۔
 
-For the exact certificate/document requirements applicable
-to a Pakistani pilgrim, the official Saudi Hajj health
-requirements and the Pakistan Ministry of Religious Affairs'
-2026 health instructions should be followed.
+**دیگر ویکسینز**
 
-I have not assumed that every recommended vaccine is
-mandatory. The official sources distinguish between
-mandatory requirements, recommendations, and measures that
-may be applied at entry.
+سعودی وزارتِ صحت نے 2026 کے لیے موسمی فلو اور COVID-19
+ویکسینیشن کی بھی سفارش کی ہے، لیکن ہر تجویز کردہ ویکسین
+کو لازمی قرار نہیں دیا گیا۔
 
-Official sources:
-1. Saudi Ministry of Health — Health Requirements for Hajj
-   1447H (2026)
-2. Saudi Ministry of Health — Hajj 1447H Vaccination Campaign
-3. Pakistan Ministry of Religious Affairs — Saudi Government
-   Health Instructions for Hajj 2026
+### سرٹیفکیٹ کے بارے میں
+
+حتمی ویکسینیشن/صحت کی دستاویزات کے لیے:
+
+1. سعودی وزارتِ صحت کی Hajj 1447/2026 Health Requirements
+2. پاکستان وزارتِ مذہبی امور کی
+   "Saudi Government Health Instructions for Hajj - 2026"
+
+کو بنیادی سرکاری ذرائع سمجھا جائے۔
+
+یہ معلومات سعودی حج صحت کی ضروریات سے متعلق ہیں؛ انہیں
+پاکستان کی عمومی ویکسینیشن پالیسی نہیں سمجھنا چاہیے۔
 """
 
-    # --------------------------------------------------------
-    # URDU
-    # --------------------------------------------------------
-
     return """
-حج 2026 (1447ھ) کے لیے سعودی عرب کی وزارتِ صحت کی
-سرکاری صحت کی ہدایات لاگو ہوتی ہیں۔
+### Hajj 2026 Vaccination Requirements
 
-پاکستان سے حج کے لیے جانے والے عازمین کے بارے میں:
+For Hajj 1447H / 2026, the Saudi Ministry of Health
+published official health requirements for pilgrims.
 
-• سعودی وزارتِ صحت کی حج 1447/2026 کی سرکاری ہدایات میں
-  پاکستان کو پولیو وائرس کی موجودگی کے حوالے سے متعلقہ
-  ممالک میں شامل کیا گیا ہے۔
+**Meningococcal (Neisseria) vaccine**
 
-• سعودی صحت حکام خطرے کے جائزے کی بنیاد پر سعودی عرب
-  پہنچنے پر ایک خوراک bivalent oral polio vaccine (bOPV)
-  دے سکتے ہیں، عمر یا پہلے ویکسین لگنے کی صورتحال سے قطع
-  نظر۔
+According to the Saudi Ministry of Health, this vaccine is
+mandatory for pilgrims who have not received it within the
+previous five years. Vaccination status can be verified
+through the Saudi Sehhaty system.
 
-• سعودی وزارتِ صحت کے مطابق meningococcal (Neisseria)
-  ویکسین ان حج عازمین کے لیے لازمی ہے جنہیں گزشتہ پانچ
-  سال کے اندر یہ ویکسین نہیں لگی۔
+**Polio**
 
-• اس ویکسین کی حیثیت سعودی Sehhaty نظام کے ذریعے بھی
-  چیک کی جا سکتی ہے۔
+The Saudi Ministry of Health's official Hajj 2026 Health
+Requirements also specify polio-related requirements for
+travellers from relevant countries. For pilgrims travelling
+from Pakistan, the applicable polio requirements should be
+followed according to that official Saudi document.
 
-پاکستانی عازم کے لیے درست سرٹیفکیٹ یا دستاویز کی حتمی
-ضرورت کے لیے سعودی وزارتِ صحت کی حج 2026 کی سرکاری
-صحت کی ہدایات اور پاکستان کی وزارتِ مذہبی امور کی
-2026 کی سرکاری صحت ہدایات پر عمل کرنا چاہیے۔
+**Other vaccines**
 
-میں نے تجویز کردہ ہر ویکسین کو لازمی قرار نہیں دیا ہے۔
-سرکاری ذرائع لازمی تقاضوں، سفارشات اور داخلے کے وقت
-ممکنہ اقدامات میں فرق کرتے ہیں۔
+The Saudi Ministry of Health also recommended seasonal
+influenza and COVID-19 vaccination for the 2026 Hajj season.
+These recommendations should not automatically be treated
+as mandatory requirements.
 
-سرکاری ذرائع:
-1۔ سعودی وزارتِ صحت — حج 1447ھ (2026) کی صحت کی ہدایات
-2۔ سعودی وزارتِ صحت — حج 1447ھ ویکسینیشن مہم
-3۔ پاکستان وزارتِ مذہبی امور — حج 2026 کی سعودی صحت کی ہدایات
+### What certificate should I have?
+
+For the exact vaccination/health documentation applicable
+to a Pakistani Hajj pilgrim, the authoritative references
+are:
+
+1. Saudi Ministry of Health — Health Requirements for
+   Hajj 1447H (2026)
+2. Pakistan Ministry of Religious Affairs —
+   "Saudi Government Health Instructions for Hajj - 2026"
+
+These are Saudi Hajj health requirements and should not be
+described as Pakistan's general vaccination policy.
 """
 
 
@@ -170,10 +209,18 @@ def ask_citizen_agent(
     language,
 ):
 
+    # --------------------------------------------------------
+    # Department detection
+    # --------------------------------------------------------
+
     department = detect_department(
         question,
         selected_department,
     )
+
+    # --------------------------------------------------------
+    # Research
+    # --------------------------------------------------------
 
     research = research_question(
         question,
@@ -195,6 +242,10 @@ def ask_citizen_agent(
         "jurisdiction"
     )
 
+    # --------------------------------------------------------
+    # Verify official sources
+    # --------------------------------------------------------
+
     verification = verify_sources(
         web_sources
     )
@@ -205,65 +256,140 @@ def ask_citizen_agent(
     )
 
     # ========================================================
-    # SPECIAL CASE:
-    # HAJJ / UMRAH VACCINATION
+    # SPECIAL HAJJ / UMRAH FINAL-STAGE PATH
+    # ========================================================
+    #
+    # IMPORTANT:
+    #
+    # This is the ONLY new final-stage branch.
+    #
+    # NADRA remains unchanged.
+    # Passport remains unchanged.
+    # Protector remains unchanged.
+    # All other departments remain unchanged.
+    #
     # ========================================================
 
-    is_hajj_question = (
-        department
-        == "Vaccination for Travelling Abroad"
-        and any(
-            term in question.lower()
-            for term in [
-                "hajj",
-                "haj",
-                "umrah",
-                "umra",
-            ]
-        )
+    hajj_question = is_hajj_or_umrah_question(
+        question,
+        department,
     )
 
-    if is_hajj_question:
+    if hajj_question:
 
-        answer = build_hajj_2026_answer(
+        answer = build_hajj_answer(
             question=question,
             language=language,
         )
 
+        # ----------------------------------------------------
+        # Keep only official sources.
+        # ----------------------------------------------------
+
+        official_sources = []
+
+        for source in web_sources:
+
+            if not isinstance(
+                source,
+                dict,
+            ):
+                continue
+
+            if source.get(
+                "official"
+            ) is True:
+
+                official_sources.append(
+                    source
+                )
+
+        # ----------------------------------------------------
+        # Remove duplicate URLs
+        # ----------------------------------------------------
+
+        unique_sources = []
+
+        seen_urls = set()
+
+        for source in official_sources:
+
+            url = (
+                source.get(
+                    "url",
+                    "",
+                )
+                or ""
+            ).strip()
+
+            if not url:
+                continue
+
+            if url in seen_urls:
+                continue
+
+            seen_urls.add(url)
+
+            unique_sources.append(
+                source
+            )
+
+        return {
+            "department": department,
+            "jurisdiction": jurisdiction,
+            "answer": answer,
+            "sources": unique_sources[:5],
+            "source_count": len(
+                unique_sources
+            ),
+            "official_source_count": len(
+                unique_sources
+            ),
+            "research_attempts": research.get(
+                "attempts",
+                1,
+            ),
+            "rag_result_count": len(
+                rag_results
+            ),
+            "checked_date": datetime.now().strftime(
+                "%d %B %Y"
+            ),
+            "warning": "",
+        }
+
+    # ========================================================
+    # EXISTING GENERAL PIPELINE
+    # ========================================================
+    #
+    # Everything below remains the normal pipeline.
+    #
+    # ========================================================
+
+    if department == "NADRA":
+
+        policy_evidence = build_nadra_evidence(
+            rag_results
+        )
+
     else:
 
-        # ----------------------------------------------------
-        # NADRA RAG
-        # ----------------------------------------------------
-
-        if department == "NADRA":
-
-            policy_evidence = build_nadra_evidence(
-                rag_results
-            )
-
-        else:
-
-            policy_evidence = (
-                "No department-specific "
-                "policy evidence was used."
-            )
-
-        # ----------------------------------------------------
-        # WEB EVIDENCE
-        # ----------------------------------------------------
-
-        web_evidence = format_web_evidence(
-            verified_sources[:5]
+        policy_evidence = (
+            "No department-specific "
+            "policy evidence was used."
         )
 
-        jurisdiction_text = (
-            jurisdiction
-            if jurisdiction
-            else "Not specified"
-        )
+    web_evidence = format_web_evidence(
+        verified_sources[:5]
+    )
 
-        combined_evidence = f"""
+    jurisdiction_text = (
+        jurisdiction
+        if jurisdiction
+        else "Not specified"
+    )
+
+    combined_evidence = f"""
 ============================================================
 GOVERNMENT POLICY EVIDENCE
 ============================================================
@@ -284,41 +410,39 @@ VERIFIED OFFICIAL WEB EVIDENCE
 {web_evidence}
 """
 
-        has_policy_evidence = bool(
-            rag_results
+    has_policy_evidence = bool(
+        rag_results
+    )
+
+    has_web_evidence = bool(
+        verified_sources
+    )
+
+    if (
+        not has_policy_evidence
+        and not has_web_evidence
+    ):
+
+        answer = (
+            "I could not verify this information "
+            "from an authoritative government source."
         )
 
-        has_web_evidence = bool(
-            verified_sources
+    else:
+
+        answer = generate_answer(
+            question=question,
+            department=department,
+            evidence=combined_evidence,
+            language=language,
         )
-
-        if (
-            not has_policy_evidence
-            and not has_web_evidence
-        ):
-
-            answer = (
-                "I could not verify this information "
-                "from an authoritative government source."
-            )
-
-        else:
-
-            answer = generate_answer(
-                question=question,
-                department=department,
-                evidence=combined_evidence,
-                language=language,
-            )
-
-    # ========================================================
-    # SOURCE COUNT
-    # ========================================================
 
     official_count = sum(
         1
         for source in verified_sources
-        if source.get("official")
+        if source.get(
+            "official"
+        )
     )
 
     return {
@@ -340,5 +464,8 @@ VERIFIED OFFICIAL WEB EVIDENCE
         "checked_date": datetime.now().strftime(
             "%d %B %Y"
         ),
-        "warning": "",
+        "warning": verification.get(
+            "warning",
+            "",
+        ),
     }
