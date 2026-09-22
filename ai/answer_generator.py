@@ -9,12 +9,7 @@ from ai.prompts import (
 from config.settings import GROQ_MODEL
 
 
-# ============================================================
-# GROQ CLIENT
-# ============================================================
-
 def get_client():
-
     import streamlit as st
 
     return Groq(
@@ -22,17 +17,12 @@ def get_client():
     )
 
 
-# ============================================================
-# GENERATE ANSWER
-# ============================================================
-
 def generate_answer(
     question,
     department,
     evidence,
     language,
 ):
-
     client = get_client()
 
     system_prompt = build_system_prompt(
@@ -48,7 +38,6 @@ def generate_answer(
     )
 
     try:
-
         response = client.chat.completions.create(
             model=GROQ_MODEL,
             messages=[
@@ -65,16 +54,18 @@ def generate_answer(
             max_tokens=1000,
         )
 
+        return response.choices[0].message.content.strip()
+
+    except RateLimitError:
         return (
-    "The AI answer service has temporarily reached "
-    "its usage limit. The official sources were "
-    "successfully searched, but the final AI response "
-    "could not be generated right now. "
-    "Please try again later."
+            "The AI answer service has temporarily reached "
+            "its usage limit. The official government sources "
+            "were successfully searched, but the final AI "
+            "response could not be generated right now. "
+            "Please try again later."
         )
 
-    except Exception as exc:
-
+    except Exception:
         return (
             "The AI answer could not be generated at this time. "
             "Please try again later."
