@@ -7,15 +7,14 @@ from agent.verifier import verify_sources
 from rag.nadra_retriever import build_nadra_evidence
 
 
-# ============================================================
-# WEB EVIDENCE
-# ============================================================
-
-def format_web_evidence(sources):
-
+def format_web_evidence(
+    sources,
+):
     if not sources:
-
-        return "No authoritative web evidence was retrieved."
+        return (
+            "No authoritative web evidence "
+            "was retrieved."
+        )
 
     evidence_parts = []
 
@@ -47,36 +46,21 @@ Information:
     )
 
 
-# ============================================================
-# MAIN CITIZEN AGENT
-# ============================================================
-
 def ask_citizen_agent(
     question,
     selected_department,
     language,
 ):
-
-    # --------------------------------------------------------
-    # DETECT DEPARTMENT
-    # --------------------------------------------------------
-
     department = detect_department(
         question,
         selected_department,
     )
-
-
-    # --------------------------------------------------------
-    # RESEARCH
-    # --------------------------------------------------------
 
     research = research_question(
         question,
         department,
         language,
     )
-
 
     web_sources = research.get(
         "sources",
@@ -88,23 +72,18 @@ def ask_citizen_agent(
         [],
     )
 
-
-    # --------------------------------------------------------
-    # VERIFY WEB SOURCES
-    # --------------------------------------------------------
+    jurisdiction = research.get(
+        "jurisdiction"
+    )
 
     verification = verify_sources(
         web_sources
     )
 
-    verified_sources = verification[
-        "verified"
-    ]
-
-
-    # --------------------------------------------------------
-    # BUILD NADRA POLICY EVIDENCE
-    # --------------------------------------------------------
+    verified_sources = verification.get(
+        "verified",
+        [],
+    )
 
     if department == "NADRA":
 
@@ -117,28 +96,30 @@ def ask_citizen_agent(
     else:
 
         policy_evidence = (
-            "No department-specific RAG "
-            "evidence was used."
+            "No department-specific "
+            "policy evidence was used."
         )
 
-
-    # --------------------------------------------------------
-    # BUILD WEB EVIDENCE
-    # --------------------------------------------------------
-
     web_evidence = format_web_evidence(
-    verified_sources[:3]
+        verified_sources[:5]
     )
 
+    jurisdiction_text = (
+        jurisdiction
+        if jurisdiction
+        else "Not specified"
+    )
 
-    # --------------------------------------------------------
-    # COMBINE ALL EVIDENCE
-    # --------------------------------------------------------
-
-combined_evidence = f"""
+    combined_evidence = f"""
 ============================================================
 GOVERNMENT POLICY EVIDENCE
 ============================================================
+
+Department:
+{department}
+
+Jurisdiction:
+{jurisdiction_text}
 
 {policy_evidence}
 
@@ -150,10 +131,6 @@ VERIFIED OFFICIAL WEB EVIDENCE
 {web_evidence}
 """
 
-    # --------------------------------------------------------
-    # CHECK WHETHER ANY VERIFIED EVIDENCE EXISTS
-    # --------------------------------------------------------
-
     has_policy_evidence = bool(
         rag_results
     )
@@ -162,12 +139,10 @@ VERIFIED OFFICIAL WEB EVIDENCE
         verified_sources
     )
 
-
-    # --------------------------------------------------------
-    # GENERATE ANSWER
-    # --------------------------------------------------------
-
-    if not has_policy_evidence and not has_web_evidence:
+    if (
+        not has_policy_evidence
+        and not has_web_evidence
+    ):
 
         answer = (
             "I could not verify this information "
@@ -183,29 +158,21 @@ VERIFIED OFFICIAL WEB EVIDENCE
             language=language,
         )
 
-
-    # --------------------------------------------------------
-    # COUNT OFFICIAL SOURCES
-    # --------------------------------------------------------
-
     official_count = sum(
         1
         for source in verified_sources
         if source.get("official")
     )
 
-
-    # --------------------------------------------------------
-    # FINAL RESPONSE
-    # --------------------------------------------------------
-
     return {
-    "department": department,
-    "jurisdiction": research.get(
-        "jurisdiction"
-    ),
-    "answer": answer,
-    "sources": verified_sources[:3],
+        "department": department,
+
+        "jurisdiction": jurisdiction,
+
+        "answer": answer,
+
+        "sources": verified_sources[:5],
+
         "source_count": len(
             verified_sources
         ),
@@ -232,7 +199,7 @@ VERIFIED OFFICIAL WEB EVIDENCE
         ),
 
         "warning": verification.get(
-    "warning",
-    "",
-),
+            "warning",
+            "",
+        ),
     }
