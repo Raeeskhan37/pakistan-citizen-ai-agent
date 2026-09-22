@@ -76,48 +76,85 @@ def research_vaccination(
     language,
 ):
     """
-    Targeted official search for international-travel
-    vaccination information in Pakistan.
+    Targeted official search for vaccination and
+    international-travel health requirements.
 
     Only NHSRC and NIH sources are accepted.
     """
 
-    queries = [
-        (
-            "site:nhsrc.gov.pk "
-            "polio vaccination certificate "
-            "international travel Pakistan"
-        ),
-        (
-            "site:nhsrc.gov.pk "
-            "yellow fever vaccination certificate "
-            "international travel Pakistan"
-        ),
-        (
-            "site:nhsrc.gov.pk "
-            "NIMS vaccination certificate "
-            "polio yellow fever"
-        ),
-        (
-            "site:nih.org.pk "
-            "polio vaccination certificate "
-            "international travel Pakistan"
-        ),
-        (
-            "site:nih.org.pk "
-            "yellow fever vaccination certificate "
-            "international travel Pakistan"
-        ),
-        (
-            f"site:nhsrc.gov.pk {question}"
-        ),
-        (
-            f"site:nih.org.pk {question}"
-        ),
-    ]
+    question_lower = question.lower()
+
+    queries = []
+
+    # --------------------------------------------------------
+    # POLIO
+    # --------------------------------------------------------
+    if "polio" in question_lower:
+        queries.extend([
+            "site:nhsrc.gov.pk polio vaccination certificate NIMS",
+            "site:nhsrc.gov.pk polio international travelers certificate",
+            "site:nih.org.pk polio vaccination international travelers",
+            "site:nih.org.pk polio vaccination certificate Pakistan",
+        ])
+
+    # --------------------------------------------------------
+    # YELLOW FEVER
+    # --------------------------------------------------------
+    if "yellow fever" in question_lower:
+        queries.extend([
+            "site:nhsrc.gov.pk yellow fever vaccination certificate NIMS",
+            "site:nhsrc.gov.pk yellow fever international travelers",
+            "site:nih.org.pk yellow fever vaccination certificate Pakistan",
+        ])
+
+    # --------------------------------------------------------
+    # HAJJ / UMRAH
+    # --------------------------------------------------------
+    if (
+        "hajj" in question_lower
+        or "haj" in question_lower
+        or "umrah" in question_lower
+        or "umra" in question_lower
+    ):
+        queries.extend([
+            "site:nhsrc.gov.pk Hajj vaccination Pakistan",
+            "site:nhsrc.gov.pk Hajj vaccine requirements Pakistan",
+            "site:nhsrc.gov.pk Hajj health requirements vaccination",
+            "site:nih.org.pk Hajj vaccination Pakistan",
+            "site:nih.org.pk Hajj health requirements",
+        ])
+
+    # --------------------------------------------------------
+    # NIMS / CERTIFICATE
+    # --------------------------------------------------------
+    if (
+        "nims" in question_lower
+        or "certificate" in question_lower
+        or "vaccination certificate" in question_lower
+    ):
+        queries.extend([
+            "site:nhsrc.gov.pk NIMS vaccination certificate",
+            "site:nhsrc.gov.pk digital vaccination certificate",
+            "site:nhsrc.gov.pk polio yellow fever NIMS",
+        ])
+
+    # --------------------------------------------------------
+    # GENERAL TRAVEL VACCINATION
+    # --------------------------------------------------------
+    queries.extend([
+        f"site:nhsrc.gov.pk {question}",
+        f"site:nih.org.pk {question}",
+    ])
+
+    # Remove duplicate queries while preserving order.
+    unique_queries = []
+
+    for query in queries:
+        if query not in unique_queries:
+            unique_queries.append(query)
 
     sources = perform_search(
-        queries=queries,
+        queries=unique_queries,
         official_domains=[
             "nhsrc.gov.pk",
             "nih.org.pk",
@@ -125,8 +162,10 @@ def research_vaccination(
         max_results=8,
     )
 
-    # HARD FILTER:
-    # Only these two official domains are allowed.
+    # --------------------------------------------------------
+    # HARD DOMAIN FILTER
+    # --------------------------------------------------------
+
     allowed_domains = {
         "nhsrc.gov.pk",
         "nih.org.pk",
@@ -154,11 +193,83 @@ def research_vaccination(
         if domain not in allowed_domains:
             continue
 
+        # ----------------------------------------------------
+        # RELEVANCE FILTER
+        # ----------------------------------------------------
+
+        title = (
+            source.get(
+                "title",
+                "",
+            )
+            or ""
+        ).lower()
+
+        snippet = (
+            source.get(
+                "snippet",
+                "",
+            )
+            or ""
+        ).lower()
+
+        page_text = (
+            source.get(
+                "page_text",
+                "",
+            )
+            or ""
+        ).lower()
+
+        combined_text = (
+            title
+            + " "
+            + snippet
+            + " "
+            + page_text
+        )
+
+        relevant_terms = [
+            "vaccin",
+            "polio",
+            "yellow fever",
+            "nims",
+            "traveller",
+            "traveler",
+            "international",
+            "hajj",
+            "haj",
+            "umrah",
+        ]
+
+        relevance = sum(
+            1
+            for term in relevant_terms
+            if term in combined_text
+        )
+
+        if relevance < 2:
+            continue
+
+        source["relevance"] = relevance
+
         official_sources.append(
             source
         )
 
-    # Remove duplicate URLs.
+    # Highest relevance first.
+    official_sources.sort(
+        key=lambda source: source.get(
+            "relevance",
+            0,
+        ),
+        reverse=True,
+    )
+
+    # --------------------------------------------------------
+    # REMOVE DUPLICATES
+    # --------------------------------------------------------
+
     unique = {}
 
     for source in official_sources:
@@ -183,6 +294,7 @@ def research_vaccination(
         "rag_results": [],
         "jurisdiction": None,
         "attempts": 1,
+    }
     }
 
 
