@@ -863,8 +863,8 @@ def research_question(
         or "سرٹیفکیٹ" in question_lower
         or "رجسٹریشن" in question_lower
     )
-
-            department == "Union Council / Local Government"
+    if (
+        department == "Union Council / Local Government"
         and is_kp
         and is_birth_question
         and is_certificate_or_registration
