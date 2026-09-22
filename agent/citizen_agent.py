@@ -200,12 +200,12 @@ VERIFIED OFFICIAL WEB EVIDENCE
     # --------------------------------------------------------
 
     return {
-        "department": department,
-
-        "answer": answer,
-
-        "sources": verified_sources,
-
+    "department": department,
+    "jurisdiction": research.get(
+        "jurisdiction"
+    ),
+    "answer": answer,
+    "sources": verified_sources[:3],
         "source_count": len(
             verified_sources
         ),
