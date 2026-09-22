@@ -1,357 +1,164 @@
-from config.departments import DEPARTMENTS
 from search.web_search import perform_search
 
-from rag.nadra_retriever import (
-    retrieve_nadra,
-    has_useful_evidence,
-)
 
+# ============================================================
+# JURISDICTION DETECTION
+# ============================================================
 
-PROVINCE_TERMS = {
+PROVINCES = {
     "Punjab": [
         "punjab",
-        "پنجاب",
+        "lahore",
+        "rawalpindi",
+        "faisalabad",
+        "multan",
+        "gujranwala",
+        "sialkot",
     ],
     "Sindh": [
         "sindh",
-        "سندھ",
+        "karachi",
+        "hyderabad",
+        "sukkur",
+        "larkana",
     ],
     "Khyber Pakhtunkhwa": [
         "khyber pakhtunkhwa",
         "kpk",
         "kp",
-        "خیبر پختونخوا",
-        "خیبر پختونخواہ",
+        "peshawar",
+        "mardan",
+        "swat",
+        "malakand",
+        "dir",
     ],
     "Balochistan": [
         "balochistan",
-        "بلوچستان",
+        "quetta",
+        "gwadar",
     ],
     "Islamabad": [
         "islamabad",
         "ict",
-        "اسلام آباد",
+        "islamabad capital territory",
     ],
     "Azad Jammu and Kashmir": [
-        "azad kashmir",
         "ajk",
-        "آزاد کشمیر",
+        "azad kashmir",
+        "muzaffarabad",
     ],
     "Gilgit-Baltistan": [
+        "gilgit",
         "gilgit baltistan",
-        "gilgit-baltistan",
         "gb",
-        "گلگت بلتستان",
+        "skardu",
     ],
 }
-
-
-PROVINCE_DOMAINS = {
-    "Punjab": [
-        "punjab.gov.pk",
-        "lgcd.punjab.gov.pk",
-        "trafficpolice.punjab.gov.pk",
-        "dlims.punjab.gov.pk",
-        "punjabpolice.gov.pk",
-    ],
-    "Sindh": [
-        "sindh.gov.pk",
-        "sindhpolice.gov.pk",
-    ],
-    "Khyber Pakhtunkhwa": [
-        "kp.gov.pk",
-        "lgkp.gov.pk",
-        "kppolice.gov.pk",
-    ],
-    "Balochistan": [
-        "balochistan.gov.pk",
-        "lgd.balochistan.gov.pk",
-        "balochistanpolice.gov.pk",
-    ],
-    "Islamabad": [
-        "ictadministration.gov.pk",
-        "islamabadpolice.gov.pk",
-    ],
-    "Azad Jammu and Kashmir": [
-        "ajk.gov.pk",
-    ],
-    "Gilgit-Baltistan": [
-        "gilgitbaltistan.gov.pk",
-    ],
-}
-
-
-GENERAL_JURISDICTIONS = [
-    "Punjab",
-    "Sindh",
-    "Khyber Pakhtunkhwa",
-    "Balochistan",
-    "Islamabad",
-    "Azad Jammu and Kashmir",
-    "Gilgit-Baltistan",
-]
 
 
 def detect_jurisdiction(question):
     question_lower = question.lower()
 
-    for jurisdiction, terms in PROVINCE_TERMS.items():
-
-        for term in terms:
-
-            if term.lower() in question_lower:
-                return jurisdiction
+    for province, keywords in PROVINCES.items():
+        for keyword in keywords:
+            if keyword in question_lower:
+                return province
 
     return None
 
 
-def get_department_domains(department):
+# ============================================================
+# VACCINATION SEARCH
+# ============================================================
 
-    department_data = DEPARTMENTS.get(
-        department,
-        {},
-    )
-
-    return department_data.get(
-        "official_domains",
-        ["gov.pk"],
-    )
-
-
-def get_search_domains(
-    department,
-    jurisdiction=None,
-):
-
-    department_domains = get_department_domains(
-        department
-    )
-
-    if not jurisdiction:
-        return department_domains
-
-    jurisdiction_domains = PROVINCE_DOMAINS.get(
-        jurisdiction,
-        [],
-    )
-
-    selected = []
-
-    for domain in (
-        jurisdiction_domains
-        + department_domains
-    ):
-
-        if domain not in selected:
-            selected.append(domain)
-
-    return selected
-
-
-def build_department_queries(
+def research_vaccination(
     question,
-    department,
-    attempt,
-    jurisdiction=None,
+    language,
 ):
+    """
+    Targeted official search for international-travel
+    vaccination information in Pakistan.
 
-    # ========================================================
-    # PROTECTOR FOR VISA
-    # ========================================================
+    Primary authority:
+    Ministry of National Health Services / NIH.
 
-    if department == "Protector for Visa":
+    Do not broaden this search to unrelated government
+    departments.
+    """
 
-        if attempt == 1:
+    question_lower = question.lower()
 
-            return [
-                f"site:beoe.gov.pk "
-                f"{question}",
+    queries = [
+        f"site:nhsrc.gov.pk {question}",
+        f"site:nhsrc.gov.pk polio yellow fever vaccination certificate NIMS {question}",
+        f"site:nhsrc.gov.pk international travellers vaccination certificate Pakistan",
+        f"site:nih.org.pk polio yellow fever vaccination certificate international travel",
+        f"site:nih.org.pk designated vaccination center international travelers",
+    ]
 
-                "site:beoe.gov.pk "
-                "How to get Emigrant's Protection",
-
-                "site:beoe.gov.pk "
-                "Protector of Emigrants required documents",
-            ]
-
-        elif attempt == 2:
-
-            return [
-                "site:beoe.gov.pk "
-                "emigrant protection documents passport CNIC",
-
-                "site:beoe.gov.pk "
-                "protector registration employment contract",
-
-                "site:beoe.gov.pk "
-                "e-Protector online registration documents",
-            ]
-
-        else:
-
-            return [
-                "site:beoe.gov.pk "
-                "procedure for overseas employment protector",
-
-                "site:beoe.gov.pk "
-                "emigration registration documents",
-
-                "site:beoe.gov.pk "
-                "Emigration Rules Protector of Emigrants",
-            ]
-
-
-    # ========================================================
-    # OTHER DEPARTMENTS
-    # ========================================================
-
-    queries = []
-
-    if jurisdiction:
-
-        domains = get_search_domains(
-            department,
-            jurisdiction,
+    # Make specific questions even more targeted.
+    if "polio" in question_lower:
+        queries.insert(
+            0,
+            (
+                "site:nhsrc.gov.pk "
+                "polio vaccination certificate "
+                "international travel NIMS Pakistan"
+            ),
         )
 
-        jurisdiction_text = (
-            f" {jurisdiction}"
+    if "yellow fever" in question_lower:
+        queries.insert(
+            0,
+            (
+                "site:nhsrc.gov.pk "
+                "yellow fever vaccination certificate "
+                "international travel NIMS Pakistan"
+            ),
         )
 
-        if attempt == 1:
+    if "nims" in question_lower:
+        queries.insert(
+            0,
+            (
+                "site:nhsrc.gov.pk "
+                "NIMS vaccination certificate "
+                "polio yellow fever"
+            ),
+        )
 
-            for domain in domains:
+    if (
+        "certificate" in question_lower
+        or "certificate" in question_lower
+    ):
+        queries.insert(
+            0,
+            (
+                "site:nhsrc.gov.pk "
+                "digital vaccination certificate "
+                "NIMS polio yellow fever"
+            ),
+        )
 
-                queries.append(
-                    f"site:{domain} "
-                    f"{question}"
-                    f"{jurisdiction_text}"
-                )
-
-        elif attempt == 2:
-
-            for domain in domains:
-
-                queries.append(
-                    f"site:{domain} "
-                    f"{question} "
-                    f"procedure requirements"
-                    f"{jurisdiction_text}"
-                )
-
-                queries.append(
-                    f"site:{domain} "
-                    f"{question} "
-                    f"documents fee"
-                    f"{jurisdiction_text}"
-                )
-
-        else:
-
-            for domain in domains:
-
-                queries.append(
-                    f"site:{domain} "
-                    f"{question} "
-                    f"official rules"
-                    f"{jurisdiction_text}"
-                )
-
-                queries.append(
-                    f"site:{domain} "
-                    f"{question} FAQ"
-                    f"{jurisdiction_text}"
-                )
-
-        return queries
-
-
-    # ========================================================
-    # GENERAL PAKISTAN QUESTION
-    # ========================================================
-
-    domains = get_department_domains(
-        department
+    sources = perform_search(
+        queries=queries,
+        official_domains=[
+            "nhsrc.gov.pk",
+            "nih.org.pk",
+        ],
+        max_results=8,
     )
 
-    if attempt == 1:
+    official_sources = [
+        source
+        for source in sources
+        if source.get("official")
+    ]
 
-        for domain in domains:
+    # Remove duplicate URLs.
+    unique = {}
 
-            queries.append(
-                f"site:{domain} "
-                f"{question} Pakistan"
-            )
-
-    elif attempt == 2:
-
-        for domain in domains:
-
-            queries.append(
-                f"site:{domain} "
-                f"{question} "
-                f"requirements Pakistan"
-            )
-
-            queries.append(
-                f"site:{domain} "
-                f"{question} "
-                f"procedure Pakistan"
-            )
-
-    else:
-
-        for domain in domains:
-
-            queries.append(
-                f"site:{domain} "
-                f"{question} "
-                f"official rules Pakistan"
-            )
-
-            queries.append(
-                f"site:{domain} "
-                f"{question} FAQ Pakistan"
-            )
-
-        for jurisdiction in GENERAL_JURISDICTIONS:
-
-            jurisdiction_domains = (
-                PROVINCE_DOMAINS.get(
-                    jurisdiction,
-                    [],
-                )
-            )
-
-            for domain in jurisdiction_domains:
-
-                queries.append(
-                    f"site:{domain} "
-                    f"{question} "
-                    f"{jurisdiction}"
-                )
-
-    return queries
-
-
-def add_unique_sources(
-    destination,
-    sources,
-):
-
-    existing_urls = {
-        item.get("url")
-        for item in destination
-        if item.get("url")
-    }
-
-    for source in sources:
-
-        if not isinstance(
-            source,
-            dict,
-        ):
-            continue
+    for source in official_sources:
 
         url = source.get(
             "url",
@@ -361,240 +168,246 @@ def add_unique_sources(
         if not url:
             continue
 
-        if url not in existing_urls:
+        if url not in unique:
+            unique[url] = source
 
-            destination.append(
-                source
-            )
-
-            existing_urls.add(
-                url
-            )
-
-
-def research_nadra(
-    question,
-    language="English",
-):
-
-    all_sources = []
-    rag_results = []
-    attempts = 0
-
-    for attempt in range(
-        1,
-        4,
-    ):
-
-        attempts = attempt
-
-        try:
-
-            current_rag = retrieve_nadra(
-                question=question,
-                language=language,
-                top_k=6,
-            )
-
-        except Exception:
-
-            current_rag = []
-
-        if current_rag:
-
-            rag_results.extend(
-                current_rag
-            )
-
-        if attempt == 1:
-
-            queries = [
-                f"site:nadra.gov.pk {question}",
-                f"site:nadra.gov.pk "
-                f"{question} requirements",
-            ]
-
-        elif attempt == 2:
-
-            queries = [
-                f"site:nadra.gov.pk "
-                f"{question} procedure",
-
-                f"site:nadra.gov.pk "
-                f"{question} documents",
-
-                f"site:nadra.gov.pk "
-                f"{question} requirements fee",
-            ]
-
-        else:
-
-            queries = [
-                f"site:nadra.gov.pk "
-                f"{question} official",
-
-                f"site:nadra.gov.pk "
-                f"{question} FAQ",
-
-                f"site:nadra.gov.pk "
-                f"{question} policy",
-            ]
-
-        try:
-
-            sources = perform_search(
-                queries=queries,
-                official_domains=[
-                    "nadra.gov.pk",
-                ],
-                max_results=8,
-            )
-
-        except Exception:
-
-            sources = []
-
-        add_unique_sources(
-            all_sources,
-            sources,
-        )
-
-        official_sources = [
-            source
-            for source in all_sources
-            if source.get("official")
-        ]
-
-        if (
-            has_useful_evidence(
-                current_rag
-            )
-            and official_sources
-        ):
-            break
-
-    unique_rag = []
-    seen = set()
-
-    for item in rag_results:
-
-        index_number = item.get(
-            "index"
-        )
-
-        if index_number in seen:
-            continue
-
-        seen.add(
-            index_number
-        )
-
-        unique_rag.append(
-            item
-        )
-
-    unique_rag.sort(
-        key=lambda item: item.get(
-            "score",
-            0,
-        ),
-        reverse=True,
+    official_sources = list(
+        unique.values()
     )
 
     return {
-        "sources": all_sources,
-        "rag_results": unique_rag[:6],
-        "attempts": attempts,
+        "sources": official_sources[:5],
+        "rag_results": [],
         "jurisdiction": None,
+        "attempts": 1,
     }
 
+
+# ============================================================
+# NADRA SEARCH
+# ============================================================
+
+def research_nadra(
+    question,
+    language,
+):
+    from rag.nadra_retriever import retrieve_nadra
+
+    rag_results = retrieve_nadra(
+        question,
+        language=language,
+    )
+
+    queries = [
+        f"site:nadra.gov.pk {question}",
+        f"site:nadra.gov.pk {question} NADRA",
+    ]
+
+    sources = perform_search(
+        queries=queries,
+        official_domains=[
+            "nadra.gov.pk",
+        ],
+        max_results=8,
+    )
+
+    official_sources = [
+        source
+        for source in sources
+        if source.get("official")
+    ]
+
+    return {
+        "sources": official_sources[:5],
+        "rag_results": rag_results,
+        "jurisdiction": None,
+        "attempts": 1,
+    }
+
+
+# ============================================================
+# PROTECTOR FOR VISA
+# ============================================================
+
+def research_protector(
+    question,
+    language,
+):
+    queries = [
+        f"site:beoe.gov.pk {question}",
+        f"site:beoe.gov.pk protector of emigrants {question}",
+        f"site:beoe.gov.pk emigrant protection documents",
+        f"site:beoe.gov.pk protector clearance procedure",
+        f"site:beoe.gov.pk direct emigrants registration",
+    ]
+
+    sources = perform_search(
+        queries=queries,
+        official_domains=[
+            "beoe.gov.pk",
+        ],
+        max_results=8,
+    )
+
+    official_sources = [
+        source
+        for source in sources
+        if source.get("official")
+    ]
+
+    unique = {}
+
+    for source in official_sources:
+
+        url = source.get(
+            "url",
+            "",
+        )
+
+        if not url:
+            continue
+
+        if url not in unique:
+            unique[url] = source
+
+    return {
+        "sources": list(
+            unique.values()
+        )[:5],
+        "rag_results": [],
+        "jurisdiction": None,
+        "attempts": 1,
+    }
+
+
+# ============================================================
+# GENERAL DEPARTMENT SEARCH
+# ============================================================
 
 def research_department(
     question,
     department,
+    language,
 ):
+    from config.departments import DEPARTMENTS
+
+    department_config = DEPARTMENTS[
+        department
+    ]
+
+    official_domains = department_config.get(
+        "official_domains",
+        [],
+    )
+
+    keywords = department_config.get(
+        "keywords",
+        [],
+    )
 
     jurisdiction = detect_jurisdiction(
         question
     )
 
-    all_sources = []
-    attempts = 0
+    queries = []
+
+    # Main question.
+    queries.append(
+        question
+    )
+
+    # Department-focused search.
+    queries.append(
+        f"{department} {question}"
+    )
+
+    # Add jurisdiction when explicitly specified.
+    if jurisdiction:
+        queries.append(
+            f"{jurisdiction} {department} {question}"
+        )
+
+    # Add useful department keywords.
+    for keyword in keywords[:5]:
+        queries.append(
+            f"{keyword} {question}"
+        )
 
     for attempt in range(
         1,
         4,
     ):
 
-        attempts = attempt
-
-        queries = build_department_queries(
-            question=question,
-            department=department,
-            attempt=attempt,
-            jurisdiction=jurisdiction,
-        )
-
-        try:
-
-            sources = perform_search(
-                queries=queries,
-                official_domains=get_search_domains(
-                    department,
-                    jurisdiction,
-                ),
-                max_results=8,
-            )
-
-        except Exception:
-
-            sources = []
-
-        add_unique_sources(
-            all_sources,
-            sources,
+        sources = perform_search(
+            queries=queries,
+            official_domains=official_domains,
+            max_results=8,
         )
 
         official_sources = [
             source
-            for source in all_sources
+            for source in sources
             if source.get("official")
         ]
 
         if official_sources:
-            break
+            return {
+                "sources": official_sources[:5],
+                "rag_results": [],
+                "jurisdiction": jurisdiction,
+                "attempts": attempt,
+            }
 
-    return {
-        "sources": all_sources,
-        "rag_results": [],
-        "attempts": attempts,
-        "jurisdiction": jurisdiction,
-    }
-
-
-def research_question(
-    question,
-    department,
-    language="English",
-):
-
-    if department == "NADRA":
-
-        return research_nadra(
-            question,
-            language,
-        )
-
-    if department in DEPARTMENTS:
-
-        return research_department(
-            question,
-            department,
+        # Broaden only if the first attempt failed.
+        queries.append(
+            f"official government {department} {question}"
         )
 
     return {
         "sources": [],
         "rag_results": [],
+        "jurisdiction": jurisdiction,
         "attempts": 3,
-        "jurisdiction": None,
     }
+
+
+# ============================================================
+# MAIN RESEARCH ROUTER
+# ============================================================
+
+def research_question(
+    question,
+    department,
+    language,
+):
+
+    # NADRA uses RAG + official web search.
+    if department == "NADRA":
+        return research_nadra(
+            question,
+            language,
+        )
+
+    # Protector has its own targeted official search.
+    if department == "Protector for Visa":
+        return research_protector(
+            question,
+            language,
+        )
+
+    # Vaccination has its own targeted official search.
+    if (
+        department
+        == "Vaccination for Travelling Abroad"
+    ):
+        return research_vaccination(
+            question,
+            language,
+        )
+
+    # All remaining departments.
+    return research_department(
+        question,
+        department,
+        language,
+    )
