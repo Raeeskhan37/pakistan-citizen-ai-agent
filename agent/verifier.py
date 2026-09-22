@@ -5,7 +5,6 @@ def verify_sources(
     sources,
     minimum_sources=1,
 ):
-
     verified = []
 
     for source in sources:
@@ -35,22 +34,12 @@ def verify_sources(
         ):
             continue
 
-        # ----------------------------------------------------
-        # ONLY official sources are verified.
-        # ----------------------------------------------------
-
         if source.get("official") is True:
-
             verified.append(
                 source
             )
 
-    # --------------------------------------------------------
-    # Never use non-official fallback evidence.
-    # --------------------------------------------------------
-
     if len(verified) >= minimum_sources:
-
         return {
             "verified": verified,
             "has_verified_source": True,
