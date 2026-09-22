@@ -141,28 +141,30 @@ DEPARTMENTS = {
     },
 
     "Vaccination for Travelling Abroad": {
-        "description": (
-            "Travel vaccination and health requirements "
-            "for international travel."
-        ),
-        "keywords": [
-            "vaccination",
-            "vaccination certificate",
-            "vaccine",
-            "travel vaccination",
-            "polio certificate",
-            "polio vaccination",
-            "yellow fever certificate",
-            "yellow fever vaccination",
-            "international travel",
-            "travel health",
-            "nims",
-        ],
-        "official_domains": [
-            "nhsrc.gov.pk",
-            "nih.org.pk",
-        ],
-    },
+    "Vaccination for Travelling Abroad": {
+    "description": (
+        "Travel vaccination and health requirements "
+        "for international travel."
+    ),
+    "keywords": [
+        "vaccination",
+        "vaccination certificate",
+        "vaccine",
+        "travel vaccination",
+        "polio certificate",
+        "polio vaccination",
+        "yellow fever certificate",
+        "yellow fever vaccination",
+        "international travel",
+        "travel health",
+        "nims",
+    ],
+    "official_domains": [
+        "nhsrc.gov.pk",
+        "nih.org.pk",
+        "moh.gov.sa",
+    ],
+},
 
     "Domicile": {
         "description": (
