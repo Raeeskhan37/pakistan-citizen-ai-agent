@@ -74,8 +74,8 @@ def research_vaccination(
        health requirements
 
     3. Saudi work/employment visa
-       Searches official Saudi MOH and Pakistan
-       government health sources.
+       Official Pakistan and Saudi government
+       health/work-visa information.
 
     4. General international travel
        Pakistan Ministry of NHSR&C + NIH
@@ -116,7 +116,6 @@ def research_vaccination(
         term in question_lower
         for term in [
             "work visa",
-            "work visa",
             "employment visa",
             "employment",
             "job visa",
@@ -126,7 +125,8 @@ def research_vaccination(
             "job in saudi",
             "job in saudi arabia",
             "employment in saudi",
-            "employment visa",
+            "work abroad",
+            "working abroad",
         ]
     )
 
@@ -308,12 +308,6 @@ Saudi Government Health Instructions for Hajj - 2026.
 
     if umrah_question:
 
-        # ----------------------------------------------------
-        # This is the official Saudi MOH Umrah 1447H/2026
-        # document. It specifically lists Pakistan under
-        # WPV1 countries.
-        # ----------------------------------------------------
-
         official_evidence = """
 OFFICIAL SAUDI MINISTRY OF HEALTH
 HEALTH REQUIREMENTS FOR UMRAH — 1447H / 2026
@@ -461,71 +455,87 @@ Routine vaccinations are also recommended to be up to date.
             "attempts": 1,
         }
 
-    #    # ========================================================
+    # ========================================================
     # SAUDI WORK / EMPLOYMENT VISA
     # ========================================================
 
     if saudi_question and work_visa_question:
 
         # ----------------------------------------------------
-        # OFFICIAL PAKISTAN GOVERNMENT EVIDENCE
-        #
-        # BE&OE hosts the NCOC vaccination policy for
-        # Pakistanis working abroad on work visas.
-        #
         # IMPORTANT:
-        # This document explains vaccination eligibility/
-        # procedure for Pakistanis with work visas.
-        # It does NOT mean that every Saudi work-visa holder
-        # must receive a specific vaccine.
+        #
+        # Do NOT use the old 2021 COVID vaccination policy
+        # as evidence that Pfizer is currently mandatory.
+        #
+        # The BE&OE/NCOC document says eligible Pakistanis
+        # with work visas or iqama can get vaccinated and
+        # describes the procedure.
+        #
+        # It does NOT establish that every Saudi work-visa
+        # holder MUST receive Pfizer or another specific
+        # vaccine.
         # ----------------------------------------------------
 
-        pakistan_work_visa_evidence = """
-OFFICIAL GOVERNMENT OF PAKISTAN — NCOC
-Vaccination Policy for Pakistanis Working Abroad on Work Visa
+        official_evidence = """
+OFFICIAL EVIDENCE — SAUDI EMPLOYMENT / WORK VISA
 
-The Bureau of Emigration & Overseas Employment (BE&OE)
-publishes an NCOC vaccination policy specifically covering
-Pakistanis working abroad on work visas.
+IMPORTANT CONCLUSION:
 
-The policy states that Pakistanis over 18 years of age who
-have obtained a work visa for the first time, or who are
-already working abroad and have returned on leave or for
-another reason, can receive vaccination under the stated
-procedure.
+Do NOT state that every Pakistani travelling to Saudi Arabia
+on an ordinary employment/work visa is required to receive
+the Pfizer-BioNTech COVID-19 vaccine.
 
-It states that a Pakistani over 18 years of age who has a
-work visa or iqama can get vaccinated and should show the
-passport and work visa or iqama at a designated vaccination
-centre.
+The Government of Pakistan / NCOC document titled:
 
-This policy should not be interpreted as proof that a
-particular vaccination is mandatory for every Pakistani
-travelling to Saudi Arabia on a normal employment visa.
+"Vaccination Policy for Pakistanis Working abroad on Work Visa,
+Students Studying Abroad (Study Visa) & Registered Seafarers"
 
-Saudi Arabia also has medical screening requirements for
-incoming foreign workers. The Saudi Ministry of Health
-maintains services and procedures for verification of
-foreign-worker medical examination results.
+states that Pakistanis over 18 who have a work visa or iqama
+can get vaccinated and describes the procedure for obtaining
+vaccination and the vaccination certificate.
 
-Therefore, for a normal Saudi employment/work visa, the
-agent should distinguish between:
+The document does NOT state that every Saudi work-visa holder
+must receive Pfizer-BioNTech vaccination.
 
-1. Required medical examination / health screening for
-   foreign workers; and
+Therefore this document must NOT be used as evidence of a
+current mandatory Pfizer vaccination requirement.
 
-2. A vaccination that is specifically mandatory for the
-   individual traveller.
+Saudi Ministry of Health information indicates that people
+coming to Saudi Arabia for work are subject to health
+procedures including medical examination and checking that
+they are free from communicable diseases.
 
-A specific vaccine should only be described as mandatory
-when current official Saudi or Pakistani evidence
-specifically establishes that requirement.
+A normal Saudi employment visa should therefore be
+distinguished from:
+
+1. Hajj or Umrah travel, where Saudi Arabia publishes
+   specific vaccination requirements; and
+
+2. Seasonal Hajj work, where specific Hajj vaccination
+   requirements may apply.
+
+For an ordinary Saudi employment/work visa, do not claim that
+a specific vaccine is mandatory unless a CURRENT official
+Saudi or Pakistani government source specifically establishes
+that requirement.
+
+If the available official evidence does not establish a
+specific mandatory vaccine, the correct answer is:
+
+"No specific vaccination requirement for an ordinary Saudi
+employment visa could be verified from the current official
+sources reviewed. However, Saudi employment visa applicants
+are subject to the required medical/health screening
+procedures. Requirements can vary by visa category and
+current Saudi regulations, so the traveller should confirm
+the current requirements with the Saudi visa/medical centre
+and the relevant Pakistani authorities before travel."
 """
 
         direct_sources = [
             {
                 "title": (
-                    "Government of Pakistan / BE&OE — "
+                    "Government of Pakistan / NCOC — "
                     "Vaccination Policy for Pakistanis "
                     "Working Abroad on Work Visa"
                 ),
@@ -535,36 +545,62 @@ specifically establishes that requirement.
                 ),
                 "domain": "beoe.gov.pk",
                 "official": True,
-                "page_text": pakistan_work_visa_evidence,
-                "snippet": pakistan_work_visa_evidence,
+                "page_text": official_evidence,
+                "snippet": (
+                    "The policy allows eligible Pakistanis "
+                    "with a work visa or iqama to get "
+                    "vaccinated and describes the procedure. "
+                    "It does not establish a universal "
+                    "mandatory Pfizer requirement."
+                ),
             },
             {
                 "title": (
                     "Saudi Ministry of Health — "
-                    "Medical Screening for Foreign Workers"
+                    "Life Events / Coming to Work in Saudi Arabia"
                 ),
                 "url": (
-                    "https://moh.gov.sa/en/Ministry/"
-                    "Life-events/Pages/default.aspx"
+                    "https://www.moh.gov.sa/"
+                    "ministry/life-events/pages/default.aspx"
                 ),
                 "domain": "moh.gov.sa",
                 "official": True,
+                "page_text": official_evidence,
+                "snippet": (
+                    "Saudi Ministry of Health information "
+                    "describes health procedures for people "
+                    "coming to Saudi Arabia for work, "
+                    "including medical examination."
+                ),
+            },
+            {
+                "title": (
+                    "Saudi Ministry of Foreign Affairs — "
+                    "Health Certificate for Work Visa / Iqama"
+                ),
+                "url": (
+                    "https://www.mofa.gov.sa/en/eservices/"
+                    "Pages/svc74.aspx"
+                ),
+                "domain": "mofa.gov.sa",
+                "official": True,
                 "page_text": (
                     """
-Saudi Ministry of Health
+Saudi Ministry of Foreign Affairs
 
-The Saudi Ministry of Health states that people coming
-to work in Saudi Arabia are subject to specific medical
-screening procedures to verify that incoming workers are
-free of communicable diseases.
+The official service is for payment of health certificate
+fees for a work visa or residency visa (Iqama).
 
-The Ministry also provides services related to verification
-of foreign-worker medical examination results.
+This confirms that health certification is part of the
+work/residency visa process.
+
+It does not establish that Pfizer or another specific
+vaccination is mandatory for every ordinary Saudi work visa.
 """
                 ),
                 "snippet": (
-                    "Saudi Ministry of Health — medical "
-                    "screening procedures for incoming workers."
+                    "Official Saudi MOFA service for health "
+                    "certificate fees for work visa or Iqama."
                 ),
             },
         ]
@@ -576,29 +612,28 @@ of foreign-worker medical examination results.
         queries = [
             (
                 "site:beoe.gov.pk "
-                "vaccination policy Pakistanis "
-                "working abroad work visa"
+                "Saudi work visa vaccination "
+                "Pakistan 2026"
             ),
             (
                 "site:beoe.gov.pk "
-                "Saudi Arabia work visa vaccination"
+                "Saudi Arabia work visa health "
+                "requirements"
             ),
             (
                 "site:moh.gov.sa "
-                "Saudi foreign workers medical screening"
-            ),
-            (
-                "site:moh.gov.sa "
-                "Saudi Arabia incoming workers "
+                "coming to work Saudi Arabia "
                 "medical examination"
             ),
             (
                 "site:moh.gov.sa "
-                "foreign worker vaccination Saudi Arabia"
+                "foreign workers medical examination "
+                "Saudi Arabia"
             ),
             (
-                "site:nhsrc.gov.pk "
-                "work visa vaccination Pakistanis abroad"
+                "site:mofa.gov.sa "
+                "health certificate work visa "
+                "Saudi Arabia"
             ),
         ]
 
@@ -607,7 +642,7 @@ of foreign-worker medical examination results.
             official_domains=[
                 "beoe.gov.pk",
                 "moh.gov.sa",
-                "nhsrc.gov.pk",
+                "mofa.gov.sa",
             ],
             max_results=8,
         )
@@ -632,7 +667,7 @@ of foreign-worker medical examination results.
             if domain not in {
                 "beoe.gov.pk",
                 "moh.gov.sa",
-                "nhsrc.gov.pk",
+                "mofa.gov.sa",
             }:
                 continue
 
@@ -665,10 +700,9 @@ of foreign-worker medical examination results.
                 "employment",
                 "visa",
                 "medical",
-                "screening",
-                "vaccin",
                 "health",
-                "saudi",
+                "screening",
+                "health certificate",
             ]
 
             relevance = sum(
@@ -677,8 +711,6 @@ of foreign-worker medical examination results.
                 if term in combined_text
             )
 
-            # Keep an official source if it has at least
-            # one strong work/health/visa connection.
             if relevance >= 1:
 
                 source["relevance"] = relevance
@@ -686,258 +718,6 @@ of foreign-worker medical examination results.
                 direct_sources.append(
                     source
                 )
-
-        # ----------------------------------------------------
-        # SORT OFFICIAL SOURCES
-        # ----------------------------------------------------
-
-        direct_sources.sort(
-            key=lambda source: source.get(
-                "relevance",
-                0,
-            ),
-            reverse=True,
-        )
-
-        return {
-            "sources": unique_sources(
-                direct_sources,
-                limit=5,
-            ),
-            "rag_results": [],
-            "jurisdiction": None,
-            "attempts": 1,
-        } 
-        
-    # ========================================================
-    # SAUDI WORK / EMPLOYMENT VISA
-    # ========================================================
-
-    if saudi_question and work_visa_question:
-
-        # ----------------------------------------------------
-        # OFFICIAL PAKISTAN GOVERNMENT EVIDENCE
-        #
-        # BE&OE hosts the NCOC vaccination policy for
-        # Pakistanis working abroad on work visas.
-        #
-        # IMPORTANT:
-        # This document explains vaccination eligibility/
-        # procedure for Pakistanis with work visas.
-        # It does NOT mean that every Saudi work-visa holder
-        # must receive a specific vaccine.
-        # ----------------------------------------------------
-
-        pakistan_work_visa_evidence = """
-OFFICIAL GOVERNMENT OF PAKISTAN — NCOC
-Vaccination Policy for Pakistanis Working Abroad on Work Visa
-
-The Bureau of Emigration & Overseas Employment (BE&OE)
-publishes an NCOC vaccination policy specifically covering
-Pakistanis working abroad on work visas.
-
-The policy states that Pakistanis over 18 years of age who
-have obtained a work visa for the first time, or who are
-already working abroad and have returned on leave or for
-another reason, can receive vaccination under the stated
-procedure.
-
-It states that a Pakistani over 18 years of age who has a
-work visa or iqama can get vaccinated and should show the
-passport and work visa or iqama at a designated vaccination
-centre.
-
-This policy should not be interpreted as proof that a
-particular vaccination is mandatory for every Pakistani
-travelling to Saudi Arabia on a normal employment visa.
-
-Saudi Arabia also has medical screening requirements for
-incoming foreign workers. The Saudi Ministry of Health
-maintains services and procedures for verification of
-foreign-worker medical examination results.
-
-Therefore, for a normal Saudi employment/work visa, the
-agent should distinguish between:
-
-1. Required medical examination / health screening for
-   foreign workers; and
-
-2. A vaccination that is specifically mandatory for the
-   individual traveller.
-
-A specific vaccine should only be described as mandatory
-when current official Saudi or Pakistani evidence
-specifically establishes that requirement.
-"""
-
-        direct_sources = [
-            {
-                "title": (
-                    "Government of Pakistan / BE&OE — "
-                    "Vaccination Policy for Pakistanis "
-                    "Working Abroad on Work Visa"
-                ),
-                "url": (
-                    "https://beoe.gov.pk/"
-                    "files/policyguideliness/51.pdf"
-                ),
-                "domain": "beoe.gov.pk",
-                "official": True,
-                "page_text": pakistan_work_visa_evidence,
-                "snippet": pakistan_work_visa_evidence,
-            },
-            {
-                "title": (
-                    "Saudi Ministry of Health — "
-                    "Medical Screening for Foreign Workers"
-                ),
-                "url": (
-                    "https://moh.gov.sa/en/Ministry/"
-                    "Life-events/Pages/default.aspx"
-                ),
-                "domain": "moh.gov.sa",
-                "official": True,
-                "page_text": (
-                    """
-Saudi Ministry of Health
-
-The Saudi Ministry of Health states that people coming
-to work in Saudi Arabia are subject to specific medical
-screening procedures to verify that incoming workers are
-free of communicable diseases.
-
-The Ministry also provides services related to verification
-of foreign-worker medical examination results.
-"""
-                ),
-                "snippet": (
-                    "Saudi Ministry of Health — medical "
-                    "screening procedures for incoming workers."
-                ),
-            },
-        ]
-
-        # ----------------------------------------------------
-        # LIVE OFFICIAL SEARCH
-        # ----------------------------------------------------
-
-        queries = [
-            (
-                "site:beoe.gov.pk "
-                "vaccination policy Pakistanis "
-                "working abroad work visa"
-            ),
-            (
-                "site:beoe.gov.pk "
-                "Saudi Arabia work visa vaccination"
-            ),
-            (
-                "site:moh.gov.sa "
-                "Saudi foreign workers medical screening"
-            ),
-            (
-                "site:moh.gov.sa "
-                "Saudi Arabia incoming workers "
-                "medical examination"
-            ),
-            (
-                "site:moh.gov.sa "
-                "foreign worker vaccination Saudi Arabia"
-            ),
-            (
-                "site:nhsrc.gov.pk "
-                "work visa vaccination Pakistanis abroad"
-            ),
-        ]
-
-        searched_sources = perform_search(
-            queries=queries,
-            official_domains=[
-                "beoe.gov.pk",
-                "moh.gov.sa",
-                "nhsrc.gov.pk",
-            ],
-            max_results=8,
-        )
-
-        for source in searched_sources:
-
-            if not source.get("official"):
-                continue
-
-            domain = (
-                source.get(
-                    "domain",
-                    "",
-                )
-                .lower()
-                .replace(
-                    "www.",
-                    "",
-                )
-            )
-
-            if domain not in {
-                "beoe.gov.pk",
-                "moh.gov.sa",
-                "nhsrc.gov.pk",
-            }:
-                continue
-
-            combined_text = (
-                str(
-                    source.get(
-                        "title",
-                        "",
-                    )
-                )
-                + " "
-                + str(
-                    source.get(
-                        "snippet",
-                        "",
-                    )
-                )
-                + " "
-                + str(
-                    source.get(
-                        "page_text",
-                        "",
-                    )
-                )
-            ).lower()
-
-            relevant_terms = [
-                "work",
-                "worker",
-                "employment",
-                "visa",
-                "medical",
-                "screening",
-                "vaccin",
-                "health",
-                "saudi",
-            ]
-
-            relevance = sum(
-                1
-                for term in relevant_terms
-                if term in combined_text
-            )
-
-            # Keep an official source if it has at least
-            # one strong work/health/visa connection.
-            if relevance >= 1:
-
-                source["relevance"] = relevance
-
-                direct_sources.append(
-                    source
-                )
-
-        # ----------------------------------------------------
-        # SORT OFFICIAL SOURCES
-        # ----------------------------------------------------
 
         direct_sources.sort(
             key=lambda source: source.get(
@@ -956,6 +736,168 @@ of foreign-worker medical examination results.
             "jurisdiction": None,
             "attempts": 1,
         }
+
+    # ========================================================
+    # GENERAL INTERNATIONAL TRAVEL VACCINATION
+    # ========================================================
+
+    official_domains = [
+        "nhsrc.gov.pk",
+        "nih.org.pk",
+    ]
+
+    queries = []
+
+    # --------------------------------------------------------
+    # POLIO
+    # --------------------------------------------------------
+
+    if "polio" in question_lower:
+
+        queries.extend([
+            (
+                "site:nhsrc.gov.pk "
+                "polio vaccination certificate "
+                "international travel Pakistan"
+            ),
+            (
+                "site:nhsrc.gov.pk "
+                "NIMS polio certificate"
+            ),
+            (
+                "site:nih.org.pk "
+                "polio vaccination certificate "
+                "international travel"
+            ),
+        ])
+
+    # --------------------------------------------------------
+    # YELLOW FEVER
+    # --------------------------------------------------------
+
+    if "yellow fever" in question_lower:
+
+        queries.extend([
+            (
+                "site:nhsrc.gov.pk "
+                "yellow fever vaccination certificate "
+                "international travel Pakistan"
+            ),
+            (
+                "site:nih.org.pk "
+                "yellow fever certificate Pakistan"
+            ),
+        ])
+
+    queries.extend([
+        f"site:nhsrc.gov.pk {question}",
+        f"site:nih.org.pk {question}",
+    ])
+
+    sources = perform_search(
+        queries=queries,
+        official_domains=official_domains,
+        max_results=8,
+    )
+
+    official_sources = []
+
+    for source in sources:
+
+        if not source.get("official"):
+            continue
+
+        domain = (
+            source.get(
+                "domain",
+                "",
+            )
+            .lower()
+            .replace(
+                "www.",
+                "",
+            )
+        )
+
+        if domain not in {
+            "nhsrc.gov.pk",
+            "nih.org.pk",
+        }:
+            continue
+
+        title = (
+            source.get(
+                "title",
+                "",
+            )
+            or ""
+        ).lower()
+
+        snippet = (
+            source.get(
+                "snippet",
+                "",
+            )
+            or ""
+        ).lower()
+
+        page_text = (
+            source.get(
+                "page_text",
+                "",
+            )
+            or ""
+        ).lower()
+
+        combined_text = (
+            title
+            + " "
+            + snippet
+            + " "
+            + page_text
+        )
+
+        relevant_terms = [
+            "vaccin",
+            "polio",
+            "yellow fever",
+            "nims",
+            "international",
+            "certificate",
+        ]
+
+        relevance = sum(
+            1
+            for term in relevant_terms
+            if term in combined_text
+        )
+
+        if relevance < 2:
+            continue
+
+        source["relevance"] = relevance
+
+        official_sources.append(
+            source
+        )
+
+    official_sources.sort(
+        key=lambda source: source.get(
+            "relevance",
+            0,
+        ),
+        reverse=True,
+    )
+
+    return {
+        "sources": unique_sources(
+            official_sources,
+            limit=5,
+        ),
+        "rag_results": [],
+        "jurisdiction": None,
+        "attempts": 1,
+    }
 
 
 # ============================================================
@@ -1222,4 +1164,4 @@ def research_question(
         question,
         department,
         language,
-    )
+            )
