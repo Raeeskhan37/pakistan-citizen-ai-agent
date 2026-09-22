@@ -1,7 +1,9 @@
 DEPARTMENTS = {
 
     "NADRA": {
-        "description": "CNIC, NICOP, POC, CRC, FRC and NADRA services.",
+        "description": (
+            "CNIC, NICOP, POC, CRC, FRC and NADRA services."
+        ),
         "keywords": [
             "nadra",
             "cnic",
@@ -18,10 +20,13 @@ DEPARTMENTS = {
         "official_domains": [
             "nadra.gov.pk",
         ],
+        "jurisdiction_required": False,
     },
 
     "Passport": {
-        "description": "Passport application, renewal, fees and delivery.",
+        "description": (
+            "Passport application, renewal, fees and delivery."
+        ),
         "keywords": [
             "passport",
             "renew passport",
@@ -35,13 +40,18 @@ DEPARTMENTS = {
         "official_domains": [
             "dgip.gov.pk",
         ],
+        "jurisdiction_required": False,
     },
 
     "Union Council / Local Government": {
-        "description": "Birth, death, marriage, divorce and local government services.",
+        "description": (
+            "Birth, death, marriage, divorce and local "
+            "government services."
+        ),
         "keywords": [
             "union council",
             "birth certificate",
+            "birth registration",
             "death certificate",
             "marriage certificate",
             "nikah registration",
@@ -50,16 +60,21 @@ DEPARTMENTS = {
             "local council",
         ],
         "official_domains": [
-            "gov.pk",
-            "punjab.gov.pk",
+            "lgcd.punjab.gov.pk",
             "sindh.gov.pk",
-            "kp.gov.pk",
-            "balochistan.gov.pk",
+            "lgkp.gov.pk",
+            "lgd.balochistan.gov.pk",
+            "ictadministration.gov.pk",
+            "gov.pk",
         ],
+        "jurisdiction_required": True,
     },
 
     "Driving Licence": {
-        "description": "Driving licence learner permit, renewal and related services.",
+        "description": (
+            "Driving licence learner permit, renewal "
+            "and related services."
+        ),
         "keywords": [
             "driving licence",
             "driving license",
@@ -71,17 +86,22 @@ DEPARTMENTS = {
             "dlims",
         ],
         "official_domains": [
+            "trafficpolice.punjab.gov.pk",
+            "dlims.punjab.gov.pk",
+            "sindhpolice.gov.pk",
+            "kppolice.gov.pk",
+            "balochistanpolice.gov.pk",
+            "islamabadpolice.gov.pk",
             "gov.pk",
-            "punjab.gov.pk",
-            "sindh.gov.pk",
-            "kp.gov.pk",
-            "balochistan.gov.pk",
-            "islamabad.gov.pk",
         ],
+        "jurisdiction_required": True,
     },
 
     "Arms Licence": {
-        "description": "Arms licence application, renewal and related government procedures.",
+        "description": (
+            "Arms licence application, renewal and "
+            "related government procedures."
+        ),
         "keywords": [
             "arms licence",
             "arms license",
@@ -96,11 +116,16 @@ DEPARTMENTS = {
             "sindh.gov.pk",
             "kp.gov.pk",
             "balochistan.gov.pk",
+            "islamabad.gov.pk",
         ],
+        "jurisdiction_required": True,
     },
 
     "Police Clearance": {
-        "description": "Police clearance, character certificates and related police services.",
+        "description": (
+            "Police clearance, character certificates "
+            "and related police services."
+        ),
         "keywords": [
             "police clearance",
             "police character certificate",
@@ -110,17 +135,21 @@ DEPARTMENTS = {
             "police clearance certificate",
         ],
         "official_domains": [
-            "gov.pk",
             "punjabpolice.gov.pk",
             "sindhpolice.gov.pk",
             "kppolice.gov.pk",
             "balochistanpolice.gov.pk",
             "islamabadpolice.gov.pk",
+            "gov.pk",
         ],
+        "jurisdiction_required": True,
     },
 
     "Protector for Visa": {
-        "description": "Protector of Emigrants and overseas employment procedures.",
+        "description": (
+            "Protector of Emigrants and overseas "
+            "employment procedures."
+        ),
         "keywords": [
             "protector",
             "protector stamp",
@@ -134,10 +163,14 @@ DEPARTMENTS = {
         "official_domains": [
             "beoe.gov.pk",
         ],
+        "jurisdiction_required": False,
     },
 
     "Vaccination for Travelling Abroad": {
-        "description": "Travel vaccination and health requirements for international travel.",
+        "description": (
+            "Travel vaccination and health requirements "
+            "for international travel."
+        ),
         "keywords": [
             "vaccination",
             "vaccine",
@@ -155,10 +188,13 @@ DEPARTMENTS = {
             "gov.pk",
             "who.int",
         ],
+        "jurisdiction_required": False,
     },
 
     "Domicile": {
-        "description": "Domicile certificate application and verification.",
+        "description": (
+            "Domicile certificate application and verification."
+        ),
         "keywords": [
             "domicile",
             "domicile certificate",
@@ -167,11 +203,13 @@ DEPARTMENTS = {
             "residence certificate",
         ],
         "official_domains": [
-            "gov.pk",
             "punjab.gov.pk",
             "sindh.gov.pk",
             "kp.gov.pk",
             "balochistan.gov.pk",
+            "ictadministration.gov.pk",
+            "gov.pk",
         ],
+        "jurisdiction_required": True,
     },
 }
