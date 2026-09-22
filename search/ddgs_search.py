@@ -1,13 +1,19 @@
 from ddgs import DDGS
 
 
+# ============================================================
+# FAST WEB SEARCH
+# ============================================================
+
 def search_ddgs(
     query: str,
     max_results: int = 8,
 ):
+
     try:
+
         results = DDGS(
-            timeout=10,
+            timeout=5,
         ).text(
             query,
             region="pk-en",
@@ -19,6 +25,7 @@ def search_ddgs(
         return results or []
 
     except Exception as exc:
+
         return [
             {
                 "error": str(exc),
