@@ -509,18 +509,304 @@ def research_vaccination(
                 "certificate",
             ]
 
-        else:
+def research_vaccination(
+    question,
+    language,
+):
+    """
+    Targeted official research for:
+    - International travel vaccination
+    - Hajj / Umrah vaccination and health requirements
 
-            relevant_terms = [
-                "vaccin",
-                "polio",
-                "yellow fever",
-                "nims",
-                "traveller",
-                "traveler",
-                "international",
-                "certificate",
-            ]
+    Hajj questions use the official Ministry of Religious
+    Affairs sources for Hajj 2026.
+    """
+
+    from search.web_search import fetch_page_text
+
+    question_lower = question.lower()
+
+    hajj_question = any(
+        term in question_lower
+        for term in [
+            "hajj",
+            "haj",
+            "umrah",
+            "umra",
+        ]
+    )
+
+    # ========================================================
+    # HAJJ / UMRAH
+    # ========================================================
+
+    if hajj_question:
+
+        # These are confirmed official MoRA 2026 pages.
+        direct_sources = [
+            {
+                "title": "Hajj Policy and Plan 2026",
+                "url": (
+                    "https://www.mora.gov.pk/"
+                    "SiteImage/Downloads/"
+                    "200825_Hajj-Policy-2026.pdf"
+                ),
+                "domain": "mora.gov.pk",
+                "official": True,
+            },
+            {
+                "title": (
+                    "Saudi Government Health Instructions "
+                    "for Hajj - 2026"
+                ),
+                "url": (
+                    "https://www.mora.gov.pk/"
+                    "NewsDetail/"
+                    "N2ExNTM0OTItNjNlMC00YTU0LWE4N2Mt"
+                    "MzcxNjI1Yjk4Zjk2"
+                ),
+                "domain": "mora.gov.pk",
+                "official": True,
+            },
+        ]
+
+        # Fetch the actual official page/PDF text where possible.
+        for source in direct_sources:
+
+            try:
+                page_text = fetch_page_text(
+                    source["url"],
+                    max_chars=20000,
+                )
+
+                if page_text:
+                    source["page_text"] = page_text
+                    source["snippet"] = page_text
+
+            except Exception:
+                pass
+
+        # Also search the official Ministry site for
+        # additional 2026 health information.
+        queries = [
+            (
+                "site:mora.gov.pk "
+                "\"Hajj Policy and Plan 2026\" "
+                "vaccination"
+            ),
+            (
+                "site:mora.gov.pk "
+                "\"Saudi Government Health Instructions "
+                "for Hajj - 2026\""
+            ),
+            (
+                "site:mora.gov.pk "
+                "Hajj 2026 vaccination certificate"
+            ),
+            (
+                "site:mora.gov.pk "
+                "Hajj 2026 meningitis vaccination"
+            ),
+            (
+                "site:mora.gov.pk "
+                "Hajj 2026 polio vaccination"
+            ),
+        ]
+
+        searched_sources = perform_search(
+            queries=queries,
+            official_domains=[
+                "mora.gov.pk",
+            ],
+            max_results=8,
+        )
+
+        # Keep only MoRA sources.
+        for source in searched_sources:
+
+            if not source.get("official"):
+                continue
+
+            domain = (
+                source.get(
+                    "domain",
+                    "",
+                )
+                .lower()
+                .replace(
+                    "www.",
+                    "",
+                )
+            )
+
+            if domain != "mora.gov.pk":
+                continue
+
+            url = source.get(
+                "url",
+                "",
+            )
+
+            if not url:
+                continue
+
+            # Don't duplicate the two direct sources.
+            if any(
+                existing["url"] == url
+                for existing in direct_sources
+            ):
+                continue
+
+            direct_sources.append(
+                source
+            )
+
+        # Remove duplicate URLs.
+        unique = {}
+
+        for source in direct_sources:
+
+            url = source.get(
+                "url",
+                "",
+            )
+
+            if url and url not in unique:
+                unique[url] = source
+
+        final_sources = list(
+            unique.values()
+        )
+
+        return {
+            "sources": final_sources[:5],
+            "rag_results": [],
+            "jurisdiction": None,
+            "attempts": 1,
+        }
+
+    # ========================================================
+    # INTERNATIONAL TRAVEL VACCINATION
+    # ========================================================
+
+    official_domains = [
+        "nhsrc.gov.pk",
+        "nih.org.pk",
+    ]
+
+    queries = []
+
+    if "polio" in question_lower:
+
+        queries.extend([
+            (
+                "site:nhsrc.gov.pk "
+                "polio vaccination certificate "
+                "international travel Pakistan"
+            ),
+            (
+                "site:nhsrc.gov.pk "
+                "NIMS polio certificate"
+            ),
+            (
+                "site:nih.org.pk "
+                "polio vaccination certificate "
+                "international travel"
+            ),
+        ])
+
+    if "yellow fever" in question_lower:
+
+        queries.extend([
+            (
+                "site:nhsrc.gov.pk "
+                "yellow fever vaccination certificate "
+                "international travel Pakistan"
+            ),
+            (
+                "site:nih.org.pk "
+                "yellow fever certificate Pakistan"
+            ),
+        ])
+
+    queries.extend([
+        f"site:nhsrc.gov.pk {question}",
+        f"site:nih.org.pk {question}",
+    ])
+
+    sources = perform_search(
+        queries=queries,
+        official_domains=official_domains,
+        max_results=8,
+    )
+
+    allowed_domains = {
+        "nhsrc.gov.pk",
+        "nih.org.pk",
+    }
+
+    official_sources = []
+
+    for source in sources:
+
+        if not source.get("official"):
+            continue
+
+        domain = (
+            source.get(
+                "domain",
+                "",
+            )
+            .lower()
+            .replace(
+                "www.",
+                "",
+            )
+        )
+
+        if domain not in allowed_domains:
+            continue
+
+        title = (
+            source.get(
+                "title",
+                "",
+            )
+            or ""
+        ).lower()
+
+        snippet = (
+            source.get(
+                "snippet",
+                "",
+            )
+            or ""
+        ).lower()
+
+        page_text = (
+            source.get(
+                "page_text",
+                "",
+            )
+            or ""
+        ).lower()
+
+        combined_text = (
+            title
+            + " "
+            + snippet
+            + " "
+            + page_text
+        )
+
+        relevant_terms = [
+            "vaccin",
+            "polio",
+            "yellow fever",
+            "nims",
+            "international",
+            "certificate",
+        ]
 
         relevance = sum(
             1
@@ -532,12 +818,10 @@ def research_vaccination(
             continue
 
         source["relevance"] = relevance
-
         official_sources.append(
             source
         )
 
-    # Highest relevance first.
     official_sources.sort(
         key=lambda source: source.get(
             "relevance",
@@ -545,10 +829,6 @@ def research_vaccination(
         ),
         reverse=True,
     )
-
-    # ========================================================
-    # REMOVE DUPLICATES
-    # ========================================================
 
     unique = {}
 
@@ -559,22 +839,17 @@ def research_vaccination(
             "",
         )
 
-        if not url:
-            continue
-
-        if url not in unique:
+        if url and url not in unique:
             unique[url] = source
 
-    official_sources = list(
-        unique.values()
-    )
-
     return {
-        "sources": official_sources[:5],
+        "sources": list(
+            unique.values()
+        )[:5],
         "rag_results": [],
         "jurisdiction": None,
         "attempts": 1,
-    }
+                    }
 
 
 # ============================================================
