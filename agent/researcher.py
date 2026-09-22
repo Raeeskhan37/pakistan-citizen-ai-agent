@@ -12,12 +12,48 @@ NADRA_SEARCH_DOMAINS = [
 ]
 
 
-# ============================================================
-# NADRA QUERY BUILDER
-# ============================================================
+def build_department_queries(
+    question,
+    department,
+    attempt,
+):
+    official_domains = DEPARTMENTS.get(
+        department,
+        {},
+    ).get(
+        "official_domains",
+        ["gov.pk"],
+    )
 
-def build_nadra_queries(question, attempt):
+    domain = official_domains[0]
 
+    if attempt == 1:
+        return [
+            f"site:{domain} {question}",
+            f"site:{domain} {question} requirements",
+            f"site:{domain} {question} procedure",
+        ]
+
+    if attempt == 2:
+        return [
+            f"site:{domain} {question} documents",
+            f"site:{domain} {question} fee",
+            f"site:{domain} {question} application",
+            f"site:{domain} {question} process",
+        ]
+
+    return [
+        f"site:{domain} {question} official",
+        f"site:{domain} {question} FAQ",
+        f"site:{domain} {question} rules",
+        f"site:{domain} {question} policy",
+    ]
+
+
+def build_nadra_queries(
+    question,
+    attempt,
+):
     if attempt == 1:
         return [
             f"site:nadra.gov.pk {question}",
@@ -39,33 +75,19 @@ def build_nadra_queries(question, attempt):
     ]
 
 
-# ============================================================
-# NADRA RAG + WEB RESEARCH
-# ============================================================
-
 def research_nadra(
     question,
     language="English",
 ):
-
     all_sources = []
     rag_results = []
     attempts = 0
-
-    # --------------------------------------------------------
-    # THREE RESEARCH ATTEMPTS
-    # --------------------------------------------------------
 
     for attempt in range(1, 4):
 
         attempts = attempt
 
-        # ====================================================
-        # RAG SEARCH
-        # ====================================================
-
         try:
-
             current_rag = retrieve_nadra(
                 question=question,
                 language=language,
@@ -73,19 +95,12 @@ def research_nadra(
             )
 
             if current_rag:
-
                 rag_results.extend(
                     current_rag
                 )
 
         except Exception:
-
             current_rag = []
-
-
-        # ====================================================
-        # OFFICIAL NADRA WEB SEARCH
-        # ====================================================
 
         queries = build_nadra_queries(
             question,
@@ -93,7 +108,6 @@ def research_nadra(
         )
 
         try:
-
             sources = perform_search(
                 queries=queries,
                 official_domains=NADRA_SEARCH_DOMAINS,
@@ -101,13 +115,7 @@ def research_nadra(
             )
 
         except Exception:
-
             sources = []
-
-
-        # ====================================================
-        # ADD UNIQUE WEB SOURCES
-        # ====================================================
 
         for source in sources:
 
@@ -119,21 +127,13 @@ def research_nadra(
             if not url:
                 continue
 
-            exists = any(
+            if not any(
                 existing.get("url") == url
                 for existing in all_sources
-            )
-
-            if not exists:
-
+            ):
                 all_sources.append(
                     source
                 )
-
-
-        # ====================================================
-        # CHECK WHETHER WE HAVE ENOUGH EVIDENCE
-        # ====================================================
 
         official_sources = [
             source
@@ -141,29 +141,15 @@ def research_nadra(
             if source.get("official")
         ]
 
-        useful_rag = has_useful_evidence(
-            current_rag
-        )
-
-        # ----------------------------------------------------
-        # STOP EARLY IF BOTH RAG AND OFFICIAL WEB
-        # EVIDENCE ARE AVAILABLE
-        # ----------------------------------------------------
-
         if (
-            useful_rag
-            and len(official_sources) >= 1
+            has_useful_evidence(
+                current_rag
+            )
+            and official_sources
         ):
-
             break
 
-
-    # ========================================================
-    # REMOVE DUPLICATE RAG RESULTS
-    # ========================================================
-
     unique_rag = []
-
     seen_rag = set()
 
     for item in rag_results:
@@ -183,28 +169,85 @@ def research_nadra(
             item
         )
 
-
-    # Keep strongest six RAG results
-    unique_rag = sorted(
-        unique_rag,
+    unique_rag.sort(
         key=lambda item: item.get(
             "score",
             0,
         ),
         reverse=True,
-    )[:6]
-
+    )
 
     return {
         "sources": all_sources,
-        "rag_results": unique_rag,
+        "rag_results": unique_rag[:6],
         "attempts": attempts,
     }
 
 
-# ============================================================
-# GENERAL RESEARCH
-# ============================================================
+def research_department(
+    question,
+    department,
+):
+    all_sources = []
+    attempts = 0
+
+    for attempt in range(1, 4):
+
+        attempts = attempt
+
+        queries = build_department_queries(
+            question,
+            department,
+            attempt,
+        )
+
+        try:
+            sources = perform_search(
+                queries=queries,
+                official_domains=DEPARTMENTS[
+                    department
+                ][
+                    "official_domains"
+                ],
+                max_results=8,
+            )
+
+        except Exception:
+            sources = []
+
+        for source in sources:
+
+            url = source.get(
+                "url",
+                "",
+            )
+
+            if not url:
+                continue
+
+            if not any(
+                existing.get("url") == url
+                for existing in all_sources
+            ):
+                all_sources.append(
+                    source
+                )
+
+        official_sources = [
+            source
+            for source in all_sources
+            if source.get("official")
+        ]
+
+        if official_sources:
+            break
+
+    return {
+        "sources": all_sources,
+        "rag_results": [],
+        "attempts": attempts,
+    }
+
 
 def research_question(
     question,
@@ -219,49 +262,15 @@ def research_question(
             language,
         )
 
-
-    # ========================================================
-    # OTHER DEPARTMENTS
-    # ========================================================
-
     if department in DEPARTMENTS:
 
-        official_domains = (
-            DEPARTMENTS[
-                department
-            ][
-                "official_domains"
-            ]
+        return research_department(
+            question,
+            department,
         )
-
-    else:
-
-        official_domains = [
-            "gov.pk"
-        ]
-
-
-    queries = [
-        question,
-        f"Pakistan government {question}",
-    ]
-
-
-    try:
-
-        sources = perform_search(
-            queries=queries,
-            official_domains=official_domains,
-            max_results=8,
-        )
-
-    except Exception:
-
-        sources = []
-
 
     return {
-        "sources": sources,
+        "sources": [],
         "rag_results": [],
-        "attempts": 1,
+        "attempts": 3,
     }
