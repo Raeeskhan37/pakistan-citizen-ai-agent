@@ -135,9 +135,9 @@ def ask_citizen_agent(
     # COMBINE ALL EVIDENCE
     # --------------------------------------------------------
 
-    combined_evidence = f"""
+combined_evidence = f"""
 ============================================================
-NADRA / GOVERNMENT POLICY EVIDENCE
+{department} GOVERNMENT EVIDENCE
 ============================================================
 
 {policy_evidence}
@@ -233,7 +233,7 @@ VERIFIED OFFICIAL WEB EVIDENCE
         ),
 
         "warning": verification.get(
-            "warning",
-            "",
-        ),
+    "warning",
+    "",
+),
     }
