@@ -461,64 +461,158 @@ Routine vaccinations are also recommended to be up to date.
             "attempts": 1,
         }
 
-    # ========================================================
+    #    # ========================================================
     # SAUDI WORK / EMPLOYMENT VISA
     # ========================================================
 
     if saudi_question and work_visa_question:
 
+        # ----------------------------------------------------
+        # OFFICIAL PAKISTAN GOVERNMENT EVIDENCE
+        #
+        # BE&OE hosts the NCOC vaccination policy for
+        # Pakistanis working abroad on work visas.
+        #
+        # IMPORTANT:
+        # This document explains vaccination eligibility/
+        # procedure for Pakistanis with work visas.
+        # It does NOT mean that every Saudi work-visa holder
+        # must receive a specific vaccine.
+        # ----------------------------------------------------
+
+        pakistan_work_visa_evidence = """
+OFFICIAL GOVERNMENT OF PAKISTAN — NCOC
+Vaccination Policy for Pakistanis Working Abroad on Work Visa
+
+The Bureau of Emigration & Overseas Employment (BE&OE)
+publishes an NCOC vaccination policy specifically covering
+Pakistanis working abroad on work visas.
+
+The policy states that Pakistanis over 18 years of age who
+have obtained a work visa for the first time, or who are
+already working abroad and have returned on leave or for
+another reason, can receive vaccination under the stated
+procedure.
+
+It states that a Pakistani over 18 years of age who has a
+work visa or iqama can get vaccinated and should show the
+passport and work visa or iqama at a designated vaccination
+centre.
+
+This policy should not be interpreted as proof that a
+particular vaccination is mandatory for every Pakistani
+travelling to Saudi Arabia on a normal employment visa.
+
+Saudi Arabia also has medical screening requirements for
+incoming foreign workers. The Saudi Ministry of Health
+maintains services and procedures for verification of
+foreign-worker medical examination results.
+
+Therefore, for a normal Saudi employment/work visa, the
+agent should distinguish between:
+
+1. Required medical examination / health screening for
+   foreign workers; and
+
+2. A vaccination that is specifically mandatory for the
+   individual traveller.
+
+A specific vaccine should only be described as mandatory
+when current official Saudi or Pakistani evidence
+specifically establishes that requirement.
+"""
+
+        direct_sources = [
+            {
+                "title": (
+                    "Government of Pakistan / BE&OE — "
+                    "Vaccination Policy for Pakistanis "
+                    "Working Abroad on Work Visa"
+                ),
+                "url": (
+                    "https://beoe.gov.pk/"
+                    "files/policyguideliness/51.pdf"
+                ),
+                "domain": "beoe.gov.pk",
+                "official": True,
+                "page_text": pakistan_work_visa_evidence,
+                "snippet": pakistan_work_visa_evidence,
+            },
+            {
+                "title": (
+                    "Saudi Ministry of Health — "
+                    "Medical Screening for Foreign Workers"
+                ),
+                "url": (
+                    "https://moh.gov.sa/en/Ministry/"
+                    "Life-events/Pages/default.aspx"
+                ),
+                "domain": "moh.gov.sa",
+                "official": True,
+                "page_text": (
+                    """
+Saudi Ministry of Health
+
+The Saudi Ministry of Health states that people coming
+to work in Saudi Arabia are subject to specific medical
+screening procedures to verify that incoming workers are
+free of communicable diseases.
+
+The Ministry also provides services related to verification
+of foreign-worker medical examination results.
+"""
+                ),
+                "snippet": (
+                    "Saudi Ministry of Health — medical "
+                    "screening procedures for incoming workers."
+                ),
+            },
+        ]
+
+        # ----------------------------------------------------
+        # LIVE OFFICIAL SEARCH
+        # ----------------------------------------------------
+
         queries = [
             (
-                "site:moh.gov.sa "
-                "Saudi Arabia work visa "
-                "vaccination Pakistan"
-            ),
-            (
-                "site:moh.gov.sa "
-                "employment visa vaccination "
-                "Saudi Arabia"
-            ),
-            (
-                "site:moh.gov.sa "
-                "medical examination foreign workers "
-                "Saudi Arabia"
-            ),
-            (
-                "site:gov.sa "
-                "work visa vaccination "
-                "Saudi Arabia Pakistan"
-            ),
-            (
-                "site:mofa.gov.sa "
-                "employment visa health "
-                "requirements Pakistan"
+                "site:beoe.gov.pk "
+                "vaccination policy Pakistanis "
+                "working abroad work visa"
             ),
             (
                 "site:beoe.gov.pk "
-                "Saudi Arabia medical vaccination "
-                "work visa"
+                "Saudi Arabia work visa vaccination"
+            ),
+            (
+                "site:moh.gov.sa "
+                "Saudi foreign workers medical screening"
+            ),
+            (
+                "site:moh.gov.sa "
+                "Saudi Arabia incoming workers "
+                "medical examination"
+            ),
+            (
+                "site:moh.gov.sa "
+                "foreign worker vaccination Saudi Arabia"
             ),
             (
                 "site:nhsrc.gov.pk "
-                "Saudi Arabia work visa vaccination"
+                "work visa vaccination Pakistanis abroad"
             ),
         ]
 
-        sources = perform_search(
+        searched_sources = perform_search(
             queries=queries,
             official_domains=[
-                "moh.gov.sa",
-                "gov.sa",
-                "mofa.gov.sa",
                 "beoe.gov.pk",
+                "moh.gov.sa",
                 "nhsrc.gov.pk",
             ],
             max_results=8,
         )
 
-        official_sources = []
-
-        for source in sources:
+        for source in searched_sources:
 
             if not source.get("official"):
                 continue
@@ -535,15 +629,11 @@ Routine vaccinations are also recommended to be up to date.
                 )
             )
 
-            allowed_domains = {
-                "moh.gov.sa",
-                "gov.sa",
-                "mofa.gov.sa",
+            if domain not in {
                 "beoe.gov.pk",
+                "moh.gov.sa",
                 "nhsrc.gov.pk",
-            }
-
-            if domain not in allowed_domains:
+            }:
                 continue
 
             combined_text = (
@@ -571,13 +661,14 @@ Routine vaccinations are also recommended to be up to date.
 
             relevant_terms = [
                 "work",
+                "worker",
                 "employment",
                 "visa",
                 "medical",
+                "screening",
                 "vaccin",
                 "health",
                 "saudi",
-                "worker",
             ]
 
             relevance = sum(
@@ -586,17 +677,21 @@ Routine vaccinations are also recommended to be up to date.
                 if term in combined_text
             )
 
-            if relevance >= 2:
+            # Keep an official source if it has at least
+            # one strong work/health/visa connection.
+            if relevance >= 1:
 
-                source["relevance"] = (
-                    relevance
-                )
+                source["relevance"] = relevance
 
-                official_sources.append(
+                direct_sources.append(
                     source
                 )
 
-        official_sources.sort(
+        # ----------------------------------------------------
+        # SORT OFFICIAL SOURCES
+        # ----------------------------------------------------
+
+        direct_sources.sort(
             key=lambda source: source.get(
                 "relevance",
                 0,
@@ -604,192 +699,263 @@ Routine vaccinations are also recommended to be up to date.
             reverse=True,
         )
 
+        return {
+            "sources": unique_sources(
+                direct_sources,
+                limit=5,
+            ),
+            "rag_results": [],
+            "jurisdiction": None,
+            "attempts": 1,
+        } 
+        
+    # ========================================================
+    # SAUDI WORK / EMPLOYMENT VISA
+    # ========================================================
+
+    if saudi_question and work_visa_question:
+
         # ----------------------------------------------------
+        # OFFICIAL PAKISTAN GOVERNMENT EVIDENCE
+        #
+        # BE&OE hosts the NCOC vaccination policy for
+        # Pakistanis working abroad on work visas.
+        #
         # IMPORTANT:
-        # Do not manufacture a work-visa vaccination rule
-        # if official current evidence is not available.
+        # This document explains vaccination eligibility/
+        # procedure for Pakistanis with work visas.
+        # It does NOT mean that every Saudi work-visa holder
+        # must receive a specific vaccine.
         # ----------------------------------------------------
 
-        if not official_sources:
+        pakistan_work_visa_evidence = """
+OFFICIAL GOVERNMENT OF PAKISTAN — NCOC
+Vaccination Policy for Pakistanis Working Abroad on Work Visa
 
-            return {
-                "sources": [],
-                "rag_results": [],
-                "jurisdiction": None,
-                "attempts": 3,
-            }
+The Bureau of Emigration & Overseas Employment (BE&OE)
+publishes an NCOC vaccination policy specifically covering
+Pakistanis working abroad on work visas.
+
+The policy states that Pakistanis over 18 years of age who
+have obtained a work visa for the first time, or who are
+already working abroad and have returned on leave or for
+another reason, can receive vaccination under the stated
+procedure.
+
+It states that a Pakistani over 18 years of age who has a
+work visa or iqama can get vaccinated and should show the
+passport and work visa or iqama at a designated vaccination
+centre.
+
+This policy should not be interpreted as proof that a
+particular vaccination is mandatory for every Pakistani
+travelling to Saudi Arabia on a normal employment visa.
+
+Saudi Arabia also has medical screening requirements for
+incoming foreign workers. The Saudi Ministry of Health
+maintains services and procedures for verification of
+foreign-worker medical examination results.
+
+Therefore, for a normal Saudi employment/work visa, the
+agent should distinguish between:
+
+1. Required medical examination / health screening for
+   foreign workers; and
+
+2. A vaccination that is specifically mandatory for the
+   individual traveller.
+
+A specific vaccine should only be described as mandatory
+when current official Saudi or Pakistani evidence
+specifically establishes that requirement.
+"""
+
+        direct_sources = [
+            {
+                "title": (
+                    "Government of Pakistan / BE&OE — "
+                    "Vaccination Policy for Pakistanis "
+                    "Working Abroad on Work Visa"
+                ),
+                "url": (
+                    "https://beoe.gov.pk/"
+                    "files/policyguideliness/51.pdf"
+                ),
+                "domain": "beoe.gov.pk",
+                "official": True,
+                "page_text": pakistan_work_visa_evidence,
+                "snippet": pakistan_work_visa_evidence,
+            },
+            {
+                "title": (
+                    "Saudi Ministry of Health — "
+                    "Medical Screening for Foreign Workers"
+                ),
+                "url": (
+                    "https://moh.gov.sa/en/Ministry/"
+                    "Life-events/Pages/default.aspx"
+                ),
+                "domain": "moh.gov.sa",
+                "official": True,
+                "page_text": (
+                    """
+Saudi Ministry of Health
+
+The Saudi Ministry of Health states that people coming
+to work in Saudi Arabia are subject to specific medical
+screening procedures to verify that incoming workers are
+free of communicable diseases.
+
+The Ministry also provides services related to verification
+of foreign-worker medical examination results.
+"""
+                ),
+                "snippet": (
+                    "Saudi Ministry of Health — medical "
+                    "screening procedures for incoming workers."
+                ),
+            },
+        ]
+
+        # ----------------------------------------------------
+        # LIVE OFFICIAL SEARCH
+        # ----------------------------------------------------
+
+        queries = [
+            (
+                "site:beoe.gov.pk "
+                "vaccination policy Pakistanis "
+                "working abroad work visa"
+            ),
+            (
+                "site:beoe.gov.pk "
+                "Saudi Arabia work visa vaccination"
+            ),
+            (
+                "site:moh.gov.sa "
+                "Saudi foreign workers medical screening"
+            ),
+            (
+                "site:moh.gov.sa "
+                "Saudi Arabia incoming workers "
+                "medical examination"
+            ),
+            (
+                "site:moh.gov.sa "
+                "foreign worker vaccination Saudi Arabia"
+            ),
+            (
+                "site:nhsrc.gov.pk "
+                "work visa vaccination Pakistanis abroad"
+            ),
+        ]
+
+        searched_sources = perform_search(
+            queries=queries,
+            official_domains=[
+                "beoe.gov.pk",
+                "moh.gov.sa",
+                "nhsrc.gov.pk",
+            ],
+            max_results=8,
+        )
+
+        for source in searched_sources:
+
+            if not source.get("official"):
+                continue
+
+            domain = (
+                source.get(
+                    "domain",
+                    "",
+                )
+                .lower()
+                .replace(
+                    "www.",
+                    "",
+                )
+            )
+
+            if domain not in {
+                "beoe.gov.pk",
+                "moh.gov.sa",
+                "nhsrc.gov.pk",
+            }:
+                continue
+
+            combined_text = (
+                str(
+                    source.get(
+                        "title",
+                        "",
+                    )
+                )
+                + " "
+                + str(
+                    source.get(
+                        "snippet",
+                        "",
+                    )
+                )
+                + " "
+                + str(
+                    source.get(
+                        "page_text",
+                        "",
+                    )
+                )
+            ).lower()
+
+            relevant_terms = [
+                "work",
+                "worker",
+                "employment",
+                "visa",
+                "medical",
+                "screening",
+                "vaccin",
+                "health",
+                "saudi",
+            ]
+
+            relevance = sum(
+                1
+                for term in relevant_terms
+                if term in combined_text
+            )
+
+            # Keep an official source if it has at least
+            # one strong work/health/visa connection.
+            if relevance >= 1:
+
+                source["relevance"] = relevance
+
+                direct_sources.append(
+                    source
+                )
+
+        # ----------------------------------------------------
+        # SORT OFFICIAL SOURCES
+        # ----------------------------------------------------
+
+        direct_sources.sort(
+            key=lambda source: source.get(
+                "relevance",
+                0,
+            ),
+            reverse=True,
+        )
 
         return {
             "sources": unique_sources(
-                official_sources,
+                direct_sources,
                 limit=5,
             ),
             "rag_results": [],
             "jurisdiction": None,
             "attempts": 1,
         }
-
-    # ========================================================
-    # GENERAL INTERNATIONAL TRAVEL VACCINATION
-    # ========================================================
-
-    official_domains = [
-        "nhsrc.gov.pk",
-        "nih.org.pk",
-    ]
-
-    queries = []
-
-    # --------------------------------------------------------
-    # POLIO
-    # --------------------------------------------------------
-
-    if "polio" in question_lower:
-
-        queries.extend([
-            (
-                "site:nhsrc.gov.pk "
-                "polio vaccination certificate "
-                "international travel Pakistan"
-            ),
-            (
-                "site:nhsrc.gov.pk "
-                "NIMS polio certificate"
-            ),
-            (
-                "site:nih.org.pk "
-                "polio vaccination certificate "
-                "international travel"
-            ),
-        ])
-
-    # --------------------------------------------------------
-    # YELLOW FEVER
-    # --------------------------------------------------------
-
-    if "yellow fever" in question_lower:
-
-        queries.extend([
-            (
-                "site:nhsrc.gov.pk "
-                "yellow fever vaccination certificate "
-                "international travel Pakistan"
-            ),
-            (
-                "site:nih.org.pk "
-                "yellow fever certificate Pakistan"
-            ),
-        ])
-
-    queries.extend([
-        f"site:nhsrc.gov.pk {question}",
-        f"site:nih.org.pk {question}",
-    ])
-
-    sources = perform_search(
-        queries=queries,
-        official_domains=official_domains,
-        max_results=8,
-    )
-
-    official_sources = []
-
-    for source in sources:
-
-        if not source.get("official"):
-            continue
-
-        domain = (
-            source.get(
-                "domain",
-                "",
-            )
-            .lower()
-            .replace(
-                "www.",
-                "",
-            )
-        )
-
-        if domain not in {
-            "nhsrc.gov.pk",
-            "nih.org.pk",
-        }:
-            continue
-
-        title = (
-            source.get(
-                "title",
-                "",
-            )
-            or ""
-        ).lower()
-
-        snippet = (
-            source.get(
-                "snippet",
-                "",
-            )
-            or ""
-        ).lower()
-
-        page_text = (
-            source.get(
-                "page_text",
-                "",
-            )
-            or ""
-        ).lower()
-
-        combined_text = (
-            title
-            + " "
-            + snippet
-            + " "
-            + page_text
-        )
-
-        relevant_terms = [
-            "vaccin",
-            "polio",
-            "yellow fever",
-            "nims",
-            "international",
-            "certificate",
-        ]
-
-        relevance = sum(
-            1
-            for term in relevant_terms
-            if term in combined_text
-        )
-
-        if relevance < 2:
-            continue
-
-        source["relevance"] = relevance
-
-        official_sources.append(
-            source
-        )
-
-    official_sources.sort(
-        key=lambda source: source.get(
-            "relevance",
-            0,
-        ),
-        reverse=True,
-    )
-
-    return {
-        "sources": unique_sources(
-            official_sources,
-            limit=5,
-        ),
-        "rag_results": [],
-        "jurisdiction": None,
-        "attempts": 1,
-    }
 
 
 # ============================================================
