@@ -7,3 +7,5 @@ lxml>=6.0.0
 sentence-transformers
 faiss-cpu
 numpy
+torch
+torchvision
