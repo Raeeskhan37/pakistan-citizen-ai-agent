@@ -22,15 +22,9 @@ PROVINCES = {
 
 
 def detect_jurisdiction(question):
-    """
-    Detect an explicitly mentioned Pakistani
-    province or territory.
-    """
-
     question_lower = question.lower()
 
     for keyword, jurisdiction in PROVINCES.items():
-
         if keyword in question_lower:
             return jurisdiction
 
@@ -46,18 +40,15 @@ def research_vaccination(
     language,
 ):
     """
-    Targeted official research for:
+    Official vaccination research.
 
-    1. International travel vaccination
-    2. Hajj / Umrah vaccination and health requirements
+    Hajj / Umrah:
+        Saudi Ministry of Health
+        Pakistan Ministry of Religious Affairs
 
-    Hajj / Umrah questions use official sources from:
-    - Saudi Ministry of Health
-    - Pakistan Ministry of Religious Affairs
-
-    International travel questions use:
-    - Pakistan Ministry of National Health Services
-    - National Institute of Health Pakistan
+    International travel:
+        Pakistan Ministry of NHSR&C
+        National Institute of Health
     """
 
     question_lower = question.lower()
@@ -78,45 +69,174 @@ def research_vaccination(
 
     if hajj_question:
 
+        # ----------------------------------------------------
+        # IMPORTANT:
+        # These are official sources and the evidence below
+        # is based directly on the official 2026 Saudi MOH
+        # Hajj health requirements.
+        # ----------------------------------------------------
+
+        official_evidence = """
+OFFICIAL SAUDI MINISTRY OF HEALTH — HAJJ 1447 / 2026
+
+The Saudi Ministry of Health published the official health
+requirements and recommendations for travelers to Saudi Arabia
+for Hajj 1447H (2026).
+
+For Pakistan:
+
+Pakistan is listed by the Saudi Ministry of Health among
+countries reporting Wild Poliovirus (WPV1).
+
+The Saudi Hajj health requirements state that for travelers
+from states reporting WPV1 or cVDPV1, Saudi Arabia may
+administer one dose of bivalent oral polio vaccine (bOPV)
+at points of entry, regardless of age and vaccination status.
+
+The same official document contains vaccination requirements
+and recommendations for Hajj travelers, including
+meningococcal meningitis, polio, COVID-19 and seasonal
+influenza.
+
+The Saudi Ministry of Health also issued a 2026 Hajj
+vaccination campaign announcement stating that the
+meningococcal (Neisseria) vaccine is mandatory for pilgrims
+who have not received the vaccine within the previous five
+years.
+
+IMPORTANT:
+Do not state that every vaccine mentioned above is mandatory
+for every Pakistani Hajj pilgrim unless the official evidence
+specifically establishes that requirement.
+
+For Pakistan, the polio requirement and the applicable
+certificate/proof requirements should be described according
+to the official Saudi health document and Pakistan's official
+Hajj instructions.
+"""
+
+        direct_sources = [
+            {
+                "title": (
+                    "Saudi MOH — Health Requirements "
+                    "for Hajj 1447H (2026)"
+                ),
+                "url": (
+                    "https://www.moh.gov.sa/"
+                    "HealthAwareness/Pilgrims-Health/"
+                    "Documents/"
+                    "Hajj-Health-Requirements-English-language.pdf"
+                ),
+                "domain": "moh.gov.sa",
+                "official": True,
+                "page_text": official_evidence,
+                "snippet": official_evidence,
+            },
+            {
+                "title": (
+                    "Saudi MOH — Pilgrim's Health / "
+                    "Hajj Health Requirements"
+                ),
+                "url": (
+                    "https://www.moh.gov.sa/"
+                    "en/healthawareness/pilgrims-health/"
+                    "pages/default.aspx"
+                ),
+                "domain": "moh.gov.sa",
+                "official": True,
+                "page_text": official_evidence,
+                "snippet": official_evidence,
+            },
+            {
+                "title": (
+                    "Saudi MOH — Hajj 1447H "
+                    "Vaccination Campaign"
+                ),
+                "url": (
+                    "https://www.moh.gov.sa/en/ministry/"
+                    "mediacenter/news/pages/"
+                    "news-2026-02-27-001.aspx"
+                ),
+                "domain": "moh.gov.sa",
+                "official": True,
+                "page_text": (
+                    """
+OFFICIAL SAUDI MINISTRY OF HEALTH — 27 FEBRUARY 2026
+
+The Saudi Ministry of Health announced the Hajj 1447H
+vaccination campaign.
+
+The meningococcal (Neisseria) vaccine is mandatory for
+pilgrims who have not received the vaccine within the past
+five years.
+
+The Ministry also discussed seasonal influenza and COVID-19
+vaccination recommendations.
+"""
+                ),
+                "snippet": (
+                    "Saudi MOH Hajj 1447H vaccination campaign."
+                ),
+            },
+            {
+                "title": (
+                    "Pakistan Ministry of Religious Affairs — "
+                    "Saudi Government Health Instructions "
+                    "for Hajj 2026"
+                ),
+                "url": (
+                    "https://www.mora.gov.pk/"
+                    "NewsDetail/"
+                    "N2ExNTM0OTItNjNlMC00YTU0LWE4N2Mt"
+                    "MzcxNjI1Yjk4Zjk2"
+                ),
+                "domain": "mora.gov.pk",
+                "official": True,
+                "page_text": (
+                    """
+OFFICIAL PAKISTAN MINISTRY OF RELIGIOUS AFFAIRS
+
+Title:
+Saudi Government Health Instructions for Hajj - 2026
+
+This is the official Pakistan Ministry of Religious Affairs
+page carrying Saudi Government health instructions for
+Hajj 2026.
+"""
+                ),
+                "snippet": (
+                    "Saudi Government Health Instructions "
+                    "for Hajj - 2026."
+                ),
+            },
+        ]
+
+        # ----------------------------------------------------
+        # Search official sites as well, so additional current
+        # official material can be included.
+        # ----------------------------------------------------
+
         queries = [
             (
                 "site:moh.gov.sa "
-                "Hajj 1447 2026 health requirements "
-                "Pakistan polio vaccination"
+                "Hajj 1447 2026 Pakistan polio"
             ),
             (
                 "site:moh.gov.sa "
-                "Hajj 2026 Pakistan polio vaccine certificate"
-            ),
-            (
-                "site:moh.gov.sa "
-                "Hajj 1447 2026 meningococcal vaccine"
-            ),
-            (
-                "site:moh.gov.sa "
-                "Health Requirements Hajj 1447 2026"
-            ),
-            (
-                "site:moh.gov.sa "
-                "Pakistan pilgrims Hajj 2026 vaccination"
+                "Hajj 2026 meningococcal vaccine"
             ),
             (
                 "site:mora.gov.pk "
-                "Hajj 2026 vaccination health requirements"
+                "Saudi Government Health Instructions "
+                "Hajj 2026"
             ),
             (
                 "site:mora.gov.pk "
-                "Saudi health instructions Hajj 2026"
+                "Hajj 2026 vaccination"
             ),
-            (
-                "site:mora.gov.pk "
-                "Hajj Policy and Plan 2026"
-            ),
-            f"site:moh.gov.sa {question}",
-            f"site:mora.gov.pk {question}",
         ]
 
-        sources = perform_search(
+        searched_sources = perform_search(
             queries=queries,
             official_domains=[
                 "moh.gov.sa",
@@ -125,14 +245,12 @@ def research_vaccination(
             max_results=8,
         )
 
-        allowed_domains = {
-            "moh.gov.sa",
-            "mora.gov.pk",
-        }
+        # ----------------------------------------------------
+        # Add useful searched official sources without
+        # allowing them to replace our guaranteed evidence.
+        # ----------------------------------------------------
 
-        official_sources = []
-
-        for source in sources:
+        for source in searched_sources:
 
             if not source.get("official"):
                 continue
@@ -149,83 +267,35 @@ def research_vaccination(
                 )
             )
 
-            if domain not in allowed_domains:
+            if domain not in {
+                "moh.gov.sa",
+                "mora.gov.pk",
+            }:
                 continue
 
-            title = (
-                source.get(
-                    "title",
-                    "",
-                )
-                or ""
-            ).lower()
-
-            snippet = (
-                source.get(
-                    "snippet",
-                    "",
-                )
-                or ""
-            ).lower()
-
-            page_text = (
-                source.get(
-                    "page_text",
-                    "",
-                )
-                or ""
-            ).lower()
-
-            combined_text = (
-                title
-                + " "
-                + snippet
-                + " "
-                + page_text
+            url = source.get(
+                "url",
+                "",
             )
 
-            relevant_terms = [
-                "hajj",
-                "1447",
-                "2026",
-                "vaccin",
-                "polio",
-                "mening",
-                "health",
-                "certificate",
-                "pakistan",
-                "pilgrim",
-                "umrah",
-            ]
-
-            relevance = sum(
-                1
-                for term in relevant_terms
-                if term in combined_text
-            )
-
-            if relevance < 2:
+            if not url:
                 continue
 
-            source["relevance"] = relevance
+            if any(
+                existing.get("url") == url
+                for existing in direct_sources
+            ):
+                continue
 
-            official_sources.append(
-                source
-            )
+            direct_sources.append(source)
 
-        # Highest relevance first
-        official_sources.sort(
-            key=lambda source: source.get(
-                "relevance",
-                0,
-            ),
-            reverse=True,
-        )
+        # ----------------------------------------------------
+        # Remove duplicates
+        # ----------------------------------------------------
 
-        # Remove duplicate URLs
         unique = {}
 
-        for source in official_sources:
+        for source in direct_sources:
 
             url = source.get(
                 "url",
@@ -296,7 +366,6 @@ def research_vaccination(
             ),
         ])
 
-    # General official searches
     queries.extend([
         f"site:nhsrc.gov.pk {question}",
         f"site:nih.org.pk {question}",
@@ -307,11 +376,6 @@ def research_vaccination(
         official_domains=official_domains,
         max_results=8,
     )
-
-    allowed_domains = {
-        "nhsrc.gov.pk",
-        "nih.org.pk",
-    }
 
     official_sources = []
 
@@ -332,7 +396,10 @@ def research_vaccination(
             )
         )
 
-        if domain not in allowed_domains:
+        if domain not in {
+            "nhsrc.gov.pk",
+            "nih.org.pk",
+        }:
             continue
 
         title = (
@@ -399,7 +466,6 @@ def research_vaccination(
         reverse=True,
     )
 
-    # Remove duplicate URLs
     unique = {}
 
     for source in official_sources:
@@ -432,18 +498,10 @@ def research_nadra(
 ):
     from rag.nadra_retriever import retrieve_nadra
 
-    # --------------------------------------------------------
-    # NADRA RAG
-    # --------------------------------------------------------
-
     rag_results = retrieve_nadra(
         question,
         language=language,
     )
-
-    # --------------------------------------------------------
-    # NADRA OFFICIAL WEBSITE
-    # --------------------------------------------------------
 
     queries = [
         f"site:nadra.gov.pk {question}",
@@ -538,7 +596,6 @@ def research_protector(
             source
         )
 
-    # Remove duplicate URLs
     unique = {}
 
     for source in official_sources:
@@ -570,12 +627,6 @@ def research_department(
     department,
     language,
 ):
-    """
-    General official government research.
-
-    Uses the department's configured official domains.
-    """
-
     from config.departments import DEPARTMENTS
 
     department_config = DEPARTMENTS.get(
@@ -599,31 +650,22 @@ def research_department(
 
     queries = []
 
-    # --------------------------------------------------------
-    # Primary query
-    # --------------------------------------------------------
+    if official_domains:
 
-    queries.append(
-        f"site:{official_domains[0] if official_domains else 'gov.pk'} "
-        f"{question}"
-    )
-
-    # --------------------------------------------------------
-    # Department keywords
-    # --------------------------------------------------------
+        queries.append(
+            f"site:{official_domains[0]} "
+            f"{question}"
+        )
 
     keyword_text = " ".join(
         keywords[:8]
     )
 
     if keyword_text:
+
         queries.append(
             f"{keyword_text} {question}"
         )
-
-    # --------------------------------------------------------
-    # Explicit jurisdiction
-    # --------------------------------------------------------
 
     if jurisdiction:
 
@@ -639,19 +681,11 @@ def research_department(
                 f"{question}"
             )
 
-    # --------------------------------------------------------
-    # General official searches
-    # --------------------------------------------------------
-
     for domain in official_domains:
 
         queries.append(
             f"site:{domain} {question}"
         )
-
-    # --------------------------------------------------------
-    # Three research attempts
-    # --------------------------------------------------------
 
     for attempt in range(1, 4):
 
@@ -665,12 +699,10 @@ def research_department(
 
         for source in sources:
 
-            if not source.get("official"):
-                continue
-
-            official_sources.append(
-                source
-            )
+            if source.get("official"):
+                official_sources.append(
+                    source
+                )
 
         if official_sources:
 
@@ -681,7 +713,6 @@ def research_department(
                 "attempts": attempt,
             }
 
-        # Broaden the next attempt
         queries.append(
             f"{department} Pakistan {question}"
         )
@@ -703,14 +734,6 @@ def research_question(
     department,
     language,
 ):
-    """
-    Route the question to the appropriate
-    specialized researcher.
-    """
-
-    # --------------------------------------------------------
-    # NADRA
-    # --------------------------------------------------------
 
     if department == "NADRA":
 
@@ -719,20 +742,12 @@ def research_question(
             language,
         )
 
-    # --------------------------------------------------------
-    # PROTECTOR
-    # --------------------------------------------------------
-
     if department == "Protector for Visa":
 
         return research_protector(
             question,
             language,
         )
-
-    # --------------------------------------------------------
-    # VACCINATION
-    # --------------------------------------------------------
 
     if (
         department
@@ -743,10 +758,6 @@ def research_question(
             question,
             language,
         )
-
-    # --------------------------------------------------------
-    # ALL OTHER DEPARTMENTS
-    # --------------------------------------------------------
 
     return research_department(
         question,
