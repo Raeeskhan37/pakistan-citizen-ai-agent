@@ -150,10 +150,98 @@ def research_vaccination(
     )
 
     official_sources = [
-        source
-        for source in sources
-        if source.get("official")
+def research_vaccination(
+    question,
+    language,
+):
+    """
+    Targeted official search for international-travel
+    vaccination information in Pakistan.
+
+    Only NHSRC and NIH sources are accepted.
+    """
+
+    question_lower = question.lower()
+
+    queries = [
+        (
+            "site:nhsrc.gov.pk "
+            "polio vaccination certificate "
+            "international travel Pakistan"
+        ),
+        (
+            "site:nhsrc.gov.pk "
+            "yellow fever vaccination certificate "
+            "international travel Pakistan"
+        ),
+        (
+            "site:nhsrc.gov.pk "
+            "NIMS vaccination certificate "
+            "polio yellow fever"
+        ),
+        (
+            "site:nih.org.pk "
+            "polio vaccination certificate "
+            "international travel Pakistan"
+        ),
+        (
+            "site:nih.org.pk "
+            "yellow fever vaccination certificate "
+            "international travel Pakistan"
+        ),
     ]
+
+    # Add the citizen's exact question as a final
+    # targeted search.
+    queries.append(
+        f"site:nhsrc.gov.pk {question}"
+    )
+
+    queries.append(
+        f"site:nih.org.pk {question}"
+    )
+
+    sources = perform_search(
+        queries=queries,
+        official_domains=[
+            "nhsrc.gov.pk",
+            "nih.org.pk",
+        ],
+        max_results=8,
+    )
+
+    # HARD FILTER:
+    # Vaccination must only use these two domains.
+    allowed_domains = {
+        "nhsrc.gov.pk",
+        "nih.org.pk",
+    }
+
+    official_sources = []
+
+    for source in sources:
+
+        if not source.get("official"):
+            continue
+
+        domain = (
+            source.get(
+                "domain",
+                "",
+            )
+            .lower()
+            .replace(
+                "www.",
+                "",
+            )
+        )
+
+        if domain not in allowed_domains:
+            continue
+
+        official_sources.append(
+            source
+        )
 
     # Remove duplicate URLs.
     unique = {}
