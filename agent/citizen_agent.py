@@ -137,7 +137,7 @@ def ask_citizen_agent(
 
 combined_evidence = f"""
 ============================================================
-{department} GOVERNMENT EVIDENCE
+GOVERNMENT POLICY EVIDENCE
 ============================================================
 
 {policy_evidence}
@@ -149,7 +149,6 @@ VERIFIED OFFICIAL WEB EVIDENCE
 
 {web_evidence}
 """
-
 
     # --------------------------------------------------------
     # CHECK WHETHER ANY VERIFIED EVIDENCE EXISTS
