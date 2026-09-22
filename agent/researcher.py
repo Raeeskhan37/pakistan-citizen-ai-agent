@@ -79,89 +79,8 @@ def research_vaccination(
     Targeted official search for international-travel
     vaccination information in Pakistan.
 
-    Primary authority:
-    Ministry of National Health Services / NIH.
-
-    Do not broaden this search to unrelated government
-    departments.
-    """
-
-    question_lower = question.lower()
-
-    queries = [
-        f"site:nhsrc.gov.pk {question}",
-        f"site:nhsrc.gov.pk polio yellow fever vaccination certificate NIMS {question}",
-        f"site:nhsrc.gov.pk international travellers vaccination certificate Pakistan",
-        f"site:nih.org.pk polio yellow fever vaccination certificate international travel",
-        f"site:nih.org.pk designated vaccination center international travelers",
-    ]
-
-    # Make specific questions even more targeted.
-    if "polio" in question_lower:
-        queries.insert(
-            0,
-            (
-                "site:nhsrc.gov.pk "
-                "polio vaccination certificate "
-                "international travel NIMS Pakistan"
-            ),
-        )
-
-    if "yellow fever" in question_lower:
-        queries.insert(
-            0,
-            (
-                "site:nhsrc.gov.pk "
-                "yellow fever vaccination certificate "
-                "international travel NIMS Pakistan"
-            ),
-        )
-
-    if "nims" in question_lower:
-        queries.insert(
-            0,
-            (
-                "site:nhsrc.gov.pk "
-                "NIMS vaccination certificate "
-                "polio yellow fever"
-            ),
-        )
-
-    if (
-        "certificate" in question_lower
-        or "certificate" in question_lower
-    ):
-        queries.insert(
-            0,
-            (
-                "site:nhsrc.gov.pk "
-                "digital vaccination certificate "
-                "NIMS polio yellow fever"
-            ),
-        )
-
-    sources = perform_search(
-        queries=queries,
-        official_domains=[
-            "nhsrc.gov.pk",
-            "nih.org.pk",
-        ],
-        max_results=8,
-    )
-
-    official_sources = [
-def research_vaccination(
-    question,
-    language,
-):
-    """
-    Targeted official search for international-travel
-    vaccination information in Pakistan.
-
     Only NHSRC and NIH sources are accepted.
     """
-
-    question_lower = question.lower()
 
     queries = [
         (
@@ -189,17 +108,13 @@ def research_vaccination(
             "yellow fever vaccination certificate "
             "international travel Pakistan"
         ),
+        (
+            f"site:nhsrc.gov.pk {question}"
+        ),
+        (
+            f"site:nih.org.pk {question}"
+        ),
     ]
-
-    # Add the citizen's exact question as a final
-    # targeted search.
-    queries.append(
-        f"site:nhsrc.gov.pk {question}"
-    )
-
-    queries.append(
-        f"site:nih.org.pk {question}"
-    )
 
     sources = perform_search(
         queries=queries,
@@ -211,7 +126,7 @@ def research_vaccination(
     )
 
     # HARD FILTER:
-    # Vaccination must only use these two domains.
+    # Only these two official domains are allowed.
     allowed_domains = {
         "nhsrc.gov.pk",
         "nih.org.pk",
@@ -324,9 +239,9 @@ def research_protector(
     queries = [
         f"site:beoe.gov.pk {question}",
         f"site:beoe.gov.pk protector of emigrants {question}",
-        f"site:beoe.gov.pk emigrant protection documents",
-        f"site:beoe.gov.pk protector clearance procedure",
-        f"site:beoe.gov.pk direct emigrants registration",
+        "site:beoe.gov.pk emigrant protection documents",
+        "site:beoe.gov.pk protector clearance procedure",
+        "site:beoe.gov.pk direct emigrants registration",
     ]
 
     sources = perform_search(
@@ -397,25 +312,16 @@ def research_department(
         question
     )
 
-    queries = []
+    queries = [
+        question,
+        f"{department} {question}",
+    ]
 
-    # Main question.
-    queries.append(
-        question
-    )
-
-    # Department-focused search.
-    queries.append(
-        f"{department} {question}"
-    )
-
-    # Add jurisdiction when explicitly specified.
     if jurisdiction:
         queries.append(
             f"{jurisdiction} {department} {question}"
         )
 
-    # Add useful department keywords.
     for keyword in keywords[:5]:
         queries.append(
             f"{keyword} {question}"
@@ -446,7 +352,6 @@ def research_department(
                 "attempts": attempt,
             }
 
-        # Broaden only if the first attempt failed.
         queries.append(
             f"official government {department} {question}"
         )
@@ -469,21 +374,18 @@ def research_question(
     language,
 ):
 
-    # NADRA uses RAG + official web search.
     if department == "NADRA":
         return research_nadra(
             question,
             language,
         )
 
-    # Protector has its own targeted official search.
     if department == "Protector for Visa":
         return research_protector(
             question,
             language,
         )
 
-    # Vaccination has its own targeted official search.
     if (
         department
         == "Vaccination for Travelling Abroad"
@@ -493,7 +395,6 @@ def research_question(
             language,
         )
 
-    # All remaining departments.
     return research_department(
         question,
         department,
