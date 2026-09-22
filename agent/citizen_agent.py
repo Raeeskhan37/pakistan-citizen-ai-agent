@@ -56,7 +56,7 @@ def is_pilgrim_question(question, selected_department):
         return False
 
     q = (question or "").strip().lower()
-
+    print("PILGRIM DEBUG QUESTION:", repr(q))
     pilgrim_terms = [
         "hajj",
         "haj",
