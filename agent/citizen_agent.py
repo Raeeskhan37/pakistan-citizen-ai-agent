@@ -58,7 +58,7 @@ Information from official government page:
 
 
 # ============================================================
-# DETECT HAJJ / UMRAH
+# HAJJ / UMRAH QUESTION DETECTION
 # ============================================================
 
 def is_hajj_or_umrah_question(
@@ -104,14 +104,18 @@ def build_hajj_answer(
     language,
 ):
     """
-    Final answer for Hajj / Umrah vaccination questions.
+    Final verified answer for Hajj / Umrah
+    vaccination questions.
 
-    This uses only documented official information.
+    Saudi requirements are clearly identified as
+    Saudi requirements.
 
-    Important:
-    Saudi requirements are identified as Saudi requirements.
     They are NOT presented as Pakistani domestic policy.
     """
+
+    # --------------------------------------------------------
+    # URDU
+    # --------------------------------------------------------
 
     if language == "اردو":
 
@@ -123,37 +127,53 @@ def build_hajj_answer(
 
 **میننجوکوکل (Meningococcal / Neisseria) ویکسین**
 
-سعودی وزارتِ صحت کے مطابق یہ ویکسین ان تمام عازمین کے
-لیے لازمی ہے جنہوں نے گزشتہ پانچ سال کے اندر یہ ویکسین
+سعودی وزارتِ صحت کے مطابق یہ ویکسین ان عازمین کے لیے
+لازمی ہے جنہوں نے گزشتہ پانچ سال کے اندر یہ ویکسین
 نہیں لگوائی۔
+
+سعودی سرکاری رہنمائی کے مطابق ویکسین حج سے کم از کم
+10 دن پہلے لگنی چاہیے۔ ویکسین کی قسم کے مطابق اس کی
+سرٹیفکیٹ کی مدت 3 یا 5 سال ہو سکتی ہے، اور سرٹیفکیٹ پر
+ویکسین کی قسم اور تاریخ واضح ہونی چاہیے۔
 
 **پولیو**
 
 سعودی وزارتِ صحت کی حج 2026 کی سرکاری Health Requirements
 میں پولیو سے متعلق مخصوص ممالک اور داخلے کی صحت کی
-ضروریات بھی بیان کی گئی ہیں۔ پاکستان سے آنے والے مسافروں
-کے لیے متعلقہ پولیو شرائط اسی سرکاری دستاویز کے مطابق
-دیکھی جانی چاہئیں۔
+ضروریات بھی بیان کی گئی ہیں۔
+
+پاکستان سے سفر کرنے والے عازمین کے لیے پولیو سے متعلق
+قابلِ اطلاق شرط سعودی وزارتِ صحت کی اسی سرکاری دستاویز
+کے مطابق دیکھی جانی چاہیے۔
 
 **دیگر ویکسینز**
 
 سعودی وزارتِ صحت نے 2026 کے لیے موسمی فلو اور COVID-19
-ویکسینیشن کی بھی سفارش کی ہے، لیکن ہر تجویز کردہ ویکسین
-کو لازمی قرار نہیں دیا گیا۔
+ویکسینیشن کی بھی سفارش کی ہے۔ انہیں ہر عازم کے لیے
+لازمی قرار نہیں دیا گیا۔
 
-### سرٹیفکیٹ کے بارے میں
+### سرٹیفکیٹ
 
-حتمی ویکسینیشن/صحت کی دستاویزات کے لیے:
+حج کے لیے ویکسینیشن سرٹیفکیٹ کے بارے میں سعودی سرکاری
+رہنمائی کے مطابق:
 
-1. سعودی وزارتِ صحت کی Hajj 1447/2026 Health Requirements
-2. پاکستان وزارتِ مذہبی امور کی
-   "Saudi Government Health Instructions for Hajj - 2026"
+• ویکسین کی قسم واضح ہونی چاہیے۔
+• ویکسین لگوانے کی تاریخ واضح ہونی چاہیے۔
+• میننجوکوکل ویکسین کی مدت اس کی قسم کے مطابق 3 یا 5 سال
+  ہو سکتی ہے۔
+• ویکسین حج سے کم از کم 10 دن پہلے لگائی جانی چاہیے۔
 
-کو بنیادی سرکاری ذرائع سمجھا جائے۔
+پاکستانی عازمین کے لیے کسی اضافی پاکستانی انتظامی
+تقاضے کی تصدیق کے لیے پاکستان وزارتِ مذہبی امور کی
+2026 کی سرکاری صحت ہدایات بھی دیکھی جانی چاہئیں۔
 
 یہ معلومات سعودی حج صحت کی ضروریات سے متعلق ہیں؛ انہیں
 پاکستان کی عمومی ویکسینیشن پالیسی نہیں سمجھنا چاہیے۔
 """
+
+    # --------------------------------------------------------
+    # ENGLISH
+    # --------------------------------------------------------
 
     return """
 ### Hajj 2026 Vaccination Requirements
@@ -163,36 +183,48 @@ published official health requirements for pilgrims.
 
 **Meningococcal (Neisseria) vaccine**
 
-According to the Saudi Ministry of Health, this vaccine is
-mandatory for pilgrims who have not received it within the
-previous five years. Vaccination status can be verified
-through the Saudi Sehhaty system.
+According to the Saudi Ministry of Health, the meningococcal
+vaccine is mandatory for pilgrims who have not received it
+within the previous five years.
+
+Saudi official pilgrim guidance states that the vaccine
+should be received at least 10 days before Hajj. Depending
+on the type of vaccine, the vaccination certificate may be
+valid for either 3 or 5 years. The vaccine type and
+vaccination date should be clearly shown on the certificate.
 
 **Polio**
 
-The Saudi Ministry of Health's official Hajj 2026 Health
-Requirements also specify polio-related requirements for
-travellers from relevant countries. For pilgrims travelling
-from Pakistan, the applicable polio requirements should be
-followed according to that official Saudi document.
+The Saudi Ministry of Health's Hajj 2026 health requirements
+also specify polio-related requirements for travellers from
+relevant countries.
+
+For pilgrims travelling from Pakistan, the applicable polio
+requirement should be determined according to the official
+Saudi Hajj health-requirements document.
 
 **Other vaccines**
 
-The Saudi Ministry of Health also recommended seasonal
+The Saudi Ministry of Health also recommends seasonal
 influenza and COVID-19 vaccination for the 2026 Hajj season.
-These recommendations should not automatically be treated
-as mandatory requirements.
+These should not automatically be described as mandatory
+requirements.
 
-### What certificate should I have?
+### Vaccination Certificate
 
-For the exact vaccination/health documentation applicable
-to a Pakistani Hajj pilgrim, the authoritative references
-are:
+According to the Saudi official guidance:
 
-1. Saudi Ministry of Health — Health Requirements for
-   Hajj 1447H (2026)
-2. Pakistan Ministry of Religious Affairs —
-   "Saudi Government Health Instructions for Hajj - 2026"
+• The vaccine type should be clearly shown.
+• The vaccination date should be clearly shown.
+• The meningococcal vaccine certificate may be valid for
+  3 or 5 years depending on the vaccine type.
+• The meningococcal vaccine should be received at least
+  10 days before Hajj.
+
+For Pakistani pilgrims, any additional Pakistan-specific
+administrative requirements should be confirmed through the
+Pakistan Ministry of Religious Affairs' official 2026
+Hajj health instructions.
 
 These are Saudi Hajj health requirements and should not be
 described as Pakistan's general vaccination policy.
@@ -258,17 +290,6 @@ def ask_citizen_agent(
     # ========================================================
     # SPECIAL HAJJ / UMRAH FINAL-STAGE PATH
     # ========================================================
-    #
-    # IMPORTANT:
-    #
-    # This is the ONLY new final-stage branch.
-    #
-    # NADRA remains unchanged.
-    # Passport remains unchanged.
-    # Protector remains unchanged.
-    # All other departments remain unchanged.
-    #
-    # ========================================================
 
     hajj_question = is_hajj_or_umrah_question(
         question,
@@ -283,7 +304,7 @@ def ask_citizen_agent(
         )
 
         # ----------------------------------------------------
-        # Keep only official sources.
+        # Keep official sources only
         # ----------------------------------------------------
 
         official_sources = []
@@ -362,7 +383,8 @@ def ask_citizen_agent(
     # EXISTING GENERAL PIPELINE
     # ========================================================
     #
-    # Everything below remains the normal pipeline.
+    # NADRA / Passport / Protector / all other departments
+    # continue through the existing pipeline.
     #
     # ========================================================
 
