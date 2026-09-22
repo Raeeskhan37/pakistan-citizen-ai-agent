@@ -46,24 +46,30 @@ with st.sidebar:
         ):
 
             st.session_state.selected_department = department
-
-            # Clear previous answer when changing department
-            st.session_state.pop("last_result", None)
+            st.session_state.pop(
+                "last_result",
+                None,
+            )
 
             st.rerun()
 
     st.divider()
 
     st.caption(
-        f"Selected: {st.session_state.selected_department}"
+        f"Selected: "
+        f"{st.session_state.selected_department}"
     )
 
     st.divider()
 
-    st.caption(f"Version {APP_VERSION}")
+    st.caption(
+        f"Version {APP_VERSION}"
+    )
 
 
-selected_department = st.session_state.selected_department
+selected_department = (
+    st.session_state.selected_department
+)
 
 
 # ============================================================
@@ -75,22 +81,18 @@ st.markdown(
 )
 
 
-if selected_department == "NADRA":
+department_description = DEPARTMENTS[
+    selected_department
+][
+    "description"
+]
 
-    st.info(
-        "Ask any question about NADRA services such as "
-        "CNIC, Smart CNIC, NICOP, POC, CRC, FRC, PakID, "
-        "renewal, modification, duplicate/lost card, fees, "
-        "requirements and application procedures."
-    )
 
-else:
-
-    st.info(
-        f"The {selected_department} research assistant is "
-        "being prepared. NADRA is currently the first fully "
-        "implemented department."
-    )
+st.info(
+    f"{department_description} "
+    "Ask your question in English or Urdu. "
+    "The agent will search official government sources."
+)
 
 
 # ============================================================
@@ -113,9 +115,9 @@ question = st.text_area(
     height=150,
     placeholder=(
         "Example:\n"
-        "How can I renew my CNIC?\n\n"
+        "What documents are required?\n\n"
         "یا\n"
-        "میرا شناختی کارڈ گم ہو گیا ہے، میں نیا کارڈ کیسے حاصل کروں؟"
+        "اس سروس کے لیے کون سے دستاویزات درکار ہیں؟"
     ),
 )
 
@@ -136,17 +138,11 @@ if st.button(
             "Please type your question first."
         )
 
-    elif selected_department != "NADRA":
-
-        st.warning(
-            f"{selected_department} is not implemented yet. "
-            "We are building NADRA first."
-        )
-
     else:
 
         with st.spinner(
-            "NADRA Agent is researching official sources..."
+            f"{selected_department} Agent is "
+            "researching official sources..."
         ):
 
             try:
@@ -180,7 +176,6 @@ if "last_result" in st.session_state:
 
     st.markdown("### 💬 Answer")
 
-    # Render Markdown/HTML returned by the AI correctly
     st.markdown(
         result.get("answer", ""),
         unsafe_allow_html=True,
@@ -188,7 +183,10 @@ if "last_result" in st.session_state:
 
     st.markdown("### 🔗 Official Sources")
 
-    sources = result.get("sources", [])
+    sources = result.get(
+        "sources",
+        [],
+    )
 
     if sources:
 
