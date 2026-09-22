@@ -1,16 +1,11 @@
 from ddgs import DDGS
 
 
-def search_ddgs(
-    query: str,
-    max_results: int = 8,
-):
-
+def search_ddgs(query: str, max_results: int = 8):
     try:
-
         results = DDGS().text(
             query,
-            region="wt-wt",
+            region="pk-en",
             safesearch="moderate",
             max_results=max_results,
         )
@@ -18,9 +13,8 @@ def search_ddgs(
         return results or []
 
     except Exception as exc:
-
         return [
             {
-                "error": str(exc)
+                "error": str(exc),
             }
         ]
