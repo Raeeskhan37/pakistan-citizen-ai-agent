@@ -141,7 +141,6 @@ DEPARTMENTS = {
     },
 
     "Vaccination for Travelling Abroad": {
-    "Vaccination for Travelling Abroad": {
     "description": (
         "Travel vaccination and health requirements "
         "for international travel."
