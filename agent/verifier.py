@@ -35,26 +35,15 @@ def verify_sources(
             continue
 
         # ----------------------------------------------------
-        # A source is considered usable when:
+        # An official government source is considered
+        # authoritative when its domain has already been
+        # verified by source_filter.py.
         #
-        # 1. It is an official government domain
-        # 2. It has either page_text OR snippet
+        # Page download failure must NOT turn an official
+        # government source into an unofficial source.
         # ----------------------------------------------------
 
         if source.get("official") is not True:
-            continue
-
-        page_text = source.get(
-            "page_text",
-            "",
-        )
-
-        snippet = source.get(
-            "snippet",
-            "",
-        )
-
-        if not page_text and not snippet:
             continue
 
         verified.append(
@@ -73,7 +62,7 @@ def verify_sources(
         "verified": [],
         "has_verified_source": False,
         "warning": (
-            "Official government sources were found, "
-            "but their content could not be retrieved."
+            "No authoritative official source "
+            "could be verified for this question."
         ),
     }
