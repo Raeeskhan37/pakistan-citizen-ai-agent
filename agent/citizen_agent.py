@@ -18,21 +18,12 @@ def format_web_evidence(sources):
 
     evidence_parts = []
 
-    for index, source in enumerate(
-        sources,
-        start=1,
-    ):
+    for index, source in enumerate(sources, start=1):
 
-        page_text = source.get(
-            "page_text",
-            "",
-        )
+        page_text = source.get("page_text", "")
 
         if not page_text:
-            page_text = source.get(
-                "snippet",
-                "",
-            )
+            page_text = source.get("snippet", "")
 
         evidence_parts.append(
             f"""
@@ -52,48 +43,42 @@ Information from official government page:
 """
         )
 
-    return "\n".join(
-        evidence_parts
-    )
+    return "\n".join(evidence_parts)
 
 
 # ============================================================
-# HAJJ / UMRAH DETECTION
+# FAST PILGRIM QUESTION DETECTION
 # ============================================================
 
-def is_hajj_or_umrah_question(
-    question,
-    department,
-):
+def is_pilgrim_question(question, selected_department):
 
-    if (
-        department
-        != "Vaccination for Travelling Abroad"
-    ):
+    if selected_department != "Vaccination for Travelling Abroad":
         return False
 
-    question_lower = question.lower()
+    q = (question or "").strip().lower()
 
-    return any(
-        term in question_lower
-        for term in [
-            "hajj",
-            "haj",
-            "umrah",
-            "umra",
-        ]
-    )
+    pilgrim_terms = [
+        "hajj",
+        "haj",
+        "umrah",
+        "umra",
+        "حج",
+        "عمرہ",
+    ]
+
+    return any(term in q for term in pilgrim_terms)
 
 
 def is_umrah_question(question):
 
-    question_lower = question.lower()
+    q = (question or "").strip().lower()
 
     return any(
-        term in question_lower
+        term in q
         for term in [
             "umrah",
             "umra",
+            "عمرہ",
         ]
     )
 
@@ -104,24 +89,17 @@ def is_umrah_question(question):
 
 HAJJ_SOURCES = [
     {
-        "title": (
-            "Saudi MOH — Health Requirements "
-            "for Hajj 1447H (2026)"
-        ),
+        "title": "Saudi MOH — Health Requirements for Hajj 1447H (2026)",
         "url": (
             "https://www.moh.gov.sa/"
             "HealthAwareness/Pilgrims-Health/"
-            "Documents/"
-            "Hajj-Health-Requirements-English-language.pdf"
+            "Documents/Hajj-Health-Requirements-English-language.pdf"
         ),
         "domain": "moh.gov.sa",
         "official": True,
     },
     {
-        "title": (
-            "Saudi MOH — Hajj 1447H "
-            "Vaccination Campaign"
-        ),
+        "title": "Saudi MOH — Hajj 1447H Vaccination Campaign",
         "url": (
             "https://www.moh.gov.sa/en/ministry/"
             "mediacenter/news/pages/"
@@ -133,12 +111,10 @@ HAJJ_SOURCES = [
     {
         "title": (
             "Pakistan Ministry of Religious Affairs — "
-            "Saudi Government Health Instructions "
-            "for Hajj 2026"
+            "Saudi Government Health Instructions for Hajj 2026"
         ),
         "url": (
-            "https://www.mora.gov.pk/"
-            "NewsDetail/"
+            "https://www.mora.gov.pk/NewsDetail/"
             "N2ExNTM0OTItNjNlMC00YTU0LWE4N2Mt"
             "MzcxNjI1Yjk4Zjk2"
         ),
@@ -156,8 +132,8 @@ UMRAH_SOURCES = [
     {
         "title": (
             "Saudi MOH — Health Requirements and "
-            "Recommendations for Travelers to "
-            "Saudi Arabia for Umrah - 1447H (2026)"
+            "Recommendations for Travelers to Saudi Arabia "
+            "for Umrah - 1447H (2026)"
         ),
         "url": (
             "https://www.moh.gov.sa/"
@@ -168,9 +144,7 @@ UMRAH_SOURCES = [
         "official": True,
     },
     {
-        "title": (
-            "Saudi MOH — Pilgrim's Health"
-        ),
+        "title": "Saudi MOH — Pilgrim's Health",
         "url": (
             "https://www.moh.gov.sa/"
             "en/healthawareness/pilgrims-health/"
@@ -198,25 +172,22 @@ Health Requirements کے مطابق:
 
 **میننجوکوکل ویکسین**
 
-یہ ان عازمین کے لیے لازمی ہے جنہوں نے گزشتہ پانچ سال
-کے اندر یہ ویکسین نہیں لگوائی۔
+میننجوکوکل ویکسین ان عازمین کے لیے لازمی ہے جنہوں نے
+گزشتہ پانچ سال کے اندر یہ ویکسین نہیں لگوائی۔
 
 سعودی رہنمائی کے مطابق ویکسین حج سے کم از کم 10 دن پہلے
-لگنی چاہیے۔
+لگائی جانی چاہیے۔
 
 **پولیو**
 
 پاکستان سے آنے والے مسافروں کے لیے سعودی حج صحت کی
-سرکاری دستاویز میں پولیو سے متعلق مخصوص شرط موجود ہے۔
-
-قابلِ اطلاق پولیو ویکسین اور سرٹیفکیٹ کی شرط اسی سعودی
-سرکاری دستاویز کے مطابق پوری کی جانی چاہیے۔
+سرکاری دستاویز میں پولیو سے متعلق مخصوص شرائط موجود ہیں۔
 
 **فلو اور COVID-19**
 
-سعودی وزارتِ صحت نے موسمی فلو اور COVID-19 ویکسینیشن
-کی سفارش بھی کی ہے۔ انہیں ہر عازم کے لیے لازمی قرار
-نہیں دیا گیا۔
+سعودی وزارتِ صحت موسمی فلو اور COVID-19 ویکسینیشن کی
+بھی سفارش کرتی ہے۔ انہیں ہر عازم کے لیے لازمی نہیں
+کہا جانا چاہیے۔
 
 یہ سعودی حج صحت کی ضروریات ہیں، پاکستان کی عمومی
 ویکسینیشن پالیسی نہیں۔
@@ -241,9 +212,8 @@ at least 10 days before Hajj.
 For travelers arriving from Pakistan, the Saudi Hajj
 health requirements contain specific polio requirements.
 
-The applicable polio vaccination and certificate
-requirements should be followed according to that official
-Saudi document.
+The applicable vaccination and certificate requirements
+should be followed according to the official Saudi document.
 
 **Influenza and COVID-19**
 
@@ -272,36 +242,34 @@ Health Requirements کے مطابق:
 
 **1. میننجوکوکل ویکسین**
 
-عمرہ کے لیے آنے والے تمام افراد کے لیے منظور شدہ
+عمرہ کے لیے آنے والے مسافروں کے لیے منظور شدہ
 میننجوکوکل ویکسین ضروری ہے۔
 
-Conjugate ویکسین گزشتہ 5 سال کے اندر اور سفر سے کم از کم
-10 دن پہلے لگائی گئی ہونی چاہیے۔
-
-Polysaccharide ویکسین گزشتہ 3 سال کے اندر اور سعودی عرب
+Conjugate ویکسین گزشتہ 5 سال کے اندر اور سعودی عرب
 پہنچنے سے کم از کم 10 دن پہلے لگائی گئی ہونی چاہیے۔
+
+Polysaccharide ویکسین گزشتہ 3 سال کے اندر اور سعودی
+عرب پہنچنے سے کم از کم 10 دن پہلے لگائی گئی ہونی چاہیے۔
 
 ویکسین کا نام اور لگانے کی تاریخ سرٹیفکیٹ پر واضح ہونی
 چاہیے۔
 
 **2. پولیو — پاکستان سے آنے والے مسافر**
 
-پاکستان سعودی وزارتِ صحت کی دستاویز میں WPV1 رپورٹ کرنے
-والے ممالک میں شامل ہے۔
+سعودی وزارتِ صحت کی 1447ھ / 2026 کی عمرہ دستاویز میں
+پاکستان سے آنے والے مسافروں کے لیے پولیو سے متعلق
+مخصوص شرط موجود ہے۔
 
-پاکستان سے سعودی عرب عمرہ کے لیے آنے والے افراد کے لیے
-کم از کم ایک خوراک bOPV یا IPV درکار ہے، عمر یا سابقہ
-ویکسینیشن اسٹیٹس سے قطع نظر۔
+پاکستان سے عمرہ کے لیے آنے والے مسافروں کے لیے متعلقہ
+پولیو ویکسین اور سرٹیفکیٹ کی شرط پوری کرنا ضروری ہے۔
 
 **3. COVID-19**
 
-کچھ مخصوص زیادہ خطرے والے افراد کے لیے COVID-19 ویکسینیشن
-یا immunity کا ثبوت درکار ہو سکتا ہے، مثلاً 65 سال سے
-زیادہ عمر کے افراد، حاملہ خواتین اور مخصوص دائمی بیماریوں
-یا کمزور مدافعت والے افراد۔
+کچھ مخصوص زیادہ خطرے والے عمرہ مسافروں کے لیے
+COVID-19 ویکسینیشن یا immunity کا ثبوت درکار ہو سکتا ہے۔
 
-یہ شرائط سعودی وزارتِ صحت کی 1447ھ / 2026 کی عمرہ
-دستاویز کے مطابق ہیں۔
+یہ شرائط سعودی وزارتِ صحت کی سرکاری عمرہ
+1447ھ / 2026 دستاویز کے مطابق ہیں۔
 """
 
     return """
@@ -312,8 +280,8 @@ Health Requirements for Umrah 1447H (2026):
 
 **1. Meningococcal vaccine**
 
-An approved meningococcal vaccine is required for people
-intending to perform Umrah.
+An approved meningococcal vaccine is required for
+travelers intending to perform Umrah.
 
 For a conjugate meningococcal vaccine, it must have been
 received within the previous 5 years and at least 10 days
@@ -328,19 +296,17 @@ shown on the vaccination certificate.
 
 **2. Polio — travelers from Pakistan**
 
-Pakistan is listed in the Saudi MOH document among countries
-reporting WPV1.
+The Saudi Ministry of Health's 1447H / 2026 Umrah document
+contains specific polio requirements for travelers arriving
+from Pakistan.
 
-Travelers arriving from Pakistan for Umrah are required to
-have at least one dose of bOPV or IPV before travel,
-regardless of age or previous vaccination status.
+The applicable polio vaccination and certificate
+requirements should be completed before travel.
 
 **3. COVID-19**
 
-Certain higher-risk Umrah travelers may be required to have
-proof of COVID-19 vaccination or immunity, including
-certain people over 65, pregnant women, and people with
-specified chronic diseases or immunodeficiency.
+Certain higher-risk Umrah travelers may need proof of
+COVID-19 vaccination or immunity.
 
 These requirements are based on the Saudi Ministry of
 Health's official Umrah 1447H / 2026 document.
@@ -348,44 +314,31 @@ Health's official Umrah 1447H / 2026 document.
 
 
 # ============================================================
-# SPECIAL HAJJ / UMRAH RESPONSE
+# INSTANT PILGRIM RESPONSE
 # ============================================================
 
-def build_special_pilgrim_response(
-    question,
-    language,
-):
+def build_special_pilgrim_response(question, language):
 
     if is_umrah_question(question):
 
-        answer = build_umrah_answer(
-            language
-        )
-
+        answer = build_umrah_answer(language)
         sources = UMRAH_SOURCES
 
     else:
 
-        answer = build_hajj_answer(
-            language
-        )
-
+        answer = build_hajj_answer(language)
         sources = HAJJ_SOURCES
 
     return {
-        "department": (
-            "Vaccination for Travelling Abroad"
-        ),
-        "jurisdiction": None,
+        "department": "Vaccination for Travelling Abroad",
+        "jurisdiction": "Saudi Arabia",
         "answer": answer,
         "sources": sources,
         "source_count": len(sources),
         "official_source_count": len(sources),
         "research_attempts": 0,
         "rag_result_count": 0,
-        "checked_date": datetime.now().strftime(
-            "%d %B %Y"
-        ),
+        "checked_date": datetime.now().strftime("%d %B %Y"),
         "warning": "",
     }
 
@@ -400,36 +353,36 @@ def ask_citizen_agent(
     language,
 ):
 
-    # --------------------------------------------------------
-    # Department
-    # --------------------------------------------------------
+    # ========================================================
+    # CRITICAL FAST PATH
+    # ========================================================
+    #
+    # Use SELECTED department directly.
+    #
+    # Do NOT call detect_department() first.
+    # Do NOT call research_question().
+    #
+    # This makes Hajj/Umrah responses immediate.
+    # ========================================================
 
-    department = detect_department(
+    if is_pilgrim_question(
         question,
         selected_department,
-    )
-
-    # ========================================================
-    # FAST PATH
-    # ========================================================
-    #
-    # IMPORTANT:
-    # Do this BEFORE research_question().
-    #
-    # This eliminates unnecessary live searches for Hajj
-    # and Umrah and makes the response almost immediate.
-    #
-    # ========================================================
-
-    if is_hajj_or_umrah_question(
-        question,
-        department,
     ):
 
         return build_special_pilgrim_response(
             question=question,
             language=language,
         )
+
+    # ========================================================
+    # NORMAL DEPARTMENT ROUTING
+    # ========================================================
+
+    department = detect_department(
+        question,
+        selected_department,
+    )
 
     # ========================================================
     # NORMAL RESEARCH PIPELINE
@@ -465,7 +418,7 @@ def ask_citizen_agent(
     )
 
     # ========================================================
-    # NADRA
+    # NADRA RAG
     # ========================================================
 
     if department == "NADRA":
