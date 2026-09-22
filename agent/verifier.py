@@ -10,12 +10,24 @@ def verify_sources(
 
     for source in sources:
 
-        url = source.get("url", "")
+        if not isinstance(
+            source,
+            dict,
+        ):
+            continue
+
+        url = source.get(
+            "url",
+            "",
+        )
 
         if not url:
             continue
 
-        parsed = urlparse(url)
+        try:
+            parsed = urlparse(url)
+        except Exception:
+            continue
 
         if parsed.scheme not in (
             "http",
@@ -23,10 +35,21 @@ def verify_sources(
         ):
             continue
 
-        if source.get("official"):
-            verified.append(source)
+        # ----------------------------------------------------
+        # ONLY official sources are verified.
+        # ----------------------------------------------------
 
-    if verified:
+        if source.get("official") is True:
+
+            verified.append(
+                source
+            )
+
+    # --------------------------------------------------------
+    # Never use non-official fallback evidence.
+    # --------------------------------------------------------
+
+    if len(verified) >= minimum_sources:
 
         return {
             "verified": verified,
@@ -34,25 +57,11 @@ def verify_sources(
             "warning": "",
         }
 
-    fallback = sources[:5]
-
-    if len(fallback) >= minimum_sources:
-
-        return {
-            "verified": fallback,
-            "has_verified_source": False,
-            "warning": (
-                "No authoritative official source was found "
-                "among the retrieved results. The information "
-                "should be independently verified."
-            ),
-        }
-
     return {
         "verified": [],
         "has_verified_source": False,
         "warning": (
-            "I could not find enough reliable information "
-            "to verify an answer."
+            "No authoritative official source could be "
+            "verified for this question."
         ),
     }
