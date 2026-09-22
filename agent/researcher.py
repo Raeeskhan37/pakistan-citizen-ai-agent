@@ -8,39 +8,45 @@ from rag.nadra_retriever import (
 
 
 PROVINCE_TERMS = {
-
     "Punjab": [
         "punjab",
         "پنجاب",
     ],
-
     "Sindh": [
         "sindh",
         "سندھ",
     ],
-
     "Khyber Pakhtunkhwa": [
         "khyber pakhtunkhwa",
         "kpk",
         "kp",
         "خیبر پختونخوا",
+        "خیبر پختونخواہ",
     ],
-
     "Balochistan": [
         "balochistan",
         "بلوچستان",
     ],
-
     "Islamabad": [
         "islamabad",
         "ict",
         "اسلام آباد",
     ],
+    "Azad Jammu and Kashmir": [
+        "azad kashmir",
+        "ajk",
+        "آزاد کشمیر",
+    ],
+    "Gilgit-Baltistan": [
+        "gilgit baltistan",
+        "gilgit-baltistan",
+        "gb",
+        "گلگت بلتستان",
+    ],
 }
 
 
 PROVINCE_DOMAINS = {
-
     "Punjab": [
         "punjab.gov.pk",
         "lgcd.punjab.gov.pk",
@@ -48,35 +54,45 @@ PROVINCE_DOMAINS = {
         "dlims.punjab.gov.pk",
         "punjabpolice.gov.pk",
     ],
-
     "Sindh": [
         "sindh.gov.pk",
         "sindhpolice.gov.pk",
     ],
-
     "Khyber Pakhtunkhwa": [
         "kp.gov.pk",
         "lgkp.gov.pk",
         "kppolice.gov.pk",
     ],
-
     "Balochistan": [
         "balochistan.gov.pk",
         "lgd.balochistan.gov.pk",
         "balochistanpolice.gov.pk",
     ],
-
     "Islamabad": [
         "ictadministration.gov.pk",
         "islamabadpolice.gov.pk",
     ],
+    "Azad Jammu and Kashmir": [
+        "ajk.gov.pk",
+    ],
+    "Gilgit-Baltistan": [
+        "gilgitbaltistan.gov.pk",
+    ],
 }
 
 
-def detect_jurisdiction(
-    question,
-):
+GENERAL_JURISDICTIONS = [
+    "Punjab",
+    "Sindh",
+    "Khyber Pakhtunkhwa",
+    "Balochistan",
+    "Islamabad",
+    "Azad Jammu and Kashmir",
+    "Gilgit-Baltistan",
+]
 
+
+def detect_jurisdiction(question):
     question_lower = question.lower()
 
     for jurisdiction, terms in PROVINCE_TERMS.items():
@@ -84,50 +100,52 @@ def detect_jurisdiction(
         for term in terms:
 
             if term.lower() in question_lower:
-
                 return jurisdiction
 
     return None
+
+
+def get_department_domains(
+    department,
+):
+    department_data = DEPARTMENTS.get(
+        department,
+        {},
+    )
+
+    return department_data.get(
+        "official_domains",
+        ["gov.pk"],
+    )
 
 
 def get_search_domains(
     department,
     jurisdiction=None,
 ):
-
-    department_data = DEPARTMENTS.get(
-        department,
-        {},
+    department_domains = get_department_domains(
+        department
     )
 
-    department_domains = department_data.get(
-        "official_domains",
-        ["gov.pk"],
+    if not jurisdiction:
+        return department_domains
+
+    jurisdiction_domains = PROVINCE_DOMAINS.get(
+        jurisdiction,
+        [],
     )
 
-    if jurisdiction:
+    selected = []
 
-        jurisdiction_domains = PROVINCE_DOMAINS.get(
-            jurisdiction,
-            [],
-        )
+    for domain in (
+        jurisdiction_domains
+        + department_domains
+    ):
 
-        selected = []
+        if domain not in selected:
+            selected.append(domain)
 
-        for domain in (
-            jurisdiction_domains
-            + department_domains
-        ):
-
-            if domain not in selected:
-
-                selected.append(
-                    domain
-                )
-
-        return selected
-
-    return department_domains
+    return selected
 
 
 def build_department_queries(
@@ -136,29 +154,73 @@ def build_department_queries(
     attempt,
     jurisdiction=None,
 ):
-
-    domains = get_search_domains(
-        department,
-        jurisdiction,
-    )
-
     queries = []
 
-    # --------------------------------------------------------
-    # Explicit jurisdiction
-    # --------------------------------------------------------
-
-    jurisdiction_text = ""
-
     if jurisdiction:
+
+        domains = get_search_domains(
+            department,
+            jurisdiction,
+        )
 
         jurisdiction_text = (
             f" {jurisdiction}"
         )
 
-    # --------------------------------------------------------
-    # Attempt 1
-    # --------------------------------------------------------
+        if attempt == 1:
+
+            for domain in domains:
+
+                queries.append(
+                    f"site:{domain} "
+                    f"{question}"
+                    f"{jurisdiction_text}"
+                )
+
+        elif attempt == 2:
+
+            for domain in domains:
+
+                queries.append(
+                    f"site:{domain} "
+                    f"{question} "
+                    f"procedure requirements"
+                    f"{jurisdiction_text}"
+                )
+
+                queries.append(
+                    f"site:{domain} "
+                    f"{question} "
+                    f"documents fee"
+                    f"{jurisdiction_text}"
+                )
+
+        else:
+
+            for domain in domains:
+
+                queries.append(
+                    f"site:{domain} "
+                    f"{question} "
+                    f"official rules"
+                    f"{jurisdiction_text}"
+                )
+
+                queries.append(
+                    f"site:{domain} "
+                    f"{question} FAQ"
+                    f"{jurisdiction_text}"
+                )
+
+        return queries
+
+    # ---------------------------------------------------------
+    # GENERAL PAKISTAN QUESTION
+    # ---------------------------------------------------------
+
+    domains = get_department_domains(
+        department
+    )
 
     if attempt == 1:
 
@@ -166,13 +228,8 @@ def build_department_queries(
 
             queries.append(
                 f"site:{domain} "
-                f"{question}"
-                f"{jurisdiction_text}"
+                f"{question} Pakistan"
             )
-
-    # --------------------------------------------------------
-    # Attempt 2
-    # --------------------------------------------------------
 
     elif attempt == 2:
 
@@ -181,20 +238,14 @@ def build_department_queries(
             queries.append(
                 f"site:{domain} "
                 f"{question} "
-                f"procedure documents"
-                f"{jurisdiction_text}"
+                f"requirements Pakistan"
             )
 
             queries.append(
                 f"site:{domain} "
                 f"{question} "
-                f"requirements"
-                f"{jurisdiction_text}"
+                f"procedure Pakistan"
             )
-
-    # --------------------------------------------------------
-    # Attempt 3
-    # --------------------------------------------------------
 
     else:
 
@@ -203,15 +254,31 @@ def build_department_queries(
             queries.append(
                 f"site:{domain} "
                 f"{question} "
-                f"official rules"
-                f"{jurisdiction_text}"
+                f"official rules Pakistan"
             )
 
             queries.append(
                 f"site:{domain} "
-                f"{question} FAQ"
-                f"{jurisdiction_text}"
+                f"{question} FAQ Pakistan"
             )
+
+        # Search major jurisdictions individually
+        for jurisdiction in GENERAL_JURISDICTIONS:
+
+            jurisdiction_domains = (
+                PROVINCE_DOMAINS.get(
+                    jurisdiction,
+                    [],
+                )
+            )
+
+            for domain in jurisdiction_domains:
+
+                queries.append(
+                    f"site:{domain} "
+                    f"{question} "
+                    f"{jurisdiction}"
+                )
 
     return queries
 
@@ -220,8 +287,19 @@ def add_unique_sources(
     destination,
     sources,
 ):
+    existing_urls = {
+        item.get("url")
+        for item in destination
+        if item.get("url")
+    }
 
     for source in sources:
+
+        if not isinstance(
+            source,
+            dict,
+        ):
+            continue
 
         url = source.get(
             "url",
@@ -231,13 +309,14 @@ def add_unique_sources(
         if not url:
             continue
 
-        if not any(
-            item.get("url") == url
-            for item in destination
-        ):
+        if url not in existing_urls:
 
             destination.append(
                 source
+            )
+
+            existing_urls.add(
+                url
             )
 
 
@@ -245,12 +324,14 @@ def research_nadra(
     question,
     language="English",
 ):
-
     all_sources = []
     rag_results = []
     attempts = 0
 
-    for attempt in range(1, 4):
+    for attempt in range(
+        1,
+        4,
+    ):
 
         attempts = attempt
 
@@ -276,23 +357,30 @@ def research_nadra(
 
             queries = [
                 f"site:nadra.gov.pk {question}",
-                f"site:nadra.gov.pk {question} requirements",
+                f"site:nadra.gov.pk "
+                f"{question} requirements",
             ]
 
         elif attempt == 2:
 
             queries = [
-                f"site:nadra.gov.pk {question} procedure",
-                f"site:nadra.gov.pk {question} documents",
-                f"site:nadra.gov.pk {question} requirements fee",
+                f"site:nadra.gov.pk "
+                f"{question} procedure",
+                f"site:nadra.gov.pk "
+                f"{question} documents",
+                f"site:nadra.gov.pk "
+                f"{question} requirements fee",
             ]
 
         else:
 
             queries = [
-                f"site:nadra.gov.pk {question} official",
-                f"site:nadra.gov.pk {question} FAQ",
-                f"site:nadra.gov.pk {question} policy",
+                f"site:nadra.gov.pk "
+                f"{question} official",
+                f"site:nadra.gov.pk "
+                f"{question} FAQ",
+                f"site:nadra.gov.pk "
+                f"{question} policy",
             ]
 
         try:
@@ -326,7 +414,6 @@ def research_nadra(
             )
             and official_sources
         ):
-
             break
 
     unique_rag = []
@@ -369,7 +456,6 @@ def research_department(
     question,
     department,
 ):
-
     jurisdiction = detect_jurisdiction(
         question
     )
@@ -377,7 +463,10 @@ def research_department(
     all_sources = []
     attempts = 0
 
-    for attempt in range(1, 4):
+    for attempt in range(
+        1,
+        4,
+    ):
 
         attempts = attempt
 
@@ -415,7 +504,6 @@ def research_department(
         ]
 
         if official_sources:
-
             break
 
     return {
@@ -431,7 +519,6 @@ def research_question(
     department,
     language="English",
 ):
-
     if department == "NADRA":
 
         return research_nadra(
