@@ -354,4 +354,4 @@ def research_question(
         "sources": [],
         "rag_results": [],
         "attempts": 3,
-    }
+        }
