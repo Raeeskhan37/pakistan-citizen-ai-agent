@@ -7,21 +7,20 @@ from agent.verifier import verify_sources
 from rag.nadra_retriever import build_nadra_evidence
 
 
-def format_web_evidence(
-    sources,
-):
+def format_web_evidence(sources):
     if not sources:
-        return (
-            "No authoritative web evidence "
-            "was retrieved."
-        )
+        return "No authoritative web evidence was retrieved."
 
     evidence_parts = []
 
-    for index, source in enumerate(
-        sources,
-        start=1,
-    ):
+    for index, source in enumerate(sources, start=1):
+
+        # Prefer actual official page content
+        page_text = source.get("page_text", "")
+
+        # Fall back to snippet if page content is unavailable
+        if not page_text:
+            page_text = source.get("snippet", "")
 
         evidence_parts.append(
             f"""
@@ -36,14 +35,12 @@ URL:
 Official government source:
 {source.get("official", False)}
 
-Information:
-{source.get("snippet", "")}
+Information from official government page:
+{page_text}
 """
         )
 
-    return "\n".join(
-        evidence_parts
-    )
+    return "\n".join(evidence_parts)
 
 
 def ask_citizen_agent(
@@ -85,12 +82,14 @@ def ask_citizen_agent(
         [],
     )
 
+    # ---------------------------------------------------------
+    # NADRA POLICY EVIDENCE
+    # ---------------------------------------------------------
+
     if department == "NADRA":
 
-        policy_evidence = (
-            build_nadra_evidence(
-                rag_results
-            )
+        policy_evidence = build_nadra_evidence(
+            rag_results
         )
 
     else:
@@ -99,6 +98,10 @@ def ask_citizen_agent(
             "No department-specific "
             "policy evidence was used."
         )
+
+    # ---------------------------------------------------------
+    # OFFICIAL WEB EVIDENCE
+    # ---------------------------------------------------------
 
     web_evidence = format_web_evidence(
         verified_sources[:5]
@@ -139,10 +142,11 @@ VERIFIED OFFICIAL WEB EVIDENCE
         verified_sources
     )
 
-    if (
-        not has_policy_evidence
-        and not has_web_evidence
-    ):
+    # ---------------------------------------------------------
+    # GENERATE ANSWER
+    # ---------------------------------------------------------
+
+    if not has_policy_evidence and not has_web_evidence:
 
         answer = (
             "I could not verify this information "
@@ -166,38 +170,21 @@ VERIFIED OFFICIAL WEB EVIDENCE
 
     return {
         "department": department,
-
         "jurisdiction": jurisdiction,
-
         "answer": answer,
-
         "sources": verified_sources[:5],
-
-        "source_count": len(
-            verified_sources
+        "source_count": len(verified_sources),
+        "official_source_count": official_count,
+        "research_attempts": research.get(
+            "attempts",
+            1,
         ),
-
-        "official_source_count": (
-            official_count
-        ),
-
-        "research_attempts": (
-            research.get(
-                "attempts",
-                1,
-            )
-        ),
-
         "rag_result_count": len(
             rag_results
         ),
-
-        "checked_date": (
-            datetime.now().strftime(
-                "%d %B %Y"
-            )
+        "checked_date": datetime.now().strftime(
+            "%d %B %Y"
         ),
-
         "warning": verification.get(
             "warning",
             "",
