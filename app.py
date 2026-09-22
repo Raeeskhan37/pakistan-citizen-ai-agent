@@ -12,10 +12,6 @@ st.set_page_config(
 )
 
 
-# ============================================================
-# HEADER
-# ============================================================
-
 st.title("🇵🇰 Pakistan Citizen AI Agent")
 st.subheader("پاکستان سٹیزن AI ایجنٹ")
 
@@ -31,7 +27,6 @@ st.write(
 with st.sidebar:
 
     st.header("🏛️ Government Services")
-
     st.caption("Select a department")
 
     if "selected_department" not in st.session_state:
@@ -46,6 +41,7 @@ with st.sidebar:
         ):
 
             st.session_state.selected_department = department
+
             st.session_state.pop(
                 "last_result",
                 None,
@@ -67,14 +63,13 @@ with st.sidebar:
     )
 
 
+# ============================================================
+# SELECTED DEPARTMENT
+# ============================================================
+
 selected_department = (
     st.session_state.selected_department
 )
-
-
-# ============================================================
-# RIGHT PANE
-# ============================================================
 
 st.markdown(
     f"## 🏛️ {selected_department} Citizen Assistant"
@@ -83,9 +78,7 @@ st.markdown(
 
 department_description = DEPARTMENTS[
     selected_department
-][
-    "description"
-]
+]["description"]
 
 
 st.info(
@@ -123,7 +116,7 @@ question = st.text_area(
 
 
 # ============================================================
-# ASK AGENT
+# SEARCH BUTTON
 # ============================================================
 
 if st.button(
@@ -165,7 +158,7 @@ if st.button(
 
 
 # ============================================================
-# DISPLAY ANSWER
+# RESULT
 # ============================================================
 
 if "last_result" in st.session_state:
@@ -181,6 +174,11 @@ if "last_result" in st.session_state:
         unsafe_allow_html=True,
     )
 
+
+    # ========================================================
+    # OFFICIAL SOURCES
+    # ========================================================
+
     st.markdown("### 🔗 Official Sources")
 
     sources = result.get(
@@ -188,9 +186,54 @@ if "last_result" in st.session_state:
         [],
     )
 
-    if sources:
 
-        for source in sources:
+    # Remove duplicate URLs AND duplicate titles
+    unique_sources = []
+
+    seen_urls = set()
+    seen_titles = set()
+
+    for source in sources:
+
+        title = (
+            source.get(
+                "title",
+                "Official Source",
+            )
+            or "Official Source"
+        )
+
+        url = (
+            source.get(
+                "url",
+                "",
+            )
+            or ""
+        )
+
+        title_key = title.strip().lower()
+        url_key = url.strip().lower()
+
+        if not url_key:
+            continue
+
+        # Skip exact duplicate URL
+        if url_key in seen_urls:
+            continue
+
+        # Skip repeated source title
+        if title_key in seen_titles:
+            continue
+
+        seen_urls.add(url_key)
+        seen_titles.add(title_key)
+
+        unique_sources.append(source)
+
+
+    if unique_sources:
+
+        for source in unique_sources:
 
             title = source.get(
                 "title",
@@ -214,9 +257,10 @@ if "last_result" in st.session_state:
             "No authoritative source could be verified."
         )
 
-    # --------------------------------------------------------
-    # Research details
-    # --------------------------------------------------------
+
+    # ========================================================
+    # RESEARCH DETAILS
+    # ========================================================
 
     with st.expander(
         "🔎 Research details"
@@ -240,10 +284,7 @@ if "last_result" in st.session_state:
 
         st.write(
             "Official sources found:",
-            result.get(
-                "official_source_count",
-                0,
-            ),
+            len(unique_sources),
         )
 
         if result.get("warning"):
