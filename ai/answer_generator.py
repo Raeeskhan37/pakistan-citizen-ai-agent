@@ -1,4 +1,5 @@
 from groq import Groq
+from groq import RateLimitError
 
 from ai.prompts import (
     build_system_prompt,
@@ -8,6 +9,10 @@ from ai.prompts import (
 from config.settings import GROQ_MODEL
 
 
+# ============================================================
+# GROQ CLIENT
+# ============================================================
+
 def get_client():
 
     import streamlit as st
@@ -16,6 +21,10 @@ def get_client():
         api_key=st.secrets["GROQ_API_KEY"]
     )
 
+
+# ============================================================
+# GENERATE ANSWER
+# ============================================================
 
 def generate_answer(
     question,
@@ -38,19 +47,39 @@ def generate_answer(
         language=language,
     )
 
-    response = client.chat.completions.create(
-        model=GROQ_MODEL,
-        messages=[
-            {
-                "role": "system",
-                "content": system_prompt,
-            },
-            {
-                "role": "user",
-                "content": user_prompt,
-            },
-        ],
-        temperature=0.1,
-    )
+    try:
 
-    return response.choices[0].message.content.strip()
+        response = client.chat.completions.create(
+            model=GROQ_MODEL,
+            messages=[
+                {
+                    "role": "system",
+                    "content": system_prompt,
+                },
+                {
+                    "role": "user",
+                    "content": user_prompt,
+                },
+            ],
+            temperature=0.1,
+            max_tokens=1000,
+        )
+
+        return response.choices[0].message.content.strip()
+
+    except RateLimitError:
+
+        return (
+            "The AI answer service has temporarily reached "
+            "its usage limit. The NADRA policy and official "
+            "sources were successfully searched, but the "
+            "final AI response could not be generated right now. "
+            "Please try again later."
+        )
+
+    except Exception as exc:
+
+        return (
+            "The AI answer could not be generated at this time. "
+            "Please try again later."
+        )
