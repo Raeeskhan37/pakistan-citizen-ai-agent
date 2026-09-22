@@ -1,4 +1,5 @@
 from search.ddgs_search import search_ddgs
+
 from search.source_filter import (
     filter_and_rank_sources,
 )
@@ -29,7 +30,9 @@ def perform_search(
             ):
                 continue
 
-            if result.get("error"):
+            if result.get(
+                "error"
+            ):
                 continue
 
             all_results.append(
@@ -40,10 +43,6 @@ def perform_search(
         all_results,
         official_domains,
     )
-
-    # --------------------------------------------------------
-    # Remove duplicate URLs
-    # --------------------------------------------------------
 
     unique = {}
 
@@ -58,15 +57,12 @@ def perform_search(
             continue
 
         if url not in unique:
+
             unique[url] = source
 
     sources = list(
         unique.values()
     )
-
-    # --------------------------------------------------------
-    # Official sources first
-    # --------------------------------------------------------
 
     official_sources = [
         source
