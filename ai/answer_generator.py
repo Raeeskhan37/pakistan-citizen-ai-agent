@@ -1,101 +1,99 @@
 from groq import Groq
 from groq import RateLimitError
 
+import streamlit as st
+
 from ai.prompts import (
-build_system_prompt,
-build_user_prompt,
+    build_system_prompt,
+    build_user_prompt,
 )
 
 from config.settings import GROQ_MODEL
 
-def get_client():
-import streamlit as st
 
-return Groq(
-    api_key=st.secrets["GROQ_API_KEY"],
-    timeout=30.0,
-)
+def get_client():
+    return Groq(
+        api_key=st.secrets["GROQ_API_KEY"],
+        timeout=30.0,
+    )
+
 
 def is_saudi_work_visa_vaccination_question(
-question,
-department,
+    question,
+    department,
 ):
-"""
-Detect ordinary Saudi employment/work-visa
-vaccination questions.
+    """
+    Detect ordinary Saudi employment/work-visa
+    vaccination questions.
 
-This is intentionally separate from Hajj/Umrah.
-"""
+    This is intentionally separate from Hajj/Umrah.
+    """
+    if department != "Vaccination for Travelling Abroad":
+        return False
 
-if department != "Vaccination for Travelling Abroad":
-    return False
+    q = (question or "").lower()
 
-q = (question or "").lower()
+    saudi_terms = [
+        "saudi",
+        "saudia",
+        "saudi arabia",
+        "سعودی",
+    ]
 
-saudi_terms = [
-    "saudi",
-    "saudia",
-    "saudi arabia",
-    "سعودی",
-]
+    work_terms = [
+        "work visa",
+        "employment visa",
+        "employment",
+        "work permit",
+        "worker",
+        "working",
+        "job visa",
+        "iqama",
+        "job",
+        "ملازمت",
+        "ورک ویزا",
+        "اقامہ",
+    ]
 
-work_terms = [
-    "work visa",
-    "employment visa",
-    "employment",
-    "work permit",
-    "worker",
-    "working",
-    "job visa",
-    "iqama",
-    "job",
-    "ملازمت",
-    "ورک ویزا",
-    "اقامہ",
-]
+    vaccination_terms = [
+        "vaccine",
+        "vaccination",
+        "vaccinated",
+        "immunization",
+        "immunisation",
+        "ویکسین",
+        "ویکسینیشن",
+    ]
 
-vaccination_terms = [
-    "vaccine",
-    "vaccination",
-    "vaccinated",
-    "immunization",
-    "immunisation",
-    "ویکسین",
-    "ویکسینیشن",
-]
+    has_saudi = any(
+        term in q
+        for term in saudi_terms
+    )
 
-has_saudi = any(
-    term in q
-    for term in saudi_terms
-)
+    has_work = any(
+        term in q
+        for term in work_terms
+    )
 
-has_work = any(
-    term in q
-    for term in work_terms
-)
+    has_vaccination = any(
+        term in q
+        for term in vaccination_terms
+    )
 
-has_vaccination = any(
-    term in q
-    for term in vaccination_terms
-)
+    return (
+        has_saudi
+        and has_work
+        and has_vaccination
+    )
 
-return (
-    has_saudi
-    and has_work
-    and has_vaccination
-)
 
-def add_work_visa_guardrail(
-system_prompt,
-):
-"""
-Prevent the model from converting historical
-vaccination-availability guidance into a current
-mandatory vaccination requirement.
-"""
-
-guardrail = """
-
+def add_work_visa_guardrail(system_prompt):
+    """
+    Prevent the model from converting historical
+    vaccination-availability guidance into a current
+    mandatory vaccination requirement.
+    """
+    guardrail = """
 CRITICAL EVIDENCE RULE — ORDINARY SAUDI WORK VISA
 
 If the user's question concerns an ORDINARY Saudi
@@ -106,14 +104,11 @@ the supplied evidence explicitly establishes that the
 specific vaccine is currently mandatory for ordinary Saudi
 employment/work-visa travellers.
 
-IMPORTANT:
-
 The Government of Pakistan / NCOC document about Pakistanis
 working abroad on work visas says eligible people with a
 work visa or iqama CAN GET VACCINATED.
 
 "CAN GET VACCINATED" does NOT mean:
-
 "MUST BE VACCINATED."
 
 Do not convert permission, availability, eligibility,
@@ -132,7 +127,6 @@ vaccines unless the supplied CURRENT official evidence
 explicitly establishes that fact.
 
 Distinguish carefully between:
-
 1. Ordinary employment/work visa
 2. Hajj
 3. Umrah
@@ -163,72 +157,52 @@ Never invent a vaccination requirement.
 Never turn "can get vaccinated" into "must be vaccinated."
 """
 
-return (
-    system_prompt
-    + "\n\n"
-    + guardrail
-)
-
-def generate_answer(
-question,
-department,
-evidence,
-language,
-):
-client = get_client()
-
-system_prompt = build_system_prompt(
-    department=department,
-    language=language,
-)
-
-# --------------------------------------------------------
-# SPECIAL SAFETY GUARDRAIL
-# --------------------------------------------------------
-#
-# Ordinary Saudi work-visa vaccination questions require
-# extra protection because historical vaccination policy
-# can easily be misinterpreted as a current mandatory rule.
-#
-if is_saudi_work_visa_vaccination_question(
-    question=question,
-    department=department,
-):
-    system_prompt = add_work_visa_guardrail(
+    return (
         system_prompt
+        + "\n\n"
+        + guardrail
     )
 
-# --------------------------------------------------------
-# Keep evidence reasonably small.
-# --------------------------------------------------------
 
-max_evidence_chars = 30000
-
-if len(evidence) > max_evidence_chars:
-    evidence = evidence[:max_evidence_chars]
-
-user_prompt = build_user_prompt(
-    question=question,
-    department=department,
-    evidence=evidence,
-    language=language,
-)
-
-# --------------------------------------------------------
-# Add a direct instruction to the USER prompt as well.
-#
-# This gives the model the rule immediately before the
-# evidence, reducing the chance that an old source will
-# override the safety instruction.
-# --------------------------------------------------------
-
-if is_saudi_work_visa_vaccination_question(
-    question=question,
-    department=department,
+def generate_answer(
+    question,
+    department,
+    evidence,
+    language,
 ):
-    user_prompt = (
-        """
+    client = get_client()
 
+    system_prompt = build_system_prompt(
+        department=department,
+        language=language,
+    )
+
+    if is_saudi_work_visa_vaccination_question(
+        question=question,
+        department=department,
+    ):
+        system_prompt = add_work_visa_guardrail(
+            system_prompt
+        )
+
+    max_evidence_chars = 30000
+
+    if len(evidence) > max_evidence_chars:
+        evidence = evidence[:max_evidence_chars]
+
+    user_prompt = build_user_prompt(
+        question=question,
+        department=department,
+        evidence=evidence,
+        language=language,
+    )
+
+    if is_saudi_work_visa_vaccination_question(
+        question=question,
+        department=department,
+    ):
+        user_prompt = (
+            """
 SPECIAL INSTRUCTION FOR THIS QUESTION:
 
 This is an ordinary Saudi employment/work-visa
@@ -253,136 +227,121 @@ Before answering, follow these rules:
 Answer only from the supplied official evidence.
 
 """
-+ user_prompt
-)
-
-try:
-
-    response = client.chat.completions.create(
-        model=GROQ_MODEL,
-        messages=[
-            {
-                "role": "system",
-                "content": system_prompt,
-            },
-            {
-                "role": "user",
-                "content": user_prompt,
-            },
-        ],
-        temperature=0.1,
-        max_tokens=1000,
-    )
-
-    answer = response.choices[
-        0
-    ].message.content
-
-    if not answer:
-        return (
-            "The official sources were found, "
-            "but the AI could not generate an answer. "
-            "Please try again."
+            + user_prompt
         )
 
-    answer = answer.strip()
+    try:
+        response = client.chat.completions.create(
+            model=GROQ_MODEL,
+            messages=[
+                {
+                    "role": "system",
+                    "content": system_prompt,
+                },
+                {
+                    "role": "user",
+                    "content": user_prompt,
+                },
+            ],
+            temperature=0.1,
+            max_tokens=1000,
+        )
 
-    # ----------------------------------------------------
-    # FINAL OUTPUT GUARD
-    #
-    # If the model nevertheless produces the known
-    # dangerous interpretation, replace it with a safe
-    # evidence-based answer.
-    # ----------------------------------------------------
+        answer = response.choices[0].message.content
 
-    if is_saudi_work_visa_vaccination_question(
-        question=question,
-        department=department,
-    ):
-
-        answer_lower = answer.lower()
-
-        dangerous_phrases = [
-            "must be vaccinated",
-            "must receive a vaccine",
-            "mandatory vaccination",
-            "mandatory vaccine",
-            "you need to be vaccinated",
-            "you are required to be vaccinated",
-            "pfizer is mandatory",
-            "pfizer-biontech is mandatory",
-            "pfizer is required",
-            "pfizer-biontech is required",
-            "need to receive pfizer",
-            "required to receive pfizer",
-            "chinese vaccines are not accepted",
-            "china vaccines are not accepted",
-            "chinese-manufactured vaccines are not accepted",
-        ]
-
-        if any(
-            phrase in answer_lower
-            for phrase in dangerous_phrases
-        ):
-            if language == "Urdu":
-                return (
-                    "موجودہ سرکاری ذرائع کی بنیاد پر "
-                    "عام سعودی ورک یا ایمپلائمنٹ ویزا "
-                    "کے لیے کسی مخصوص ویکسین کی لازمی "
-                    "ضرورت کی تصدیق نہیں ہو سکی۔ "
-                    "البتہ سعودی ورک ویزا کے لیے مطلوبہ "
-                    "میڈیکل اور ہیلتھ اسکریننگ کے مراحل "
-                    "ہوتے ہیں۔ ویزا کی قسم اور موجودہ "
-                    "سعودی قواعد کے مطابق تقاضے مختلف "
-                    "ہو سکتے ہیں، اس لیے سفر سے پہلے "
-                    "متعلقہ سعودی اور پاکستانی سرکاری "
-                    "حکام سے موجودہ تقاضوں کی تصدیق کریں۔"
-                )
-
+        if not answer:
             return (
-                "No specific vaccination requirement for "
-                "an ordinary Saudi employment/work visa "
-                "could be verified from the current "
-                "official sources reviewed. However, "
-                "Saudi employment visa applicants are "
-                "subject to the required medical and "
-                "health screening procedures. Requirements "
-                "can vary by visa category and current "
-                "Saudi regulations, so the traveller "
-                "should confirm the current requirements "
-                "with the relevant Saudi and Pakistani "
-                "authorities before travel."
+                "The official sources were found, "
+                "but the AI could not generate an answer. "
+                "Please try again."
             )
 
-    return answer
+        answer = answer.strip()
 
-except RateLimitError:
+        if is_saudi_work_visa_vaccination_question(
+            question=question,
+            department=department,
+        ):
+            answer_lower = answer.lower()
 
-    return (
-        "The AI answer service has temporarily "
-        "reached its usage limit. The official "
-        "government sources were found, but the "
-        "answer could not be generated right now. "
-        "Please try again later."
-    )
+            dangerous_phrases = [
+                "must be vaccinated",
+                "must receive a vaccine",
+                "mandatory vaccination",
+                "mandatory vaccine",
+                "you need to be vaccinated",
+                "you are required to be vaccinated",
+                "pfizer is mandatory",
+                "pfizer-biontech is mandatory",
+                "pfizer is required",
+                "pfizer-biontech is required",
+                "need to receive pfizer",
+                "required to receive pfizer",
+                "chinese vaccines are not accepted",
+                "china vaccines are not accepted",
+                "chinese-manufactured vaccines are not accepted",
+            ]
 
-except Exception as exc:
+            if any(
+                phrase in answer_lower
+                for phrase in dangerous_phrases
+            ):
+                if language in ("Urdu", "اردو"):
+                    return (
+                        "موجودہ سرکاری ذرائع کی بنیاد پر "
+                        "عام سعودی ورک یا ایمپلائمنٹ ویزا "
+                        "کے لیے کسی مخصوص ویکسین کی لازمی "
+                        "ضرورت کی تصدیق نہیں ہو سکی۔ "
+                        "البتہ سعودی ورک ویزا کے لیے مطلوبہ "
+                        "میڈیکل اور ہیلتھ اسکریننگ کے مراحل "
+                        "ہوتے ہیں۔ ویزا کی قسم اور موجودہ "
+                        "سعودی قواعد کے مطابق تقاضے مختلف "
+                        "ہو سکتے ہیں، اس لیے سفر سے پہلے "
+                        "متعلقہ سعودی اور پاکستانی سرکاری "
+                        "حکام سے موجودہ تقاضوں کی تصدیق کریں۔"
+                    )
 
-    error_text = str(exc).lower()
+                return (
+                    "No specific vaccination requirement for "
+                    "an ordinary Saudi employment/work visa "
+                    "could be verified from the current "
+                    "official sources reviewed. However, "
+                    "Saudi employment visa applicants are "
+                    "subject to the required medical and "
+                    "health screening procedures. Requirements "
+                    "can vary by visa category and current "
+                    "Saudi regulations, so the traveller "
+                    "should confirm the current requirements "
+                    "with the relevant Saudi and Pakistani "
+                    "authorities before travel."
+                )
 
-    if (
-        "timeout" in error_text
-        or "timed out" in error_text
-    ):
+        return answer
 
+    except RateLimitError:
         return (
-            "The AI request took too long to complete. "
-            "The official government sources were found. "
-            "Please try the question again."
+            "The AI answer service has temporarily "
+            "reached its usage limit. The official "
+            "government sources were found, but the "
+            "answer could not be generated right now. "
+            "Please try again later."
         )
 
-    return (
-        "The AI answer could not be generated at this "
-        "time. The official government sources were "
-        "found. Please try the question again."
-    )
+    except Exception as exc:
+        error_text = str(exc).lower()
+
+        if (
+            "timeout" in error_text
+            or "timed out" in error_text
+        ):
+            return (
+                "The AI request took too long to complete. "
+                "The official government sources were found. "
+                "Please try the question again."
+            )
+
+        return (
+            "The AI answer could not be generated at this "
+            "time. The official government sources were "
+            "found. Please try the question again."
+        )
