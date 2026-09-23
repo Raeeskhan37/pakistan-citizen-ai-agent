@@ -115,10 +115,11 @@ URDU_EMBEDDING_MODEL = (
 # DOWNLOAD HELPER
 # ============================================================
 
-def download_file(url, destination):
-
+def download_file(
+    url,
+    destination,
+):
     if os.path.exists(destination):
-
         return destination
 
     import requests
@@ -134,7 +135,6 @@ def download_file(url, destination):
         destination,
         "wb",
     ) as file:
-
         file.write(
             response.content
         )
@@ -234,15 +234,12 @@ def load_english_metadata():
     ):
 
         if "chunks" in data:
-
             data = data["chunks"]
 
         elif "metadata" in data:
-
             data = data["metadata"]
 
         elif "chunk_metadata" in data:
-
             data = data["chunk_metadata"]
 
         else:
@@ -258,7 +255,6 @@ def load_english_metadata():
                     dict,
                 )
             ):
-
                 data = values
 
     return data
@@ -311,7 +307,6 @@ def get_chunk_text(
         chunk,
         str,
     ):
-
         return chunk
 
     if isinstance(
@@ -327,7 +322,6 @@ def get_chunk_text(
         ]:
 
             if key in chunk:
-
                 return str(
                     chunk[key]
                 )
@@ -384,20 +378,121 @@ def get_section(
 
 
 # ============================================================
+# CRC QUERY EXPANSION
+# ============================================================
+
+def expand_nadra_query(
+    question,
+    language,
+):
+    """
+    Expand common NADRA service terminology before
+    embedding the question.
+
+    This does NOT add policy information.
+    It only helps the existing RAG retrieve the
+    correct policy chunks.
+    """
+
+    question = (
+        question or ""
+    ).strip()
+
+    if not question:
+        return question
+
+    question_lower = question.lower()
+
+    crc_terms = [
+        "crc",
+        "child registration certificate",
+        "b-form",
+        "b form",
+        "child registration",
+        "minor registration",
+        "under 18",
+        "under eighteen",
+        "juvenile",
+    ]
+
+    is_crc_question = any(
+        term in question_lower
+        for term in crc_terms
+    )
+
+    if language == "اردو":
+
+        urdu_crc_terms = [
+            "سی آر سی",
+            "چائلڈ رجسٹریشن",
+            "ب فارم",
+            "ب فارم",
+            "بچے کی رجسٹریشن",
+            "بچے کا رجسٹریشن",
+            "بچوں کی رجسٹریشن",
+            "نابالغ",
+            "جیوینائل",
+        ]
+
+        is_crc_question = (
+            is_crc_question
+            or any(
+                term in question
+                for term in urdu_crc_terms
+            )
+        )
+
+    if not is_crc_question:
+        return question
+
+    if language == "اردو":
+
+        return (
+            question
+            + "\n\n"
+            + "CRC / Child Registration Certificate / "
+            + "B-Form / minor / under 18 / juvenile "
+            + "registration / fresh registration / "
+            + "requirements / documents / birth certificate"
+        )
+
+    return (
+        question
+        + "\n\n"
+        + "CRC Child Registration Certificate "
+        + "B-Form child registration minor "
+        + "under 18 juvenile fresh registration "
+        + "requirements documents birth certificate"
+    )
+
+
+# ============================================================
 # RETRIEVE FROM NADRA RAG
 # ============================================================
 
 def retrieve_nadra(
     question,
     language="English",
-    top_k=6,
+    top_k=8,
 ):
 
     if not question or not question.strip():
-
         return []
 
     question = question.strip()
+
+    # --------------------------------------------------------
+    # EXPAND QUERY FOR BETTER POLICY RETRIEVAL
+    # --------------------------------------------------------
+
+    retrieval_query = expand_nadra_query(
+        question,
+        language,
+    )
+
+    # --------------------------------------------------------
+    # LOAD LANGUAGE-SPECIFIC RAG
+    # --------------------------------------------------------
 
     if language == "اردو":
 
@@ -411,7 +506,7 @@ def retrieve_nadra(
 
         query = (
             "query: "
-            + question
+            + retrieval_query
         )
 
     else:
@@ -424,7 +519,7 @@ def retrieve_nadra(
             "English"
         )
 
-        query = question
+        query = retrieval_query
 
     # --------------------------------------------------------
     # CREATE QUERY EMBEDDING
@@ -444,12 +539,17 @@ def retrieve_nadra(
     # FAISS SEARCH
     # --------------------------------------------------------
 
+    search_k = min(
+        max(
+            top_k,
+            12,
+        ),
+        index.ntotal,
+    )
+
     scores, indices = index.search(
         embedding,
-        min(
-            top_k,
-            index.ntotal,
-        ),
+        search_k,
     )
 
     results = []
@@ -464,11 +564,9 @@ def retrieve_nadra(
     ):
 
         if index_number < 0:
-
             continue
 
         if index_number >= len(chunks):
-
             continue
 
         chunk = chunks[
@@ -499,7 +597,7 @@ def retrieve_nadra(
             }
         )
 
-    return results
+    return results[:top_k]
 
 
 # ============================================================
@@ -511,6 +609,7 @@ def build_nadra_evidence(
 ):
 
     if not results:
+
         return (
             "No relevant NADRA Registration Policy "
             "evidence was retrieved."
@@ -524,8 +623,8 @@ def build_nadra_evidence(
         "RELEVANT POLICY EVIDENCE:",
     ]
 
-    # Only send the strongest 3 results
-    selected_results = results[:3]
+    # Send up to 5 strong policy chunks to the AI.
+    selected_results = results[:5]
 
     for number, item in enumerate(
         selected_results,
@@ -537,7 +636,6 @@ def build_nadra_evidence(
             "",
         )
 
-        # Limit each chunk to avoid excessive tokens
         text = text[:5000]
 
         evidence.append(
@@ -545,12 +643,15 @@ def build_nadra_evidence(
 [EVIDENCE {number}]
 Page: {item.get("page", "N/A")}
 Section: {item.get("section", "")}
+Retrieval Score: {item.get("score", 0):.4f}
 
 {text}
 """
         )
 
-    return "\n".join(evidence)
+    return "\n".join(
+        evidence
+    )
 
 
 # ============================================================
@@ -563,7 +664,6 @@ def has_useful_evidence(
 ):
 
     if not results:
-
         return False
 
     best_score = max(
