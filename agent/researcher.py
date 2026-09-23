@@ -63,15 +63,6 @@ def research_kp_birth_registration(
     question,
     language,
 ):
-    """
-    Direct official evidence path for KP birth-registration
-    and birth-certificate questions.
-
-    This avoids unnecessary web-search retries for a service
-    where the relevant KP Local Government information is
-    already known.
-    """
-
     official_evidence = """
 OFFICIAL GOVERNMENT OF KHYBER PAKHTUNKHWA
 LOCAL GOVERNMENT, ELECTIONS & RURAL DEVELOPMENT DEPARTMENT
@@ -115,9 +106,7 @@ according to the applicable local-government arrangement.
                 "KP Local Government — "
                 "Registration of Birth, Death, Marriage & Divorce"
             ),
-            "url": (
-                "https://www.lgkp.gov.pk/page/registration-bdmd"
-            ),
+            "url": "https://www.lgkp.gov.pk/page/registration-bdmd",
             "domain": "lgkp.gov.pk",
             "official": True,
             "page_text": official_evidence,
@@ -128,21 +117,15 @@ according to the applicable local-government arrangement.
                 "KP Local Government — "
                 "Civil Registration Vital Statistics"
             ),
-            "url": (
-                "https://lgkp.gov.pk/page/crvs"
-            ),
+            "url": "https://lgkp.gov.pk/page/crvs",
             "domain": "lgkp.gov.pk",
             "official": True,
             "page_text": official_evidence,
             "snippet": official_evidence,
         },
         {
-            "title": (
-                "KP Local Government — Forms"
-            ),
-            "url": (
-                "https://lgkp.gov.pk/page/forms"
-            ),
+            "title": "KP Local Government — Forms",
+            "url": "https://lgkp.gov.pk/page/forms",
             "domain": "lgkp.gov.pk",
             "official": True,
             "page_text": official_evidence,
@@ -159,6 +142,298 @@ according to the applicable local-government arrangement.
 
 
 # ============================================================
+# PASSPORT — DEDICATED OFFICIAL DGI&P RESEARCH
+# ============================================================
+
+def research_passport(
+    question,
+    language,
+):
+    """
+    Dedicated Passport research path.
+
+    Fresh/new/first-time passport questions are searched
+    directly against the official DGI&P domain instead of
+    relying on the generic department-search logic.
+    """
+
+    question_lower = (
+        question or ""
+    ).strip().lower()
+
+    # --------------------------------------------------------
+    # QUESTION TYPE
+    # --------------------------------------------------------
+
+    fresh_terms = [
+        "fresh passport",
+        "new passport",
+        "first passport",
+        "first time passport",
+        "first-time passport",
+        "passport for the first time",
+        "apply for passport",
+        "new mrp",
+        "new machine readable passport",
+        "new ordinary passport",
+        "ordinary passport",
+        "passport requirements",
+        "passport documents",
+        "documents required for passport",
+        "passport application",
+        "passport processing",
+        "fresh mrp",
+        "نیا پاسپورٹ",
+        "پہلی بار پاسپورٹ",
+        "نئے پاسپورٹ",
+    ]
+
+    renewal_terms = [
+        "renew passport",
+        "passport renewal",
+        "renewal of passport",
+        "renew my passport",
+        "پاسپورٹ تجدید",
+        "پاسپورٹ کی تجدید",
+    ]
+
+    modification_terms = [
+        "passport modification",
+        "modify passport",
+        "passport correction",
+        "correction in passport",
+        "change passport",
+        "passport changes",
+        "پاسپورٹ ترمیم",
+        "پاسپورٹ میں تبدیلی",
+        "پاسپورٹ کی تصحیح",
+    ]
+
+    is_fresh = any(
+        term in question_lower
+        for term in fresh_terms
+    )
+
+    is_renewal = any(
+        term in question_lower
+        for term in renewal_terms
+    )
+
+    is_modification = any(
+        term in question_lower
+        for term in modification_terms
+    )
+
+    # --------------------------------------------------------
+    # OFFICIAL DOMAIN
+    # --------------------------------------------------------
+
+    official_domains = [
+        "dgip.gov.pk",
+    ]
+
+    # --------------------------------------------------------
+    # FRESH / NEW / FIRST-TIME PASSPORT
+    # --------------------------------------------------------
+
+    if is_fresh:
+
+        queries = [
+            f"site:dgip.gov.pk {question}",
+
+            (
+                "site:dgip.gov.pk "
+                "new passport "
+                "first time applicant "
+                "requirements"
+            ),
+
+            (
+                "site:dgip.gov.pk "
+                "ordinary passport "
+                "first time "
+                "documents required"
+            ),
+
+            (
+                "site:dgip.gov.pk "
+                "new passport "
+                "application process"
+            ),
+
+            (
+                "site:dgip.gov.pk "
+                "ordinary passport "
+                "requirements Pakistan"
+            ),
+
+            (
+                "site:dgip.gov.pk "
+                "passport process "
+                "photograph biometrics data entry"
+            ),
+        ]
+
+    # --------------------------------------------------------
+    # RENEWAL
+    # --------------------------------------------------------
+
+    elif is_renewal:
+
+        queries = [
+            f"site:dgip.gov.pk {question}",
+
+            (
+                "site:dgip.gov.pk "
+                "passport renewal "
+                "requirements"
+            ),
+
+            (
+                "site:dgip.gov.pk "
+                "passport renewal "
+                "documents"
+            ),
+
+            (
+                "site:dgip.gov.pk "
+                "passport renewal "
+                "process"
+            ),
+        ]
+
+    # --------------------------------------------------------
+    # MODIFICATION
+    # --------------------------------------------------------
+
+    elif is_modification:
+
+        queries = [
+            f"site:dgip.gov.pk {question}",
+
+            (
+                "site:dgip.gov.pk "
+                "passport modification "
+                "requirements"
+            ),
+
+            (
+                "site:dgip.gov.pk "
+                "passport modification "
+                "documents"
+            ),
+
+            (
+                "site:dgip.gov.pk "
+                "passport correction "
+                "process"
+            ),
+        ]
+
+    # --------------------------------------------------------
+    # GENERAL PASSPORT QUESTION
+    # --------------------------------------------------------
+
+    else:
+
+        queries = [
+            f"site:dgip.gov.pk {question}",
+
+            (
+                "site:dgip.gov.pk "
+                "passport requirements "
+                f"{question}"
+            ),
+
+            (
+                "site:dgip.gov.pk "
+                "passport process "
+                f"{question}"
+            ),
+
+            (
+                "site:dgip.gov.pk "
+                "ordinary passport "
+                f"{question}"
+            ),
+        ]
+
+    # --------------------------------------------------------
+    # SEARCH OFFICIAL DGI&P SOURCES
+    # --------------------------------------------------------
+
+    sources = perform_search(
+        queries=queries,
+        official_domains=official_domains,
+        max_results=8,
+    )
+
+    official_sources = [
+        source
+        for source in sources
+        if source.get("official")
+    ]
+
+    if official_sources:
+
+        return {
+            "sources": unique_sources(
+                official_sources,
+                limit=5,
+            ),
+            "rag_results": [],
+            "jurisdiction": None,
+            "attempts": 1,
+        }
+
+    # --------------------------------------------------------
+    # FALLBACK OFFICIAL SEARCH
+    # --------------------------------------------------------
+
+    fallback_queries = [
+        f"site:dgip.gov.pk passport {question}",
+
+        (
+            "site:dgip.gov.pk "
+            "ordinary passport "
+            "requirements Pakistan"
+        ),
+
+        (
+            "site:dgip.gov.pk "
+            "passport application process Pakistan"
+        ),
+
+        (
+            "site:dgip.gov.pk "
+            "passport documents requirements"
+        ),
+    ]
+
+    sources = perform_search(
+        queries=fallback_queries,
+        official_domains=official_domains,
+        max_results=8,
+    )
+
+    official_sources = [
+        source
+        for source in sources
+        if source.get("official")
+    ]
+
+    return {
+        "sources": unique_sources(
+            official_sources,
+            limit=5,
+        ),
+        "rag_results": [],
+        "jurisdiction": None,
+        "attempts": 2,
+    }
+
+
+# ============================================================
 # VACCINATION
 # ============================================================
 
@@ -168,10 +443,6 @@ def research_vaccination(
 ):
 
     question_lower = question.lower()
-
-    # ========================================================
-    # QUESTION TYPE DETECTION
-    # ========================================================
 
     hajj_question = any(
         term in question_lower
@@ -223,14 +494,10 @@ def research_vaccination(
         ]
     )
 
-    # ========================================================
-    # HAJJ
-    # ========================================================
-
     if hajj_question:
 
         official_evidence = """
-OFFICIAL SAUDI MINISTRY OF HEALTH — HAJJ 1447 / 2026
+OFFICIAL SAUDI MINISTRY OF HEALTH — HAJJ
 
 The Saudi Ministry of Health publishes official health
 requirements for travelers coming to Saudi Arabia for Hajj.
@@ -249,9 +516,7 @@ unless the official requirement specifically says so.
 
         sources = [
             {
-                "title": (
-                    "Saudi MOH — Hajj Health Requirements 1447H"
-                ),
+                "title": "Saudi MOH — Hajj Health Requirements",
                 "url": (
                     "https://www.moh.gov.sa/"
                     "HealthAwareness/Pilgrims-Health/"
@@ -264,9 +529,7 @@ unless the official requirement specifically says so.
                 "snippet": official_evidence,
             },
             {
-                "title": (
-                    "Saudi MOH — Pilgrim's Health"
-                ),
+                "title": "Saudi MOH — Pilgrim's Health",
                 "url": (
                     "https://www.moh.gov.sa/"
                     "en/healthawareness/pilgrims-health/"
@@ -286,14 +549,10 @@ unless the official requirement specifically says so.
             "attempts": 1,
         }
 
-    # ========================================================
-    # UMRAH
-    # ========================================================
-
     if umrah_question:
 
         official_evidence = """
-OFFICIAL SAUDI MINISTRY OF HEALTH — UMRAH 1447H / 2026
+OFFICIAL SAUDI MINISTRY OF HEALTH — UMRAH
 
 The Saudi Ministry of Health publishes official health
 requirements for travelers coming to Saudi Arabia for Umrah.
@@ -312,9 +571,7 @@ the official Saudi Ministry of Health document.
 
         sources = [
             {
-                "title": (
-                    "Saudi MOH — Umrah Health Requirements 1447H"
-                ),
+                "title": "Saudi MOH — Umrah Health Requirements",
                 "url": (
                     "https://www.moh.gov.sa/"
                     "en/HealthAwareness/Pilgrims-Health/"
@@ -326,9 +583,7 @@ the official Saudi Ministry of Health document.
                 "snippet": official_evidence,
             },
             {
-                "title": (
-                    "Saudi MOH — Pilgrim's Health"
-                ),
+                "title": "Saudi MOH — Pilgrim's Health",
                 "url": (
                     "https://www.moh.gov.sa/"
                     "en/healthawareness/pilgrims-health/"
@@ -348,10 +603,6 @@ the official Saudi Ministry of Health document.
             "attempts": 1,
         }
 
-    # ========================================================
-    # SAUDI WORK / EMPLOYMENT VISA
-    # ========================================================
-
     if saudi_question and work_visa_question:
 
         official_evidence = """
@@ -367,14 +618,6 @@ iqama can get vaccinated.
 
 "CAN GET VACCINATED" must NOT be interpreted as
 "MUST BE VACCINATED."
-
-Saudi Ministry of Health information describes medical
-screening procedures for people coming to Saudi Arabia
-for work.
-
-Saudi Ministry of Foreign Affairs also provides official
-information concerning health certificates for work visa
-and Iqama procedures.
 
 Do not transfer Hajj or Umrah vaccination requirements
 to ordinary employment visas.
@@ -448,10 +691,6 @@ Saudi employment visa holders.
             "attempts": 1,
         }
 
-    # ========================================================
-    # GENERAL INTERNATIONAL TRAVEL
-    # ========================================================
-
     official_domains = [
         "nhsrc.gov.pk",
         "nih.org.pk",
@@ -461,7 +700,6 @@ Saudi employment visa holders.
     queries = []
 
     if "polio" in question_lower:
-
         queries.append(
             "site:nhsrc.gov.pk "
             "polio vaccination certificate "
@@ -469,7 +707,6 @@ Saudi employment visa holders.
         )
 
     if "yellow fever" in question_lower:
-
         queries.append(
             "site:nhsrc.gov.pk "
             "yellow fever vaccination certificate "
@@ -564,13 +801,11 @@ def research_protector(
 
     queries = [
         f"site:beoe.gov.pk {question}",
-
         (
             "site:beoe.gov.pk "
             "protector of emigrants "
             f"{question}"
         ),
-
         (
             "site:beoe.gov.pk "
             "emigrant protection documents"
@@ -603,7 +838,7 @@ def research_protector(
 
 
 # ============================================================
-# GENERAL DEPARTMENT RESEARCH — OPTIMIZED
+# GENERAL DEPARTMENT RESEARCH
 # ============================================================
 
 def research_department(
@@ -638,7 +873,7 @@ def research_department(
     )
 
     # ========================================================
-    # ATTEMPT 1 — FOCUSED SEARCH
+    # ATTEMPT 1
     # ========================================================
 
     queries = []
@@ -723,7 +958,7 @@ def research_department(
         }
 
     # ========================================================
-    # ATTEMPT 2 — BROADER SEARCH
+    # ATTEMPT 2
     # ========================================================
 
     fallback_queries = []
@@ -805,6 +1040,17 @@ def research_question(
         )
 
     # ========================================================
+    # PASSPORT
+    # ========================================================
+
+    if department == "Passport":
+
+        return research_passport(
+            question,
+            language,
+        )
+
+    # ========================================================
     # PROTECTOR
     # ========================================================
 
@@ -828,13 +1074,6 @@ def research_question(
 
     # ========================================================
     # KP BIRTH REGISTRATION DIRECT PATH
-    # ========================================================
-    #
-    # This must happen BEFORE the generic web-search
-    # pipeline.
-    #
-    # It prevents the agent from spending a long time
-    # searching multiple websites for this common service.
     # ========================================================
 
     question_lower = (
@@ -863,12 +1102,14 @@ def research_question(
         or "سرٹیفکیٹ" in question_lower
         or "رجسٹریشن" in question_lower
     )
+
     if (
         department == "Union Council / Local Government"
         and is_kp
         and is_birth_question
         and is_certificate_or_registration
     ):
+
         return research_kp_birth_registration(
             question,
             language,
