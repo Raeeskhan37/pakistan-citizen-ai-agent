@@ -317,14 +317,15 @@ def generate_answer(
     # searches do not cause Groq failures.
     # --------------------------------------------------------
 
-    max_evidence_chars = 18000
+    max_evidence_chars = 30000
 
     if len(evidence) > max_evidence_chars:
 
         evidence = (
             evidence[:max_evidence_chars]
-            + "\n\n[Additional evidence omitted for "
-              "answer-generation efficiency.]"
+            + "\n\n[Evidence was limited for answer-generation "
+              "efficiency. Use the jurisdiction-specific evidence "
+              "already provided above and do not invent missing details.]"
         )
 
     user_prompt = build_user_prompt(
