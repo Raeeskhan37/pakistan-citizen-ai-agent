@@ -410,16 +410,16 @@ def build_all_province_instruction(
     # --------------------------------------------------------
 
     if department == "Driving Licence":
-
     return """
 IMPORTANT ANSWERING RULE — DRIVING LICENCE
 
 The citizen did NOT specify a province or territory.
 
-Therefore the answer MUST cover ALL seven Pakistan
-jurisdictions separately.
+Therefore, you MUST provide the driving licence
+information separately for ALL seven Pakistani
+jurisdictions listed below.
 
-Required headings:
+MANDATORY HEADINGS — USE ALL SEVEN:
 
 1. Punjab
 2. Sindh
@@ -429,70 +429,80 @@ Required headings:
 6. Azad Jammu and Kashmir
 7. Gilgit-Baltistan
 
-DO NOT stop after the first few jurisdictions.
+CRITICAL:
+Do NOT stop after Punjab, Sindh or KP.
 
-For EVERY jurisdiction:
+You MUST continue and provide all seven headings,
+even when some jurisdictions have less information
+available.
+
+For EACH jurisdiction:
 
 - Identify the responsible authority.
-- Give the official portal/app where supported.
-- Explain the new/regular licence procedure where
-  official evidence supports it.
-- Distinguish learner licence from regular licence.
-- Identify the vehicle category when relevant.
-- Mention Motor Cycle where relevant.
-- Mention Motor Car / Car / Jeep where relevant.
-- Mention LTV where relevant.
-- Mention HTV where relevant.
-- Mention PSV where relevant.
-- Mention fees only when officially supported.
-- Mention documents only when officially supported.
-- Mention medical requirements only when officially supported.
-- Mention tests only when officially supported.
+- Identify the official online portal/app when
+  supported by the evidence.
+- Explain the procedure for a NEW licence when the
+  question asks for a new licence.
+- Distinguish LEARNER from REGULAR licence.
+- Identify the requested vehicle category when
+  applicable:
+  Motorcycle, Motor Car/Car/Jeep, LTV, HTV or PSV.
+- Mention documents only when supported by the
+  jurisdiction-specific evidence.
+- Mention fees only when supported by the
+  jurisdiction-specific evidence.
+- Mention age requirements only when supported.
+- Mention medical requirements only when supported.
+- Mention tests only when supported.
+- Mention renewal/duplicate/international services
+  only when relevant to the citizen's question.
 
-CATEGORY RULE:
-
-If the citizen asks about:
-- LTV → focus on LTV.
-- HTV → focus on HTV.
-- Motor Car → focus on Motor Car / Car / Jeep.
-- Motorcycle → focus on Motorcycle.
-- PSV → focus on PSV.
-- Learner → focus on learner licence.
-- Renewal → focus on renewal.
-- Duplicate → focus on duplicate.
-- International → focus on international driving permit/licence.
-
-If no category is specified, explain the general new
-driving licence process.
-
-CRITICAL:
-
-Do NOT transfer requirements from one jurisdiction
-to another.
-
-Do NOT assume Punjab's procedure applies to KP.
-
-Do NOT assume KP's procedure applies to Sindh.
-
-Do NOT assume Islamabad's procedure applies to Balochistan.
-
-Use only the evidence supplied for that jurisdiction.
-
-If the official evidence is incomplete for a jurisdiction,
-say so specifically for that jurisdiction.
-
-Never invent missing fees, documents, age limits,
-processing times, tests or online procedures.
+JURISDICTION ISOLATION:
+Never transfer a requirement, fee, age, document,
+test or procedure from one jurisdiction to another.
 
 KP SPECIAL RULE:
+For Khyber Pakhtunkhwa, recognize Dastak as an
+official digital route for the transport/driving
+licensing workflow where the relevant service is
+available.
 
-For Khyber Pakhtunkhwa, distinguish between:
-- KP Police E-Driving License
-- Police Sahulat Markaz learner/learner-driving services
+KP driving-related evidence may also mention
+Police Sahulat Markaz for the specific services
+supported by the official KP Police evidence.
 
+Do NOT state that Dastak is unrelated to driving
+licences.
 
-The final answer MUST contain all seven jurisdiction
-headings even if some have limited verified information.
+EVIDENCE RULE:
+Use only the evidence supplied for each jurisdiction.
+
+If evidence for a jurisdiction is insufficient,
+write:
+
+"Official procedural details could not be fully
+verified from the government sources reviewed for
+this jurisdiction."
+
+Do NOT fill missing information with assumptions.
+
+COMPLETENESS RULE:
+Before finishing the answer, check that these seven
+sections are present:
+
+Punjab
+Sindh
+Khyber Pakhtunkhwa
+Balochistan
+Islamabad Capital Territory
+Azad Jammu and Kashmir
+Gilgit-Baltistan
+
+If one is missing, add it before finishing.
+
+Do not combine jurisdictions into one paragraph.
+Do not omit a jurisdiction merely because another
+jurisdiction has more detailed information.
 """
 
     # --------------------------------------------------------
