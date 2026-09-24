@@ -411,15 +411,15 @@ def build_all_province_instruction(
 
     if department == "Driving Licence":
 
-        return """
+    return """
 IMPORTANT ANSWERING RULE — DRIVING LICENCE
 
 The citizen did NOT specify a province or territory.
 
-Therefore, provide the driving licence procedure
-separately for each jurisdiction.
+Therefore the answer MUST cover ALL seven Pakistan
+jurisdictions separately.
 
-Use separate headings for:
+Required headings:
 
 1. Punjab
 2. Sindh
@@ -429,38 +429,70 @@ Use separate headings for:
 6. Azad Jammu and Kashmir
 7. Gilgit-Baltistan
 
-IMPORTANT:
+DO NOT stop after the first few jurisdictions.
 
-- Do NOT assume that the procedure is identical
-  across Pakistan.
-- Use only the evidence supplied for each jurisdiction.
-- Clearly identify the responsible authority.
-- Clearly identify the official online portal where
-  supported by the evidence.
-- Clearly identify learner versus regular licence.
-- Clearly identify the requested vehicle category,
-  such as:
-  - Motorcycle
-  - Motor Car / Car / Jeep
-  - LTV
-  - HTV
-  - PSV
-- Mention fees only when supported by official evidence.
-- Mention documents only when supported by official evidence.
-- Mention tests or medical requirements only when supported
-  by official evidence.
-- Do not copy Punjab requirements into KP.
-- Do not copy Sindh requirements into Balochistan.
-- Do not copy Islamabad requirements into Sindh.
+For EVERY jurisdiction:
 
-If official evidence for a jurisdiction is insufficient,
-say:
+- Identify the responsible authority.
+- Give the official portal/app where supported.
+- Explain the new/regular licence procedure where
+  official evidence supports it.
+- Distinguish learner licence from regular licence.
+- Identify the vehicle category when relevant.
+- Mention Motor Cycle where relevant.
+- Mention Motor Car / Car / Jeep where relevant.
+- Mention LTV where relevant.
+- Mention HTV where relevant.
+- Mention PSV where relevant.
+- Mention fees only when officially supported.
+- Mention documents only when officially supported.
+- Mention medical requirements only when officially supported.
+- Mention tests only when officially supported.
 
-"Official procedural details could not be fully verified
-from the government sources reviewed for this jurisdiction."
+CATEGORY RULE:
 
-Do NOT invent fees, documents, age requirements,
-testing requirements or processing times.
+If the citizen asks about:
+- LTV → focus on LTV.
+- HTV → focus on HTV.
+- Motor Car → focus on Motor Car / Car / Jeep.
+- Motorcycle → focus on Motorcycle.
+- PSV → focus on PSV.
+- Learner → focus on learner licence.
+- Renewal → focus on renewal.
+- Duplicate → focus on duplicate.
+- International → focus on international driving permit/licence.
+
+If no category is specified, explain the general new
+driving licence process.
+
+CRITICAL:
+
+Do NOT transfer requirements from one jurisdiction
+to another.
+
+Do NOT assume Punjab's procedure applies to KP.
+
+Do NOT assume KP's procedure applies to Sindh.
+
+Do NOT assume Islamabad's procedure applies to Balochistan.
+
+Use only the evidence supplied for that jurisdiction.
+
+If the official evidence is incomplete for a jurisdiction,
+say so specifically for that jurisdiction.
+
+Never invent missing fees, documents, age limits,
+processing times, tests or online procedures.
+
+KP SPECIAL RULE:
+
+For Khyber Pakhtunkhwa, distinguish between:
+- KP Police E-Driving License
+- Police Sahulat Markaz learner/learner-driving services
+
+
+The final answer MUST contain all seven jurisdiction
+headings even if some have limited verified information.
 """
 
     # --------------------------------------------------------
@@ -638,7 +670,7 @@ def ask_citizen_agent(
 
         # Driving licence without a jurisdiction requires
         # evidence for all seven jurisdictions.
-        selected_sources = verified_sources[:20]
+        selected_sources = verified_sources[:21]
 
     else:
 
