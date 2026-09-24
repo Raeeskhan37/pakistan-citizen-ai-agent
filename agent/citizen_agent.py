@@ -579,7 +579,7 @@ def ask_citizen_agent(
     # but use only a controlled number for AI evidence.
     selected_sources = verified_sources[:10]
 
-else:
+    else:
 
     selected_sources = verified_sources[:8]
 
