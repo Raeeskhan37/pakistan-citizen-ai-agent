@@ -1740,7 +1740,373 @@ def research_protector(
         "attempts": 1,
     }
 
+# ============================================================
+# DRIVING LICENCE
+# ============================================================
 
+DRIVING_LICENSE_CATEGORIES = {
+    "motorcycle": [
+        "motorcycle",
+        "motor cycle",
+        "bike",
+        "موٹر سائیکل",
+        "موٹر بائیک",
+    ],
+
+    "motor car": [
+        "motor car",
+        "motorcar",
+        "car licence",
+        "car license",
+        "car/jeep",
+        "car",
+        "jeep",
+        "موٹر کار",
+        "کار",
+        "جیپ",
+    ],
+
+    "LTV": [
+        "ltv",
+        "light transport vehicle",
+        "light transport",
+        "لائٹ ٹرانسپورٹ",
+        "ایل ٹی وی",
+    ],
+
+    "HTV": [
+        "htv",
+        "heavy transport vehicle",
+        "heavy transport",
+        "ہیوی ٹرانسپورٹ",
+        "ایچ ٹی وی",
+    ],
+
+    "PSV": [
+        "psv",
+        "public service vehicle",
+        "پبلک سروس وہیکل",
+        "پی ایس وی",
+    ],
+
+    "learner": [
+        "learner",
+        "learner licence",
+        "learner license",
+        "learner permit",
+        "learning licence",
+        "learning license",
+        "لرنر",
+        "لرنر لائسنس",
+        "لرنر پرمٹ",
+    ],
+
+    "regular": [
+        "regular licence",
+        "regular license",
+        "driving licence",
+        "driving license",
+        "new licence",
+        "new license",
+        "fresh licence",
+        "fresh license",
+        "نیا لائسنس",
+        "ڈرائیونگ لائسنس",
+    ],
+
+    "renewal": [
+        "renew",
+        "renewal",
+        "renew licence",
+        "renew license",
+        "licence renewal",
+        "license renewal",
+        "تجدید",
+        "لائسنس کی تجدید",
+    ],
+
+    "duplicate": [
+        "duplicate",
+        "lost licence",
+        "lost license",
+        "replacement licence",
+        "replacement license",
+        "ڈپلیکیٹ",
+        "گمشدہ لائسنس",
+    ],
+
+    "international": [
+        "international driving permit",
+        "international driving licence",
+        "international driving license",
+        "idp",
+        "بین الاقوامی ڈرائیونگ",
+    ],
+}
+
+
+DRIVING_JURISDICTION_DOMAINS = {
+    "Punjab": [
+        "dlims.punjab.gov.pk",
+        "punjab.gov.pk",
+        "punjabpolice.gov.pk",
+    ],
+
+    "Sindh": [
+        "dlsonline.sindhpolice.gov.pk",
+        "sindhpolice.gov.pk",
+        "sindh.gov.pk",
+    ],
+
+    "Khyber Pakhtunkhwa": [
+        "kppolice.gov.pk",
+        "kp.gov.pk",
+    ],
+
+    "Balochistan": [
+        "balochistan.gov.pk",
+        "police.balochistan.gov.pk",
+    ],
+
+    "Islamabad Capital Territory": [
+        "dlims.islamabadpolice.gov.pk",
+        "islamabadpolice.gov.pk",
+    ],
+
+    "Azad Jammu and Kashmir": [
+        "ajk.gov.pk",
+        "police.ajk.gov.pk",
+    ],
+
+    "Gilgit-Baltistan": [
+        "gilgitbaltistan.gov.pk",
+        "gbpolice.gov.pk",
+    ],
+}
+
+
+def detect_driving_categories(
+    question,
+):
+
+    q = (
+        question or ""
+    ).strip().lower()
+
+    detected = []
+
+    for category, terms in (
+        DRIVING_LICENSE_CATEGORIES.items()
+    ):
+
+        if any(
+            term in q
+            for term in terms
+        ):
+
+            detected.append(
+                category
+            )
+
+    # A normal "new driving licence" question
+    # should be treated as a general driving licence
+    # question rather than being left without a category.
+    if not detected:
+
+        detected.append(
+            "general driving licence"
+        )
+
+    return detected
+
+
+def build_driving_query_text(
+    question,
+    categories,
+):
+
+    category_text = ", ".join(
+        categories
+    )
+
+    return (
+        f"{question} "
+        f"driving licence category: "
+        f"{category_text}"
+    )
+
+
+def research_driving_license(
+    question,
+    language,
+):
+
+    jurisdiction = detect_jurisdiction(
+        question
+    )
+
+    categories = detect_driving_categories(
+        question
+    )
+
+    # --------------------------------------------------------
+    # SPECIFIC JURISDICTION
+    # --------------------------------------------------------
+
+    if jurisdiction:
+
+        domains = DRIVING_JURISDICTION_DOMAINS.get(
+            jurisdiction,
+            ["gov.pk"],
+        )
+
+        query_text = build_driving_query_text(
+            question,
+            categories,
+        )
+
+        queries = []
+
+        for domain in domains:
+
+            queries.extend(
+                [
+                    (
+                        f"site:{domain} "
+                        f"{query_text}"
+                    ),
+                    (
+                        f"site:{domain} "
+                        "new driving licence "
+                        f"{', '.join(categories)}"
+                    ),
+                    (
+                        f"site:{domain} "
+                        "driving licence requirements "
+                        f"{query_text}"
+                    ),
+                    (
+                        f"site:{domain} "
+                        "driving licence application "
+                        f"{query_text}"
+                    ),
+                ]
+            )
+
+        sources = perform_search(
+            queries=queries,
+            official_domains=domains,
+            max_results=12,
+        )
+
+        official_sources = [
+            source
+            for source in sources
+            if source.get("official")
+        ]
+
+        for source in official_sources:
+
+            source["jurisdiction"] = (
+                jurisdiction
+            )
+
+            source["driving_categories"] = (
+                categories
+            )
+
+        return {
+            "sources": unique_sources(
+                official_sources,
+                limit=10,
+            ),
+            "rag_results": [],
+            "jurisdiction": jurisdiction,
+            "attempts": 1,
+        }
+
+    # --------------------------------------------------------
+    # NO JURISDICTION
+    # SEARCH ALL PAKISTAN JURISDICTIONS
+    # --------------------------------------------------------
+
+    all_sources = []
+
+    for region in ALL_JURISDICTIONS:
+
+        domains = (
+            DRIVING_JURISDICTION_DOMAINS.get(
+                region,
+                ["gov.pk"],
+            )
+        )
+
+        query_text = build_driving_query_text(
+            question,
+            categories,
+        )
+
+        queries = []
+
+        for domain in domains:
+
+            queries.extend(
+                [
+                    (
+                        f"site:{domain} "
+                        f"{query_text}"
+                    ),
+                    (
+                        f"site:{domain} "
+                        "new driving licence"
+                    ),
+                    (
+                        f"site:{domain} "
+                        "driving licence requirements"
+                    ),
+                    (
+                        f"site:{domain} "
+                        "driving licence application"
+                    ),
+                ]
+            )
+
+        sources = perform_search(
+            queries=queries,
+            official_domains=domains,
+            max_results=6,
+        )
+
+        for source in sources:
+
+            if source.get("official"):
+
+                source["jurisdiction"] = (
+                    region
+                )
+
+                source["driving_categories"] = (
+                    categories
+                )
+
+                all_sources.append(
+                    source
+                )
+
+    return {
+        "sources": unique_sources(
+            all_sources,
+            limit=30,
+        ),
+        "rag_results": [],
+        "jurisdiction": None,
+        "all_jurisdictions": True,
+        "jurisdictions_searched": (
+            ALL_JURISDICTIONS
+        ),
+        "driving_categories": categories,
+        "attempts": 1,
+    }
 # ============================================================
 # GENERAL DEPARTMENT
 # ============================================================
@@ -1876,6 +2242,13 @@ def research_question(
     if department == "Vaccination for Travelling Abroad":
 
         return research_vaccination(
+            question,
+            language,
+        )
+
+    if department == "Driving Licence":
+
+        return research_driving_license(
             question,
             language,
         )
