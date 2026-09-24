@@ -7,21 +7,47 @@ from agent.verifier import verify_sources
 from rag.nadra_retriever import build_nadra_evidence
 
 
+# ============================================================
+# WEB EVIDENCE FORMATTER
+# ============================================================
+
 def format_web_evidence(sources):
+
     if not sources:
-        return "No authoritative web evidence was retrieved."
+        return (
+            "No authoritative web evidence was retrieved."
+        )
 
     evidence_parts = []
 
-    for index, source in enumerate(sources, start=1):
-        page_text = source.get("page_text", "")
+    for index, source in enumerate(
+        sources,
+        start=1,
+    ):
+
+        page_text = source.get(
+            "page_text",
+            "",
+        )
 
         if not page_text:
-            page_text = source.get("snippet", "")
+
+            page_text = source.get(
+                "snippet",
+                "",
+            )
+
+        jurisdiction = source.get(
+            "jurisdiction",
+            "",
+        )
 
         evidence_parts.append(
             f"""
 WEB SOURCE {index}
+
+Jurisdiction:
+{jurisdiction}
 
 Title:
 {source.get("title", "")}
@@ -37,29 +63,48 @@ Information from official government page:
 """
         )
 
-    return "\n".join(evidence_parts)
+    return "\n".join(
+        evidence_parts
+    )
 
 
-def is_pilgrim_question(question, selected_department):
-    if selected_department != "Vaccination for Travelling Abroad":
+# ============================================================
+# PILGRIM QUESTION
+# ============================================================
+
+def is_pilgrim_question(
+    question,
+    selected_department,
+):
+
+    if (
+        selected_department
+        != "Vaccination for Travelling Abroad"
+    ):
         return False
 
-    q = (question or "").strip().lower()
+    q = (
+        question or ""
+    ).strip().lower()
 
-    pilgrim_terms = [
-        "hajj",
-        "haj",
-        "umrah",
-        "umra",
-        "حج",
-        "عمرہ",
-    ]
-
-    return any(term in q for term in pilgrim_terms)
+    return any(
+        term in q
+        for term in [
+            "hajj",
+            "haj",
+            "umrah",
+            "umra",
+            "حج",
+            "عمرہ",
+        ]
+    )
 
 
 def is_umrah_question(question):
-    q = (question or "").strip().lower()
+
+    q = (
+        question or ""
+    ).strip().lower()
 
     return any(
         term in q
@@ -71,14 +116,24 @@ def is_umrah_question(question):
     )
 
 
+# ============================================================
+# SAUDI WORK VISA
+# ============================================================
+
 def is_saudi_work_visa_question(
     question,
     selected_department,
 ):
-    if selected_department != "Vaccination for Travelling Abroad":
+
+    if (
+        selected_department
+        != "Vaccination for Travelling Abroad"
+    ):
         return False
 
-    q = (question or "").strip().lower()
+    q = (
+        question or ""
+    ).strip().lower()
 
     saudi_terms = [
         "saudi",
@@ -113,44 +168,37 @@ def is_saudi_work_visa_question(
     ]
 
     return (
-        any(term in q for term in saudi_terms)
-        and any(term in q for term in work_terms)
-        and any(term in q for term in vaccination_terms)
+        any(
+            term in q
+            for term in saudi_terms
+        )
+        and
+        any(
+            term in q
+            for term in work_terms
+        )
+        and
+        any(
+            term in q
+            for term in vaccination_terms
+        )
     )
 
 
+# ============================================================
+# SPECIAL SOURCES
+# ============================================================
+
 HAJJ_SOURCES = [
     {
-        "title": "Saudi MOH — Health Requirements for Hajj 1447H (2026)",
+        "title": "Saudi MOH — Hajj Health Requirements",
         "url": (
             "https://www.moh.gov.sa/"
             "HealthAwareness/Pilgrims-Health/"
-            "Documents/Hajj-Health-Requirements-English-language.pdf"
+            "Documents/"
+            "Hajj-Health-Requirements-English-language.pdf"
         ),
         "domain": "moh.gov.sa",
-        "official": True,
-    },
-    {
-        "title": "Saudi MOH — Hajj 1447H Vaccination Campaign",
-        "url": (
-            "https://www.moh.gov.sa/en/ministry/"
-            "mediacenter/news/pages/"
-            "news-2026-02-27-001.aspx"
-        ),
-        "domain": "moh.gov.sa",
-        "official": True,
-    },
-    {
-        "title": (
-            "Pakistan Ministry of Religious Affairs — "
-            "Saudi Government Health Instructions for Hajj 2026"
-        ),
-        "url": (
-            "https://www.mora.gov.pk/NewsDetail/"
-            "N2ExNTM0OTItNjNlMC00YTU0LWE4N2Mt"
-            "MzcxNjI1Yjk4Zjk2"
-        ),
-        "domain": "mora.gov.pk",
         "official": True,
     },
 ]
@@ -158,25 +206,11 @@ HAJJ_SOURCES = [
 
 UMRAH_SOURCES = [
     {
-        "title": (
-            "Saudi MOH — Health Requirements and "
-            "Recommendations for Travelers to Saudi Arabia "
-            "for Umrah - 1447H (2026)"
-        ),
+        "title": "Saudi MOH — Umrah Health Requirements",
         "url": (
             "https://www.moh.gov.sa/"
             "en/HealthAwareness/Pilgrims-Health/"
             "Documents/Health-Regulations-Umrah-EN.pdf"
-        ),
-        "domain": "moh.gov.sa",
-        "official": True,
-    },
-    {
-        "title": "Saudi MOH — Pilgrim's Health",
-        "url": (
-            "https://www.moh.gov.sa/"
-            "en/healthawareness/pilgrims-health/"
-            "pages/default.aspx"
         ),
         "domain": "moh.gov.sa",
         "official": True,
@@ -187,9 +221,8 @@ UMRAH_SOURCES = [
 SAUDI_WORK_VISA_SOURCES = [
     {
         "title": (
-            "Government of Pakistan / NCOC — "
-            "Vaccination Policy for Pakistanis Working "
-            "Abroad on Work Visa"
+            "Government of Pakistan / BEOE — "
+            "Work Visa Vaccination Policy"
         ),
         "url": (
             "https://beoe.gov.pk/"
@@ -197,17 +230,11 @@ SAUDI_WORK_VISA_SOURCES = [
         ),
         "domain": "beoe.gov.pk",
         "official": True,
-        "snippet": (
-            "The official policy states that Pakistanis "
-            "over 18 with a work visa or iqama can get "
-            "vaccinated. It does not establish a universal "
-            "mandatory Pfizer vaccination requirement."
-        ),
     },
     {
         "title": (
             "Saudi Ministry of Health — "
-            "Life Events / Coming to Work in Saudi Arabia"
+            "Coming to Work in Saudi Arabia"
         ),
         "url": (
             "https://www.moh.gov.sa/"
@@ -215,189 +242,110 @@ SAUDI_WORK_VISA_SOURCES = [
         ),
         "domain": "moh.gov.sa",
         "official": True,
-        "snippet": (
-            "Saudi Ministry of Health information describes "
-            "medical screening procedures for people coming "
-            "to Saudi Arabia for work."
-        ),
-    },
-    {
-        "title": (
-            "Saudi Ministry of Foreign Affairs — "
-            "Health Certificate for Work Visa / Iqama"
-        ),
-        "url": (
-            "https://www.mofa.gov.sa/en/eservices/"
-            "Pages/svc74.aspx"
-        ),
-        "domain": "mofa.gov.sa",
-        "official": True,
-        "snippet": (
-            "Official Saudi service concerning health "
-            "certificate fees for work visa or Iqama."
-        ),
     },
 ]
 
 
+# ============================================================
+# HAJJ ANSWER
+# ============================================================
+
 def build_hajj_answer(language):
+
     if language == "اردو":
+
         return """
-حج 2026 کے لیے ویکسینیشن
+حج کے لیے ویکسینیشن
 
-سعودی وزارتِ صحت کی حج 1447ھ / 2026 کی سرکاری
-Health Requirements کے مطابق:
+سعودی وزارتِ صحت کی موجودہ سرکاری حج صحت
+ضروریات کے مطابق حج کے لیے متعلقہ ویکسینیشن
+اور صحت کی شرائط پوری کرنا ضروری ہے۔
 
-میننجوکوکل ویکسین
+میننجوکوکل ویکسین اور پاکستان سے آنے والے
+مسافروں کے لیے متعلقہ پولیو شرائط سرکاری
+سعودی دستاویز کے مطابق پوری کی جائیں۔
 
-میننجوکوکل ویکسین ان عازمین کے لیے لازمی ہے جنہوں نے
-گزشتہ پانچ سال کے اندر یہ ویکسین نہیں لگوائی۔
-
-سعودی رہنمائی کے مطابق ویکسین حج سے کم از کم 10 دن پہلے
-لگائی جانی چاہیے۔
-
-پولیو
-
-پاکستان سے آنے والے مسافروں کے لیے سعودی حج صحت کی
-سرکاری دستاویز میں پولیو سے متعلق مخصوص شرائط موجود ہیں۔
-
-فلو اور COVID-19
-
-سعودی وزارتِ صحت موسمی فلو اور COVID-19 ویکسینیشن کی
-بھی سفارش کرتی ہے۔ انہیں ہر عازم کے لیے لازمی نہیں
-کہا جانا چاہیے۔
-
-یہ سعودی حج صحت کی ضروریات ہیں، پاکستان کی عمومی
-ویکسینیشن پالیسی نہیں۔
+موسمی فلو اور COVID-19 سے متعلق معلومات کو
+صرف اسی صورت میں لازمی قرار دیا جائے جب
+موجودہ سرکاری دستاویز واضح طور پر ایسا کہے۔
 """
 
     return """
-Hajj 2026 Vaccination Requirements
+Hajj Vaccination Requirements
 
-According to the Saudi Ministry of Health's official
-Hajj 1447H / 2026 health requirements:
+Follow the current Saudi Ministry of Health official
+Hajj health requirements.
 
-Meningococcal vaccine
+The applicable meningococcal vaccination requirement
+and Pakistan-specific polio requirements should be
+completed according to the current official document.
 
-The meningococcal vaccine is mandatory for pilgrims who
-have not received it within the previous five years.
-
-Saudi guidance states that the vaccine should be received
-at least 10 days before Hajj.
-
-Polio
-
-For travelers arriving from Pakistan, the Saudi Hajj
-health requirements contain specific polio requirements.
-
-The applicable vaccination and certificate requirements
-should be followed according to the official Saudi document.
-
-Influenza and COVID-19
-
-Saudi MOH also recommends seasonal influenza and
-COVID-19 vaccination. These should not automatically be
-described as mandatory for every pilgrim.
-
-These are Saudi Hajj health requirements, not Pakistan's
-general vaccination policy.
+Influenza and COVID-19 should not automatically be
+described as mandatory unless the current official
+document explicitly says so.
 """
 
+
+# ============================================================
+# UMRAH ANSWER
+# ============================================================
 
 def build_umrah_answer(language):
+
     if language == "اردو":
+
         return """
-عمرہ 2026 کے لیے ویکسینیشن
+عمرہ کے لیے ویکسینیشن
 
-سعودی وزارتِ صحت کی عمرہ 1447ھ / 2026 کی سرکاری
-Health Requirements کے مطابق:
+عمرہ کے لیے موجودہ سعودی وزارتِ صحت کی سرکاری
+صحت کی ضروریات پر عمل کرنا ضروری ہے۔
 
-1. میننجوکوکل ویکسین
-
-عمرہ کے لیے آنے والے مسافروں کے لیے منظور شدہ
-میننجوکوکل ویکسین ضروری ہے۔
-
-Conjugate ویکسین گزشتہ 5 سال کے اندر اور سعودی عرب
-پہنچنے سے کم از کم 10 دن پہلے لگائی گئی ہونی چاہیے۔
-
-Polysaccharide ویکسین گزشتہ 3 سال کے اندر اور سعودی
-عرب پہنچنے سے کم از کم 10 دن پہلے لگائی گئی ہونی چاہیے۔
-
-ویکسین کا نام اور لگانے کی تاریخ سرٹیفکیٹ پر واضح ہونی
-چاہیے۔
-
-2. پولیو — پاکستان سے آنے والے مسافر
-
-سعودی وزارتِ صحت کی 1447ھ / 2026 کی عمرہ دستاویز میں
-پاکستان سے آنے والے مسافروں کے لیے پولیو سے متعلق
-مخصوص شرط موجود ہے۔
-
-پاکستان سے عمرہ کے لیے آنے والے مسافروں کے لیے متعلقہ
-پولیو ویکسین اور سرٹیفکیٹ کی شرط پوری کرنا ضروری ہے۔
-
-3. COVID-19
-
-کچھ مخصوص زیادہ خطرے والے عمرہ مسافروں کے لیے
-COVID-19 ویکسینیشن یا immunity کا ثبوت درکار ہو سکتا ہے۔
-
-یہ شرائط سعودی وزارتِ صحت کی سرکاری عمرہ
-1447ھ / 2026 دستاویز کے مطابق ہیں۔
+میننجوکوکل ویکسین اور پاکستان سے آنے والے
+مسافروں کے لیے متعلقہ پولیو شرائط موجودہ
+سرکاری سعودی دستاویز کے مطابق پوری کی جائیں۔
 """
 
     return """
-Umrah 2026 Vaccination Requirements
+Umrah Vaccination Requirements
 
-According to the Saudi Ministry of Health's official
-Health Requirements for Umrah 1447H (2026):
+Follow the current Saudi Ministry of Health official
+Umrah health requirements.
 
-1. Meningococcal vaccine
-
-An approved meningococcal vaccine is required for
-travelers intending to perform Umrah.
-
-For a conjugate meningococcal vaccine, it must have been
-received within the previous 5 years and at least 10 days
-before arrival.
-
-For a polysaccharide meningococcal vaccine, it must have
-been received within the previous 3 years and at least
-10 days before arrival.
-
-The vaccine name and administration date should be clearly
-shown on the vaccination certificate.
-
-2. Polio — travelers from Pakistan
-
-The Saudi Ministry of Health's 1447H / 2026 Umrah document
-contains specific polio requirements for travelers arriving
-from Pakistan.
-
-The applicable polio vaccination and certificate
-requirements should be completed before travel.
-
-3. COVID-19
-
-Certain higher-risk Umrah travelers may need proof of
-COVID-19 vaccination or immunity.
-
-These requirements are based on the Saudi Ministry of
-Health's official Umrah 1447H / 2026 document.
+The applicable meningococcal vaccination and
+Pakistan-specific polio requirements should be
+completed according to the current official document.
 """
 
+
+# ============================================================
+# SPECIAL PILGRIM RESPONSE
+# ============================================================
 
 def build_special_pilgrim_response(
     question,
     language,
 ):
+
     if is_umrah_question(question):
-        answer = build_umrah_answer(language)
+
+        answer = build_umrah_answer(
+            language
+        )
+
         sources = UMRAH_SOURCES
+
     else:
-        answer = build_hajj_answer(language)
+
+        answer = build_hajj_answer(
+            language
+        )
+
         sources = HAJJ_SOURCES
 
     return {
-        "department": "Vaccination for Travelling Abroad",
+        "department": (
+            "Vaccination for Travelling Abroad"
+        ),
         "jurisdiction": "Saudi Arabia",
         "answer": answer,
         "sources": sources,
@@ -405,79 +353,154 @@ def build_special_pilgrim_response(
         "official_source_count": len(sources),
         "research_attempts": 0,
         "rag_result_count": 0,
-        "checked_date": datetime.now().strftime("%d %B %Y"),
+        "checked_date": datetime.now().strftime(
+            "%d %B %Y"
+        ),
         "warning": "",
     }
 
 
+# ============================================================
+# WORK VISA FALLBACK
+# ============================================================
+
 def build_work_visa_fallback_evidence():
+
     return """
 OFFICIAL EVIDENCE — ORDINARY SAUDI WORK VISA
 
-IMPORTANT:
+The available official evidence does not establish that
+every Pakistani travelling on an ordinary Saudi employment
+visa must receive a specific vaccine.
 
-The available official evidence does NOT establish that
-every Pakistani travelling to Saudi Arabia on an ordinary
-employment/work visa must receive a specific vaccine.
+Do not transfer Hajj or Umrah vaccination requirements
+to ordinary employment visas.
 
-The Government of Pakistan / NCOC work-visa vaccination
-policy states that eligible Pakistanis with a work visa or
-iqama CAN GET VACCINATED.
-
-"CAN GET VACCINATED" must NOT be interpreted as
-"MUST BE VACCINATED."
-
-The Saudi Ministry of Health describes medical screening
-procedures for people coming to Saudi Arabia for work.
-
-The Saudi Ministry of Foreign Affairs has official
-information concerning health certificates for work
-visa/Iqama procedures.
-
-No current official evidence supplied here establishes
-that Pfizer-BioNTech is universally mandatory for ordinary
-Saudi employment visa holders.
-
-Do not transfer Hajj or Umrah vaccination requirements to
-ordinary employment visas.
-
-If no current official source establishes a specific
-mandatory vaccine, the correct conclusion is:
-
-"No specific vaccination requirement for an ordinary Saudi
-employment visa could be verified from the current official
-sources reviewed. However, Saudi employment visa applicants
-are subject to the required medical/health screening
-procedures."
+Current medical and health-screening requirements should
+be checked against current Saudi and Pakistani official
+requirements.
 """
 
+
+# ============================================================
+# ALL-PROVINCES DETECTION
+# ============================================================
+
+def is_all_jurisdictions_research(
+    research,
+):
+
+    return bool(
+        research.get(
+            "all_jurisdictions",
+            False,
+        )
+    )
+
+
+# ============================================================
+# BUILD PROVINCE INSTRUCTION
+# ============================================================
+
+def build_all_province_instruction():
+
+    return """
+IMPORTANT ANSWERING RULE — ALL PROVINCES
+
+The citizen did NOT specify a province or area.
+
+The answer MUST therefore be organized by jurisdiction.
+
+Do NOT give only one province's procedure.
+
+Use separate headings for:
+
+1. Punjab
+2. Sindh
+3. Khyber Pakhtunkhwa
+4. Balochistan
+5. Islamabad Capital Territory
+6. Azad Jammu and Kashmir
+7. Gilgit-Baltistan
+
+For each jurisdiction:
+
+- Use only the evidence supplied for that jurisdiction.
+- Clearly state the responsible local authority where
+  supported by official evidence.
+- Clearly state documents only where supported by official
+  evidence.
+- Clearly state online options only where supported by
+  official evidence.
+- Clearly state fees or processing time only where the
+  official evidence supports them.
+- Do not copy Punjab requirements into Sindh.
+- Do not copy KP requirements into Balochistan.
+- Do not assume the same procedure applies everywhere.
+
+If official evidence for a jurisdiction is insufficient,
+say:
+
+"Official procedural details could not be fully verified
+from the government sources reviewed. The citizen should
+contact the relevant local government / Union Council
+authority in that jurisdiction."
+
+Do NOT replace a civil birth certificate with NADRA CRC.
+
+CRC/B-Form is a separate NADRA identity document.
+
+The citizen asked about a BIRTH CERTIFICATE, so answer
+about CIVIL BIRTH REGISTRATION / BIRTH CERTIFICATE first.
+"""
+
+
+# ============================================================
+# MAIN AGENT
+# ============================================================
 
 def ask_citizen_agent(
     question,
     selected_department,
     language,
 ):
-    # Hajj / Umrah fast path
+
+    # --------------------------------------------------------
+    # Hajj / Umrah
+    # --------------------------------------------------------
+
     if is_pilgrim_question(
         question,
         selected_department,
     ):
+
         return build_special_pilgrim_response(
             question=question,
             language=language,
         )
 
-    # Preserve explicit department selection for
-    # Vaccination for Travelling Abroad.
-    if selected_department == "Vaccination for Travelling Abroad":
+    # --------------------------------------------------------
+    # Department
+    # --------------------------------------------------------
+
+    if (
+        selected_department
+        == "Vaccination for Travelling Abroad"
+    ):
+
         department = selected_department
+
     else:
+
         department = detect_department(
             question,
             selected_department,
         )
 
-    # Normal research pipeline
+    # --------------------------------------------------------
+    # Research
+    # --------------------------------------------------------
+
     research = research_question(
         question,
         department,
@@ -498,11 +521,21 @@ def ask_citizen_agent(
         "jurisdiction"
     )
 
-    # Work-visa source fallback
+    all_jurisdictions = (
+        is_all_jurisdictions_research(
+            research
+        )
+    )
+
+    # --------------------------------------------------------
+    # Saudi work visa
+    # --------------------------------------------------------
+
     if is_saudi_work_visa_question(
         question,
         selected_department,
     ):
+
         existing_urls = {
             source.get("url", "")
             for source in web_sources
@@ -510,13 +543,22 @@ def ask_citizen_agent(
         }
 
         for source in SAUDI_WORK_VISA_SOURCES:
+
             if source["url"] not in existing_urls:
-                web_sources.append(source)
 
-        if not jurisdiction:
-            jurisdiction = "Saudi Arabia"
+                web_sources.append(
+                    source
+                )
 
-    # Verify sources
+        jurisdiction = (
+            jurisdiction
+            or "Saudi Arabia"
+        )
+
+    # --------------------------------------------------------
+    # Verify
+    # --------------------------------------------------------
+
     verification = verify_sources(
         web_sources
     )
@@ -526,7 +568,24 @@ def ask_citizen_agent(
         [],
     )
 
-    # Second work-visa verification fallback
+    # --------------------------------------------------------
+    # If all-province research, retain ALL verified
+    # jurisdiction sources.
+    # --------------------------------------------------------
+
+    if all_jurisdictions:
+
+        # Do not reduce to five here.
+        selected_sources = verified_sources
+
+    else:
+
+        selected_sources = verified_sources[:8]
+
+    # --------------------------------------------------------
+    # Work visa fallback
+    # --------------------------------------------------------
+
     if (
         is_saudi_work_visa_question(
             question,
@@ -534,6 +593,7 @@ def ask_citizen_agent(
         )
         and not verified_sources
     ):
+
         verified_sources = [
             source
             for source in web_sources
@@ -544,27 +604,60 @@ def ask_citizen_agent(
             )
         ]
 
-    # NADRA RAG
-    if department == "NADRA":
-        policy_evidence = build_nadra_evidence(
-            rag_results
+        selected_sources = (
+            verified_sources
+            if all_jurisdictions
+            else verified_sources[:8]
         )
+
+    # --------------------------------------------------------
+    # NADRA RAG
+    # --------------------------------------------------------
+
+    if department == "NADRA":
+
+        policy_evidence = (
+            build_nadra_evidence(
+                rag_results
+            )
+        )
+
     else:
+
         policy_evidence = (
             "No department-specific "
             "policy evidence was used."
         )
 
+    # --------------------------------------------------------
     # Web evidence
+    # --------------------------------------------------------
+
     web_evidence = format_web_evidence(
-        verified_sources[:5]
+        selected_sources
     )
 
-    # Special work-visa evidence
+    # --------------------------------------------------------
+    # All province instruction
+    # --------------------------------------------------------
+
+    if all_jurisdictions:
+
+        web_evidence = (
+            build_all_province_instruction()
+            + "\n\n"
+            + web_evidence
+        )
+
+    # --------------------------------------------------------
+    # Work visa
+    # --------------------------------------------------------
+
     if is_saudi_work_visa_question(
         question,
         selected_department,
     ):
+
         web_evidence = (
             build_work_visa_fallback_evidence()
             + "\n\n"
@@ -574,8 +667,16 @@ def ask_citizen_agent(
     jurisdiction_text = (
         jurisdiction
         if jurisdiction
-        else "Not specified"
+        else (
+            "All Pakistan jurisdictions"
+            if all_jurisdictions
+            else "Not specified"
+        )
     )
+
+    # --------------------------------------------------------
+    # Combined evidence
+    # --------------------------------------------------------
 
     combined_evidence = f"""
 GOVERNMENT POLICY EVIDENCE
@@ -593,30 +694,37 @@ VERIFIED OFFICIAL WEB EVIDENCE
 {web_evidence}
 """
 
+    # --------------------------------------------------------
     # Evidence check
+    # --------------------------------------------------------
+
     has_policy_evidence = bool(
         rag_results
     )
 
     has_web_evidence = bool(
-        verified_sources
+        selected_sources
     )
 
     if is_saudi_work_visa_question(
         question,
         selected_department,
     ):
+
         has_web_evidence = True
 
     if (
         not has_policy_evidence
         and not has_web_evidence
     ):
+
         answer = (
             "I could not verify this information "
             "from an authoritative government source."
         )
+
     else:
+
         answer = generate_answer(
             question=question,
             department=department,
@@ -624,32 +732,56 @@ VERIFIED OFFICIAL WEB EVIDENCE
             language=language,
         )
 
+    # --------------------------------------------------------
     # Source count
+    # --------------------------------------------------------
+
     official_count = sum(
         1
-        for source in verified_sources
+        for source in selected_sources
         if source.get("official")
     )
 
+    # --------------------------------------------------------
+    # Return
+    # --------------------------------------------------------
+
     return {
         "department": department,
+
         "jurisdiction": jurisdiction,
+
         "answer": answer,
-        "sources": verified_sources[:5],
-        "source_count": len(
-            verified_sources
+
+        # Keep more sources available for all-province
+        # answers.
+        "sources": (
+            selected_sources
+            if all_jurisdictions
+            else selected_sources[:8]
         ),
-        "official_source_count": official_count,
+
+        "source_count": len(
+            selected_sources
+        ),
+
+        "official_source_count": (
+            official_count
+        ),
+
         "research_attempts": research.get(
             "attempts",
             1,
         ),
+
         "rag_result_count": len(
             rag_results
         ),
+
         "checked_date": datetime.now().strftime(
             "%d %B %Y"
         ),
+
         "warning": verification.get(
             "warning",
             "",
