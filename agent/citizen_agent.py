@@ -31,7 +31,6 @@ def format_web_evidence(sources):
         )
 
         if not page_text:
-
             page_text = source.get(
                 "snippet",
                 "",
@@ -569,15 +568,17 @@ def ask_citizen_agent(
     )
 
     # --------------------------------------------------------
-    # If all-province research, retain ALL verified
-    # jurisdiction sources.
+    # Select controlled evidence
     # --------------------------------------------------------
 
     if all_jurisdictions:
-        # Keep all official sources for the UI,
-        # but use only a controlled number for AI evidence.
+
+        # Keep a controlled number of official sources
+        # for the AI evidence/context.
         selected_sources = verified_sources[:10]
+
     else:
+
         selected_sources = verified_sources[:8]
 
     # --------------------------------------------------------
@@ -602,11 +603,13 @@ def ask_citizen_agent(
             )
         ]
 
-        selected_sources = (
-            verified_sources
-            if all_jurisdictions
-            else verified_sources[:8]
-        )
+        if all_jurisdictions:
+
+            selected_sources = verified_sources[:10]
+
+        else:
+
+            selected_sources = verified_sources[:8]
 
     # --------------------------------------------------------
     # NADRA RAG
@@ -744,52 +747,37 @@ VERIFIED OFFICIAL WEB EVIDENCE
     # Return
     # --------------------------------------------------------
 
+    if all_jurisdictions:
+
+        output_sources = verified_sources
+
+    else:
+
+        output_sources = selected_sources
+
     return {
         "department": department,
-
         "jurisdiction": jurisdiction,
-
         "answer": answer,
-
-        "sources": (
-        verified_sources
-        if all_jurisdictions
-        else selected_sources
-    ),
-
-        "source_count": len(
-        verified_sources
-        if all_jurisdictions
-        else selected_sources
-    ),
-
-        "official_source_count": (
-        sum(
+        "sources": output_sources,
+        "source_count": len(output_sources),
+        "official_source_count": sum(
             1
-            for source in (
-                verified_sources
-                if all_jurisdictions
-                else selected_sources
-            )
+            for source in output_sources
             if source.get("official")
-        )
-    ),
-
+        ),
         "research_attempts": research.get(
-        "attempts",
-        1,
-    ),
-
+            "attempts",
+            1,
+        ),
         "rag_result_count": len(
-        rag_results
-    ),
-
+            rag_results
+        ),
         "checked_date": datetime.now().strftime(
-        "%d %B %Y"
-    ),
-
+            "%d %B %Y"
+        ),
         "warning": verification.get(
-        "warning",
-        "",
-    ),
-}
+            "warning",
+            "",
+        ),
+    }
