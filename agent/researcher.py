@@ -9,6 +9,7 @@ PROVINCES = {
     "punjab": "Punjab",
     "sindh": "Sindh",
     "khyber pakhtunkhwa": "Khyber Pakhtunkhwa",
+    "khyber-pakhtunkhwa": "Khyber Pakhtunkhwa",
     "kpk": "Khyber Pakhtunkhwa",
     "kp": "Khyber Pakhtunkhwa",
     "balochistan": "Balochistan",
@@ -16,44 +17,228 @@ PROVINCES = {
     "ict": "Islamabad Capital Territory",
     "ajk": "Azad Jammu and Kashmir",
     "azad kashmir": "Azad Jammu and Kashmir",
+    "azad jammu and kashmir": "Azad Jammu and Kashmir",
     "gilgit baltistan": "Gilgit-Baltistan",
+    "gilgit-baltistan": "Gilgit-Baltistan",
     "gb": "Gilgit-Baltistan",
 }
 
 
+# ============================================================
+# MAJOR CITIES / AREAS
+# ============================================================
+
+CITY_JURISDICTIONS = {
+
+    # Punjab
+    "lahore": "Punjab",
+    "rawalpindi": "Punjab",
+    "faisalabad": "Punjab",
+    "multan": "Punjab",
+    "gujranwala": "Punjab",
+    "sialkot": "Punjab",
+    "bahawalpur": "Punjab",
+    "sargodha": "Punjab",
+    "sheikhupura": "Punjab",
+    "jhelum": "Punjab",
+    "gujrat": "Punjab",
+    "rahim yar khan": "Punjab",
+    "dera ghazi khan": "Punjab",
+    "kasur": "Punjab",
+    "okara": "Punjab",
+    "chiniot": "Punjab",
+    "attock": "Punjab",
+    "chakwal": "Punjab",
+    "narowal": "Punjab",
+    "pakpattan": "Punjab",
+    "vehari": "Punjab",
+    "khanewal": "Punjab",
+    "lodhran": "Punjab",
+    "muzaffargarh": "Punjab",
+    "bahawalnagar": "Punjab",
+    "toba tek singh": "Punjab",
+    "hafizabad": "Punjab",
+    "mandi bahauddin": "Punjab",
+
+    # Sindh
+    "karachi": "Sindh",
+    "hyderabad": "Sindh",
+    "sukkur": "Sindh",
+    "larkana": "Sindh",
+    "nawabshah": "Sindh",
+    "shaheed benazirabad": "Sindh",
+    "mirpur khas": "Sindh",
+    "jacobabad": "Sindh",
+    "shikarpur": "Sindh",
+    "thatta": "Sindh",
+    "badin": "Sindh",
+    "dadu": "Sindh",
+    "jamshoro": "Sindh",
+    "khairpur": "Sindh",
+
+    # Khyber Pakhtunkhwa
+    "peshawar": "Khyber Pakhtunkhwa",
+    "mardan": "Khyber Pakhtunkhwa",
+    "swat": "Khyber Pakhtunkhwa",
+    "mingora": "Khyber Pakhtunkhwa",
+    "abbottabad": "Khyber Pakhtunkhwa",
+    "mansehra": "Khyber Pakhtunkhwa",
+    "kohat": "Khyber Pakhtunkhwa",
+    "bannu": "Khyber Pakhtunkhwa",
+    "dera ismail khan": "Khyber Pakhtunkhwa",
+    "di khan": "Khyber Pakhtunkhwa",
+    "charsadda": "Khyber Pakhtunkhwa",
+    "nowshera": "Khyber Pakhtunkhwa",
+    "swabi": "Khyber Pakhtunkhwa",
+    "haripur": "Khyber Pakhtunkhwa",
+    "dir": "Khyber Pakhtunkhwa",
+    "lower dir": "Khyber Pakhtunkhwa",
+    "upper dir": "Khyber Pakhtunkhwa",
+    "malakand": "Khyber Pakhtunkhwa",
+    "chitral": "Khyber Pakhtunkhwa",
+    "buner": "Khyber Pakhtunkhwa",
+    "batkhela": "Khyber Pakhtunkhwa",
+
+    # Balochistan
+    "quetta": "Balochistan",
+    "gwadar": "Balochistan",
+    "turbat": "Balochistan",
+    "khuzdar": "Balochistan",
+    "chaman": "Balochistan",
+    "sibi": "Balochistan",
+    "zhob": "Balochistan",
+    "loralai": "Balochistan",
+    "mastung": "Balochistan",
+    "nushki": "Balochistan",
+
+    # Islamabad
+    "islamabad": "Islamabad Capital Territory",
+    "ict": "Islamabad Capital Territory",
+
+    # AJK
+    "muzaffarabad": "Azad Jammu and Kashmir",
+    "mirpur ajk": "Azad Jammu and Kashmir",
+    "rawalakot": "Azad Jammu and Kashmir",
+    "bagh ajk": "Azad Jammu and Kashmir",
+    "kotli ajk": "Azad Jammu and Kashmir",
+
+    # Gilgit-Baltistan
+    "gilgit": "Gilgit-Baltistan",
+    "skardu": "Gilgit-Baltistan",
+    "hunza": "Gilgit-Baltistan",
+    "chilas": "Gilgit-Baltistan",
+    "ghizer": "Gilgit-Baltistan",
+}
+
+
+# ============================================================
+# ALL JURISDICTIONS
+# ============================================================
+
+ALL_JURISDICTIONS = [
+    "Punjab",
+    "Sindh",
+    "Khyber Pakhtunkhwa",
+    "Balochistan",
+    "Islamabad Capital Territory",
+    "Azad Jammu and Kashmir",
+    "Gilgit-Baltistan",
+]
+
+
+# ============================================================
+# OFFICIAL DOMAINS
+# ============================================================
+
+JURISDICTION_DOMAINS = {
+    "Punjab": [
+        "punjab.gov.pk",
+        "lgcd.punjab.gov.pk",
+    ],
+
+    "Sindh": [
+        "sindh.gov.pk",
+    ],
+
+    "Khyber Pakhtunkhwa": [
+        "kp.gov.pk",
+        "lgkp.gov.pk",
+        "kprts.gov.pk",
+    ],
+
+    "Balochistan": [
+        "balochistan.gov.pk",
+    ],
+
+    "Islamabad Capital Territory": [
+        "islamabad.gov.pk",
+        "ictadministration.gov.pk",
+    ],
+
+    "Azad Jammu and Kashmir": [
+        "ajk.gov.pk",
+    ],
+
+    "Gilgit-Baltistan": [
+        "gilgitbaltistan.gov.pk",
+    ],
+}
+
+
+# ============================================================
+# JURISDICTION DETECTION
+# ============================================================
+
 def detect_jurisdiction(question):
+
     question_lower = (question or "").lower()
 
+    # --------------------------------------------------------
+    # First check explicit province / region names
+    # --------------------------------------------------------
+
     for keyword, jurisdiction in PROVINCES.items():
+
         if keyword in question_lower:
+            return jurisdiction
+
+    # --------------------------------------------------------
+    # Then check recognized cities / areas
+    # --------------------------------------------------------
+
+    for area, jurisdiction in CITY_JURISDICTIONS.items():
+
+        if area in question_lower:
             return jurisdiction
 
     return None
 
 
 # ============================================================
-# OFFICIAL DOMAIN FOR JURISDICTION
+# GET JURISDICTION DOMAINS
 # ============================================================
 
 def get_jurisdiction_domain(jurisdiction):
-    domains = {
-        "Punjab": "punjab.gov.pk",
-        "Sindh": "sindh.gov.pk",
-        "Khyber Pakhtunkhwa": "kp.gov.pk",
-        "Balochistan": "balochistan.gov.pk",
-        "Islamabad Capital Territory": "islamabad.gov.pk",
-        "Azad Jammu and Kashmir": "ajk.gov.pk",
-        "Gilgit-Baltistan": "gilgitbaltistan.gov.pk",
-    }
 
-    return domains.get(jurisdiction)
+    domains = JURISDICTION_DOMAINS.get(
+        jurisdiction,
+        [],
+    )
+
+    if domains:
+        return domains[0]
+
+    return None
 
 
 # ============================================================
 # UNIQUE SOURCES
 # ============================================================
 
-def unique_sources(sources, limit=5):
+def unique_sources(
+    sources,
+    limit=5,
+):
 
     unique = {}
 
@@ -62,7 +247,10 @@ def unique_sources(sources, limit=5):
         if not isinstance(source, dict):
             continue
 
-        url = source.get("url", "")
+        url = source.get(
+            "url",
+            "",
+        )
 
         if not url:
             continue
@@ -70,7 +258,9 @@ def unique_sources(sources, limit=5):
         if url not in unique:
             unique[url] = source
 
-    return list(unique.values())[:limit]
+    return list(
+        unique.values()
+    )[:limit]
 
 
 # ============================================================
@@ -81,8 +271,10 @@ def research_kp_birth_registration(
     question,
     language,
 ):
+
     official_evidence = """
 OFFICIAL GOVERNMENT OF KHYBER PAKHTUNKHWA
+
 LOCAL GOVERNMENT, ELECTIONS & RURAL DEVELOPMENT DEPARTMENT
 
 SERVICE:
@@ -91,235 +283,577 @@ Registration and Certificate of Birth
 JURISDICTION:
 Khyber Pakhtunkhwa
 
-The registration of births is handled through the concerned
-Village Council or Neighbourhood Council.
+Birth registration is handled through the relevant
+Village Council or Neighbourhood Council according
+to the applicable local-government arrangement.
 
-DOCUMENTS / INFORMATION FOR BIRTH REGISTRATION:
+The official KP Local Government service table lists:
 
-1. Application form (Form-A), duly filled, signed and
-   thumb-imprinted.
+Service:
+Registration & Certificate of Birth
 
-2. Attested copy of the CNIC or passport of the parent(s)
-   or guardian.
+Designated Officer:
+Secretary Union Council
 
-3. Where applicable, residence permit for a refugee.
+The official KP government also provides forms and
+procedural information for birth registration.
 
-4. Birth certificate or immunization card issued by a
-   health facility, or school certificate, if available.
+Citizens should apply through the relevant local
+government office for the place where the birth is
+registered.
 
-DESIGNATED OFFICER:
-Secretary Union Council.
-
-The official KP Local Government website also provides
-information and forms relating to birth registration.
-
-The citizen should apply through the relevant local
-Village Council / Neighbourhood Council / Union Council
-according to the applicable local-government arrangement.
+Do not confuse a civil birth certificate with a NADRA
+Child Registration Certificate (CRC).
 """
 
     sources = [
+
         {
             "title": (
                 "KP Local Government — "
                 "Registration of Birth, Death, Marriage & Divorce"
             ),
-            "url": "https://www.lgkp.gov.pk/page/registration-bdmd",
+
+            "url": (
+                "https://www.lgkp.gov.pk/"
+                "page/registration-bdmd"
+            ),
+
             "domain": "lgkp.gov.pk",
+
             "official": True,
+
             "page_text": official_evidence,
+
             "snippet": official_evidence,
         },
+
         {
             "title": (
-                "KP Local Government — "
-                "Civil Registration Vital Statistics"
+                "KP Right to Public Services Commission — "
+                "Birth Certificate"
             ),
-            "url": "https://lgkp.gov.pk/page/crvs",
-            "domain": "lgkp.gov.pk",
+
+            "url": (
+                "https://www.kprts.gov.pk/"
+                "services/birth-certificate/"
+            ),
+
+            "domain": "kprts.gov.pk",
+
             "official": True,
+
             "page_text": official_evidence,
-            "snippet": official_evidence,
-        },
-        {
-            "title": "KP Local Government — Forms",
-            "url": "https://lgkp.gov.pk/page/forms",
-            "domain": "lgkp.gov.pk",
-            "official": True,
-            "page_text": official_evidence,
+
             "snippet": official_evidence,
         },
     ]
 
     return {
+
         "sources": sources,
+
         "rag_results": [],
-        "jurisdiction": "Khyber Pakhtunkhwa",
+
+        "jurisdiction": (
+            "Khyber Pakhtunkhwa"
+        ),
+
         "attempts": 1,
     }
 
 
 # ============================================================
-# BIRTH REGISTRATION — DEDICATED OFFICIAL RESEARCH
+# BIRTH REGISTRATION — ALL PROVINCES / REGIONS
 # ============================================================
 
 def research_birth_registration(
     question,
     language,
 ):
-    """
-    Dedicated research route for birth registration and
-    birth certificate questions.
 
-    KP uses the tested direct official evidence route.
-    Other jurisdictions use focused searches against
-    official government domains.
-    """
-
-    jurisdiction = detect_jurisdiction(question)
-
-    # --------------------------------------------------------
-    # KP — PRESERVE TESTED DIRECT ROUTE
-    # --------------------------------------------------------
-
-    if jurisdiction == "Khyber Pakhtunkhwa":
-
-        return research_kp_birth_registration(
-            question,
-            language,
-        )
-
-    # --------------------------------------------------------
-    # OFFICIAL DOMAIN
-    # --------------------------------------------------------
-
-    jurisdiction_domain = get_jurisdiction_domain(
-        jurisdiction
+    jurisdiction = detect_jurisdiction(
+        question
     )
 
-    official_domains = []
-
-    if jurisdiction_domain:
-        official_domains.append(
-            jurisdiction_domain
-        )
-
-    official_domains.extend(
-        [
-            "gov.pk",
-            "punjab.gov.pk",
-            "sindh.gov.pk",
-            "kp.gov.pk",
-            "balochistan.gov.pk",
-            "ajk.gov.pk",
-            "gilgitbaltistan.gov.pk",
-            "islamabad.gov.pk",
-        ]
-    )
-
-    # Remove duplicates
-    official_domains = list(
-        dict.fromkeys(official_domains)
-    )
-
-    # --------------------------------------------------------
-    # FOCUSED SEARCH
-    # --------------------------------------------------------
-
-    queries = [
-        f"birth registration {question}",
-        f"birth certificate {question}",
-        f"birth registration requirements {question}",
-        f"birth certificate documents {question}",
-        f"birth registration procedure {question}",
-        f"newborn birth registration {question}",
-    ]
-
-    if jurisdiction_domain:
-
-        queries = [
-            f"site:{jurisdiction_domain} birth registration {question}",
-            f"site:{jurisdiction_domain} birth certificate {question}",
-            (
-                f"site:{jurisdiction_domain} "
-                "birth registration requirements"
-            ),
-            (
-                f"site:{jurisdiction_domain} "
-                "birth certificate documents"
-            ),
-            (
-                f"site:{jurisdiction_domain} "
-                "birth registration procedure"
-            ),
-        ]
-
-    sources = perform_search(
-        queries=queries,
-        official_domains=official_domains,
-        max_results=8,
-    )
-
-    official_sources = [
-        source
-        for source in sources
-        if source.get("official")
-    ]
-
-    if official_sources:
-
-        return {
-            "sources": unique_sources(
-                official_sources,
-                limit=5,
-            ),
-            "rag_results": [],
-            "jurisdiction": jurisdiction,
-            "attempts": 1,
-        }
-
-    # --------------------------------------------------------
-    # FALLBACK SEARCH
-    # --------------------------------------------------------
-
-    fallback_queries = [
-        f"birth registration Pakistan {question}",
-        f"birth certificate Pakistan {question}",
-        f"government birth registration {question}",
-        f"official birth certificate requirements {question}",
-    ]
+    # ========================================================
+    # SPECIFIC JURISDICTION
+    # ========================================================
 
     if jurisdiction:
 
-        fallback_queries.insert(
-            0,
-            (
-                f"{jurisdiction} "
-                f"birth registration "
-                f"{question}"
-            ),
+        # ----------------------------------------------------
+        # KP — preserve tested route
+        # ----------------------------------------------------
+
+        if jurisdiction == "Khyber Pakhtunkhwa":
+
+            return research_kp_birth_registration(
+                question,
+                language,
+            )
+
+        # ----------------------------------------------------
+        # ICT — focused official search
+        # ----------------------------------------------------
+
+        if jurisdiction == (
+            "Islamabad Capital Territory"
+        ):
+
+            queries = [
+
+                f"site:ictadministration.gov.pk birth certificate {question}",
+
+                (
+                    "site:ictadministration.gov.pk "
+                    "birth certificate "
+                    "documents requirements"
+                ),
+
+                (
+                    "site:ictadministration.gov.pk "
+                    "birth certificate "
+                    "application procedure"
+                ),
+
+                (
+                    "site:ictadministration.gov.pk "
+                    "birth registration"
+                ),
+            ]
+
+        else:
+
+            jurisdiction_domains = (
+                JURISDICTION_DOMAINS.get(
+                    jurisdiction,
+                    [],
+                )
+            )
+
+            primary_domain = (
+                jurisdiction_domains[0]
+                if jurisdiction_domains
+                else "gov.pk"
+            )
+
+            queries = [
+
+                (
+                    f"site:{primary_domain} "
+                    f"birth registration {question}"
+                ),
+
+                (
+                    f"site:{primary_domain} "
+                    f"birth certificate {question}"
+                ),
+
+                (
+                    f"site:{primary_domain} "
+                    "birth registration requirements"
+                ),
+
+                (
+                    f"site:{primary_domain} "
+                    "birth certificate documents"
+                ),
+
+                (
+                    f"site:{primary_domain} "
+                    "birth registration procedure"
+                ),
+
+                (
+                    f"site:{primary_domain} "
+                    "birth certificate application"
+                ),
+            ]
+
+            # ------------------------------------------------
+            # Punjab has a strong dedicated LGCD source
+            # ------------------------------------------------
+
+            if jurisdiction == "Punjab":
+
+                queries.extend(
+                    [
+                        (
+                            "site:lgcd.punjab.gov.pk "
+                            "registration of birth"
+                        ),
+
+                        (
+                            "site:lgcd.punjab.gov.pk "
+                            "birth certificate"
+                        ),
+
+                        (
+                            "site:lgcd.punjab.gov.pk "
+                            "birth registration requirements"
+                        ),
+                    ]
+                )
+
+        # ----------------------------------------------------
+        # Official domains
+        # ----------------------------------------------------
+
+        official_domains = (
+            JURISDICTION_DOMAINS.get(
+                jurisdiction,
+                ["gov.pk"],
+            )
         )
 
-    sources = perform_search(
-        queries=fallback_queries,
-        official_domains=official_domains,
+        official_domains = list(
+            dict.fromkeys(
+                official_domains + [
+                    "gov.pk",
+                    "nadra.gov.pk",
+                ]
+            )
+        )
+
+        sources = perform_search(
+            queries=queries,
+            official_domains=official_domains,
+            max_results=10,
+        )
+
+        official_sources = [
+            source
+            for source in sources
+            if source.get("official")
+        ]
+
+        if official_sources:
+
+            return {
+
+                "sources": unique_sources(
+                    official_sources,
+                    limit=8,
+                ),
+
+                "rag_results": [],
+
+                "jurisdiction": jurisdiction,
+
+                "attempts": 1,
+            }
+
+        # ----------------------------------------------------
+        # Specific jurisdiction fallback
+        # ----------------------------------------------------
+
+        fallback_queries = [
+
+            (
+                f"{jurisdiction} "
+                f"birth certificate "
+                f"{question}"
+            ),
+
+            (
+                f"{jurisdiction} "
+                "birth registration "
+                "requirements"
+            ),
+
+            (
+                f"{jurisdiction} "
+                "birth certificate "
+                "documents"
+            ),
+
+            (
+                f"{jurisdiction} "
+                "birth registration "
+                "procedure"
+            ),
+        ]
+
+        sources = perform_search(
+            queries=fallback_queries,
+            official_domains=official_domains,
+            max_results=10,
+        )
+
+        official_sources = [
+            source
+            for source in sources
+            if source.get("official")
+        ]
+
+        return {
+
+            "sources": unique_sources(
+                official_sources,
+                limit=8,
+            ),
+
+            "rag_results": [],
+
+            "jurisdiction": jurisdiction,
+
+            "attempts": 2,
+        }
+
+    # ========================================================
+    # NO AREA / PROVINCE MENTIONED
+    # ========================================================
+    #
+    # IMPORTANT:
+    # Do NOT search only one generic government domain.
+    #
+    # Search each jurisdiction separately so the answer
+    # generator receives evidence for all regions.
+    # ========================================================
+
+    all_sources = []
+
+    jurisdiction_queries = {
+
+        "Punjab": [
+            (
+                "site:lgcd.punjab.gov.pk "
+                "birth registration"
+            ),
+            (
+                "site:lgcd.punjab.gov.pk "
+                "birth certificate requirements"
+            ),
+            (
+                "site:punjab.gov.pk "
+                "birth certificate"
+            ),
+        ],
+
+        "Sindh": [
+            (
+                "site:sindh.gov.pk "
+                "birth registration"
+            ),
+            (
+                "site:sindh.gov.pk "
+                "birth certificate requirements"
+            ),
+            (
+                "site:sindh.gov.pk "
+                "birth certificate procedure"
+            ),
+        ],
+
+        "Khyber Pakhtunkhwa": [
+            (
+                "site:lgkp.gov.pk "
+                "registration certificate birth"
+            ),
+            (
+                "site:kprts.gov.pk "
+                "birth certificate"
+            ),
+            (
+                "site:kp.gov.pk "
+                "birth registration"
+            ),
+        ],
+
+        "Balochistan": [
+            (
+                "site:balochistan.gov.pk "
+                "birth registration"
+            ),
+            (
+                "site:balochistan.gov.pk "
+                "birth certificate"
+            ),
+            (
+                "site:balochistan.gov.pk "
+                "birth registration requirements"
+            ),
+        ],
+
+        "Islamabad Capital Territory": [
+            (
+                "site:ictadministration.gov.pk "
+                "birth certificate"
+            ),
+            (
+                "site:ictadministration.gov.pk "
+                "birth registration"
+            ),
+            (
+                "site:islamabad.gov.pk "
+                "birth certificate"
+            ),
+        ],
+
+        "Azad Jammu and Kashmir": [
+            (
+                "site:ajk.gov.pk "
+                "birth registration"
+            ),
+            (
+                "site:ajk.gov.pk "
+                "birth certificate"
+            ),
+            (
+                "site:ajk.gov.pk "
+                "birth registration requirements"
+            ),
+        ],
+
+        "Gilgit-Baltistan": [
+            (
+                "site:gilgitbaltistan.gov.pk "
+                "birth registration"
+            ),
+            (
+                "site:gilgitbaltistan.gov.pk "
+                "birth certificate"
+            ),
+            (
+                "site:gilgitbaltistan.gov.pk "
+                "birth registration requirements"
+            ),
+        ],
+    }
+
+    # --------------------------------------------------------
+    # Search each jurisdiction
+    # --------------------------------------------------------
+
+    for region in ALL_JURISDICTIONS:
+
+        queries = jurisdiction_queries.get(
+            region,
+            [],
+        )
+
+        if not queries:
+            continue
+
+        domains = JURISDICTION_DOMAINS.get(
+            region,
+            ["gov.pk"],
+        )
+
+        sources = perform_search(
+            queries=queries,
+            official_domains=domains,
+            max_results=6,
+        )
+
+        official_sources = [
+            source
+            for source in sources
+            if source.get("official")
+        ]
+
+        for source in official_sources:
+
+            source_copy = dict(
+                source
+            )
+
+            # Add region metadata so the answer generator
+            # knows which province the evidence belongs to.
+            source_copy[
+                "jurisdiction"
+            ] = region
+
+            all_sources.append(
+                source_copy
+            )
+
+    # --------------------------------------------------------
+    # Add Pakistan-wide authoritative CRVS evidence
+    # --------------------------------------------------------
+
+    national_queries = [
+
+        (
+            "site:pakistan.gov.pk "
+            "birth registration "
+            "provincial services"
+        ),
+
+        (
+            "site:pc.gov.pk "
+            "civil registration "
+            "birth registration Pakistan"
+        ),
+
+        (
+            "site:nadra.gov.pk "
+            "birth death marriage divorce "
+            "public guide"
+        ),
+
+        (
+            "site:nadra.gov.pk "
+            "Pakistan Registration Ecosystem "
+            "birth certificate"
+        ),
+    ]
+
+    national_sources = perform_search(
+        queries=national_queries,
+        official_domains=[
+            "pakistan.gov.pk",
+            "pc.gov.pk",
+            "nadra.gov.pk",
+        ],
         max_results=8,
     )
 
-    official_sources = [
+    national_official_sources = [
         source
-        for source in sources
+        for source in national_sources
         if source.get("official")
     ]
 
+    for source in national_official_sources:
+
+        source_copy = dict(
+            source
+        )
+
+        source_copy[
+            "jurisdiction"
+        ] = "Pakistan-wide"
+
+        all_sources.append(
+            source_copy
+        )
+
+    # --------------------------------------------------------
+    # Remove duplicates
+    # --------------------------------------------------------
+
+    final_sources = unique_sources(
+        all_sources,
+        limit=20,
+    )
+
     return {
-        "sources": unique_sources(
-            official_sources,
-            limit=5,
-        ),
+
+        "sources": final_sources,
+
         "rag_results": [],
-        "jurisdiction": jurisdiction,
-        "attempts": 2,
+
+        "jurisdiction": None,
+
+        "all_jurisdictions": True,
+
+        "jurisdictions_searched": (
+            ALL_JURISDICTIONS
+        ),
+
+        "attempts": 1,
     }
 
 
@@ -331,183 +865,313 @@ def research_marriage_registration(
     question,
     language,
 ):
-    """
-    Dedicated research route for marriage registration,
-    Nikah registration and marriage certificate questions.
-    """
 
-    jurisdiction = detect_jurisdiction(question)
-
-    # --------------------------------------------------------
-    # OFFICIAL DOMAINS
-    # --------------------------------------------------------
-
-    jurisdiction_domain = get_jurisdiction_domain(
-        jurisdiction
+    jurisdiction = detect_jurisdiction(
+        question
     )
 
-    official_domains = []
-
-    if jurisdiction_domain:
-        official_domains.append(
-            jurisdiction_domain
-        )
-
-    # KP Local Government has a dedicated official
-    # local-government domain.
-    if jurisdiction == "Khyber Pakhtunkhwa":
-        official_domains.insert(
-            0,
-            "lgkp.gov.pk",
-        )
-
-    official_domains.extend(
-        [
-            "gov.pk",
-            "punjab.gov.pk",
-            "sindh.gov.pk",
-            "kp.gov.pk",
-            "balochistan.gov.pk",
-            "ajk.gov.pk",
-            "gilgitbaltistan.gov.pk",
-            "islamabad.gov.pk",
-        ]
-    )
-
-    official_domains = list(
-        dict.fromkeys(official_domains)
-    )
-
-    # --------------------------------------------------------
-    # FOCUSED SEARCH TERMS
-    # --------------------------------------------------------
-
-    queries = [
-        f"marriage registration {question}",
-        f"marriage certificate {question}",
-        f"nikah registration {question}",
-        f"nikah nama registration {question}",
-        f"marriage registration requirements {question}",
-        f"marriage certificate documents {question}",
-        f"marriage registration procedure {question}",
-    ]
-
-    # --------------------------------------------------------
-    # JURISDICTION-SPECIFIC SEARCH
-    # --------------------------------------------------------
-
-    if jurisdiction_domain:
-
-        queries = [
-            (
-                f"site:{jurisdiction_domain} "
-                f"marriage registration {question}"
-            ),
-            (
-                f"site:{jurisdiction_domain} "
-                f"marriage certificate {question}"
-            ),
-            (
-                f"site:{jurisdiction_domain} "
-                f"nikah registration {question}"
-            ),
-            (
-                f"site:{jurisdiction_domain} "
-                "marriage registration requirements"
-            ),
-            (
-                f"site:{jurisdiction_domain} "
-                "marriage certificate documents"
-            ),
-        ]
-
-    # KP-specific local-government searches
-    if jurisdiction == "Khyber Pakhtunkhwa":
-
-        queries = [
-            f"site:lgkp.gov.pk marriage registration {question}",
-            f"site:lgkp.gov.pk marriage certificate {question}",
-            f"site:lgkp.gov.pk nikah registration {question}",
-            (
-                "site:lgkp.gov.pk "
-                "registration marriage divorce"
-            ),
-            (
-                "site:lgkp.gov.pk "
-                "marriage registration requirements"
-            ),
-        ]
-
-    # --------------------------------------------------------
-    # SEARCH OFFICIAL SOURCES
-    # --------------------------------------------------------
-
-    sources = perform_search(
-        queries=queries,
-        official_domains=official_domains,
-        max_results=8,
-    )
-
-    official_sources = [
-        source
-        for source in sources
-        if source.get("official")
-    ]
-
-    if official_sources:
-
-        return {
-            "sources": unique_sources(
-                official_sources,
-                limit=5,
-            ),
-            "rag_results": [],
-            "jurisdiction": jurisdiction,
-            "attempts": 1,
-        }
-
-    # --------------------------------------------------------
-    # FALLBACK SEARCH
-    # --------------------------------------------------------
-
-    fallback_queries = [
-        f"marriage registration Pakistan {question}",
-        f"marriage certificate Pakistan {question}",
-        f"nikah registration Pakistan {question}",
-        f"official marriage registration requirements {question}",
-    ]
+    # ========================================================
+    # SPECIFIC JURISDICTION
+    # ========================================================
 
     if jurisdiction:
 
-        fallback_queries.insert(
-            0,
+        jurisdiction_domains = (
+            JURISDICTION_DOMAINS.get(
+                jurisdiction,
+                ["gov.pk"],
+            )
+        )
+
+        if jurisdiction == "Khyber Pakhtunkhwa":
+
+            queries = [
+
+                (
+                    "site:lgkp.gov.pk "
+                    f"marriage registration {question}"
+                ),
+
+                (
+                    "site:lgkp.gov.pk "
+                    f"marriage certificate {question}"
+                ),
+
+                (
+                    "site:lgkp.gov.pk "
+                    f"nikah registration {question}"
+                ),
+
+                (
+                    "site:lgkp.gov.pk "
+                    "registration certificate nikkah"
+                ),
+
+            ]
+
+        else:
+
+            primary_domain = (
+                jurisdiction_domains[0]
+                if jurisdiction_domains
+                else "gov.pk"
+            )
+
+            queries = [
+
+                (
+                    f"site:{primary_domain} "
+                    f"marriage registration {question}"
+                ),
+
+                (
+                    f"site:{primary_domain} "
+                    f"marriage certificate {question}"
+                ),
+
+                (
+                    f"site:{primary_domain} "
+                    f"nikah registration {question}"
+                ),
+
+                (
+                    f"site:{primary_domain} "
+                    "marriage registration requirements"
+                ),
+
+                (
+                    f"site:{primary_domain} "
+                    "marriage certificate documents"
+                ),
+            ]
+
+        sources = perform_search(
+            queries=queries,
+            official_domains=jurisdiction_domains,
+            max_results=10,
+        )
+
+        official_sources = [
+            source
+            for source in sources
+            if source.get("official")
+        ]
+
+        if official_sources:
+
+            return {
+
+                "sources": unique_sources(
+                    official_sources,
+                    limit=8,
+                ),
+
+                "rag_results": [],
+
+                "jurisdiction": jurisdiction,
+
+                "attempts": 1,
+            }
+
+        # ----------------------------------------------------
+        # Fallback
+        # ----------------------------------------------------
+
+        fallback_queries = [
+
             (
                 f"{jurisdiction} "
                 f"marriage registration "
                 f"{question}"
             ),
+
+            (
+                f"{jurisdiction} "
+                "marriage certificate "
+                "requirements"
+            ),
+
+            (
+                f"{jurisdiction} "
+                "nikah registration "
+                "procedure"
+            ),
+        ]
+
+        sources = perform_search(
+            queries=fallback_queries,
+            official_domains=jurisdiction_domains,
+            max_results=10,
         )
 
-    sources = perform_search(
-        queries=fallback_queries,
-        official_domains=official_domains,
-        max_results=8,
+        official_sources = [
+            source
+            for source in sources
+            if source.get("official")
+        ]
+
+        return {
+
+            "sources": unique_sources(
+                official_sources,
+                limit=8,
+            ),
+
+            "rag_results": [],
+
+            "jurisdiction": jurisdiction,
+
+            "attempts": 2,
+        }
+
+    # ========================================================
+    # NO AREA / PROVINCE
+    # ========================================================
+
+    all_sources = []
+
+    marriage_queries = {
+
+        "Punjab": [
+            (
+                "site:lgcd.punjab.gov.pk "
+                "registration marriage"
+            ),
+            (
+                "site:lgcd.punjab.gov.pk "
+                "marriage registration certificate"
+            ),
+            (
+                "site:punjab.gov.pk "
+                "marriage registration"
+            ),
+        ],
+
+        "Sindh": [
+            (
+                "site:sindh.gov.pk "
+                "marriage registration"
+            ),
+            (
+                "site:sindh.gov.pk "
+                "marriage certificate"
+            ),
+        ],
+
+        "Khyber Pakhtunkhwa": [
+            (
+                "site:lgkp.gov.pk "
+                "registration certificate nikkah"
+            ),
+            (
+                "site:lgkp.gov.pk "
+                "marriage registration"
+            ),
+        ],
+
+        "Balochistan": [
+            (
+                "site:balochistan.gov.pk "
+                "marriage registration"
+            ),
+            (
+                "site:balochistan.gov.pk "
+                "marriage certificate"
+            ),
+        ],
+
+        "Islamabad Capital Territory": [
+            (
+                "site:islamabad.gov.pk "
+                "marriage registration"
+            ),
+            (
+                "site:ictadministration.gov.pk "
+                "marriage certificate"
+            ),
+        ],
+
+        "Azad Jammu and Kashmir": [
+            (
+                "site:ajk.gov.pk "
+                "marriage registration"
+            ),
+            (
+                "site:ajk.gov.pk "
+                "marriage certificate"
+            ),
+        ],
+
+        "Gilgit-Baltistan": [
+            (
+                "site:gilgitbaltistan.gov.pk "
+                "marriage registration"
+            ),
+            (
+                "site:gilgitbaltistan.gov.pk "
+                "marriage certificate"
+            ),
+        ],
+    }
+
+    for region in ALL_JURISDICTIONS:
+
+        queries = marriage_queries.get(
+            region,
+            [],
+        )
+
+        domains = JURISDICTION_DOMAINS.get(
+            region,
+            ["gov.pk"],
+        )
+
+        sources = perform_search(
+            queries=queries,
+            official_domains=domains,
+            max_results=6,
+        )
+
+        official_sources = [
+            source
+            for source in sources
+            if source.get("official")
+        ]
+
+        for source in official_sources:
+
+            source_copy = dict(
+                source
+            )
+
+            source_copy[
+                "jurisdiction"
+            ] = region
+
+            all_sources.append(
+                source_copy
+            )
+
+    final_sources = unique_sources(
+        all_sources,
+        limit=20,
     )
 
-    official_sources = [
-        source
-        for source in sources
-        if source.get("official")
-    ]
-
     return {
-        "sources": unique_sources(
-            official_sources,
-            limit=5,
-        ),
+
+        "sources": final_sources,
+
         "rag_results": [],
-        "jurisdiction": jurisdiction,
-        "attempts": 2,
+
+        "jurisdiction": None,
+
+        "all_jurisdictions": True,
+
+        "jurisdictions_searched": (
+            ALL_JURISDICTIONS
+        ),
+
+        "attempts": 1,
     }
 
 
@@ -519,12 +1183,6 @@ def research_passport(
     question,
     language,
 ):
-    """
-    Dedicated Passport research path.
-
-    Fresh/new/first-time passport questions are searched
-    directly against the official DGI&P domain.
-    """
 
     question_lower = (
         question or ""
@@ -599,30 +1257,25 @@ def research_passport(
             f"site:dgip.gov.pk {question}",
             (
                 "site:dgip.gov.pk "
-                "new passport "
-                "first time applicant "
+                "new passport first time applicant "
                 "requirements"
             ),
             (
                 "site:dgip.gov.pk "
-                "ordinary passport "
-                "first time "
+                "ordinary passport first time "
                 "documents required"
             ),
             (
                 "site:dgip.gov.pk "
-                "new passport "
-                "application process"
+                "new passport application process"
             ),
             (
                 "site:dgip.gov.pk "
-                "ordinary passport "
-                "requirements Pakistan"
+                "ordinary passport requirements Pakistan"
             ),
             (
                 "site:dgip.gov.pk "
-                "passport process "
-                "photograph biometrics data entry"
+                "passport process photograph biometrics"
             ),
         ]
 
@@ -632,18 +1285,15 @@ def research_passport(
             f"site:dgip.gov.pk {question}",
             (
                 "site:dgip.gov.pk "
-                "passport renewal "
-                "requirements"
+                "passport renewal requirements"
             ),
             (
                 "site:dgip.gov.pk "
-                "passport renewal "
-                "documents"
+                "passport renewal documents"
             ),
             (
                 "site:dgip.gov.pk "
-                "passport renewal "
-                "process"
+                "passport renewal process"
             ),
         ]
 
@@ -653,18 +1303,15 @@ def research_passport(
             f"site:dgip.gov.pk {question}",
             (
                 "site:dgip.gov.pk "
-                "passport modification "
-                "requirements"
+                "passport modification requirements"
             ),
             (
                 "site:dgip.gov.pk "
-                "passport modification "
-                "documents"
+                "passport modification documents"
             ),
             (
                 "site:dgip.gov.pk "
-                "passport correction "
-                "process"
+                "passport correction process"
             ),
         ]
 
@@ -704,12 +1351,16 @@ def research_passport(
     if official_sources:
 
         return {
+
             "sources": unique_sources(
                 official_sources,
                 limit=5,
             ),
+
             "rag_results": [],
+
             "jurisdiction": None,
+
             "attempts": 1,
         }
 
@@ -717,8 +1368,7 @@ def research_passport(
         f"site:dgip.gov.pk passport {question}",
         (
             "site:dgip.gov.pk "
-            "ordinary passport "
-            "requirements Pakistan"
+            "ordinary passport requirements Pakistan"
         ),
         (
             "site:dgip.gov.pk "
@@ -743,12 +1393,16 @@ def research_passport(
     ]
 
     return {
+
         "sources": unique_sources(
             official_sources,
             limit=5,
         ),
+
         "rag_results": [],
+
         "jurisdiction": None,
+
         "attempts": 2,
     }
 
@@ -762,7 +1416,9 @@ def research_vaccination(
     language,
 ):
 
-    question_lower = question.lower()
+    question_lower = (
+        question or ""
+    ).lower()
 
     hajj_question = any(
         term in question_lower
@@ -1020,6 +1676,7 @@ Saudi employment visa holders.
     queries = []
 
     if "polio" in question_lower:
+
         queries.append(
             "site:nhsrc.gov.pk "
             "polio vaccination certificate "
@@ -1027,6 +1684,7 @@ Saudi employment visa holders.
         )
 
     if "yellow fever" in question_lower:
+
         queries.append(
             "site:nhsrc.gov.pk "
             "yellow fever vaccination certificate "
@@ -1054,12 +1712,16 @@ Saudi employment visa holders.
     ]
 
     return {
+
         "sources": unique_sources(
             official_sources,
             limit=5,
         ),
+
         "rag_results": [],
+
         "jurisdiction": None,
+
         "attempts": 1,
     }
 
@@ -1100,12 +1762,16 @@ def research_nadra(
     ]
 
     return {
+
         "sources": unique_sources(
             official_sources,
             limit=5,
         ),
+
         "rag_results": rag_results,
+
         "jurisdiction": None,
+
         "attempts": 1,
     }
 
@@ -1147,12 +1813,16 @@ def research_protector(
     ]
 
     return {
+
         "sources": unique_sources(
             official_sources,
             limit=5,
         ),
+
         "rag_results": [],
+
         "jurisdiction": None,
+
         "attempts": 1,
     }
 
@@ -1200,8 +1870,19 @@ def research_department(
 
     if jurisdiction:
 
-        jurisdiction_domain = get_jurisdiction_domain(
-            jurisdiction
+        jurisdiction_domains = (
+            JURISDICTION_DOMAINS.get(
+                jurisdiction,
+                [],
+            )
+        )
+
+        jurisdiction_domain = (
+            jurisdiction_domains[0]
+            if jurisdiction_domains
+            else get_jurisdiction_domain(
+                jurisdiction
+            )
         )
 
         if jurisdiction_domain:
@@ -1249,12 +1930,16 @@ def research_department(
     if official_sources:
 
         return {
+
             "sources": unique_sources(
                 official_sources,
                 limit=5,
             ),
+
             "rag_results": [],
+
             "jurisdiction": jurisdiction,
+
             "attempts": 1,
         }
 
@@ -1309,12 +1994,16 @@ def research_department(
     ]
 
     return {
+
         "sources": unique_sources(
             official_sources,
             limit=5,
         ),
+
         "rag_results": [],
+
         "jurisdiction": jurisdiction,
+
         "attempts": 2,
     }
 
@@ -1396,11 +2085,19 @@ def research_question(
             "new born",
             "child birth",
             "registration of birth",
+            "new birth certificate",
+            "get birth certificate",
+            "obtain birth certificate",
+            "birth certificate procedure",
+            "birth certificate requirements",
+            "birth certificate documents",
             "پیدائش",
             "پیدائش سرٹیفکیٹ",
             "پیدائش رجسٹریشن",
             "بچے کی پیدائش",
             "پیدائش کا اندراج",
+            "نیا پیدائش سرٹیفکیٹ",
+            "پیدائش کا سرٹیفکیٹ",
         ]
 
         is_birth_question = any(
@@ -1432,6 +2129,8 @@ def research_question(
             "nikah nama registration",
             "marriage document",
             "marriage documents",
+            "marriage certificate procedure",
+            "marriage certificate requirements",
             "شادی",
             "شادی رجسٹریشن",
             "شادی کا سرٹیفکیٹ",
