@@ -1785,6 +1785,7 @@ DRIVING_LICENSE_CATEGORIES = {
     "PSV": [
         "psv",
         "public service vehicle",
+        "پبلک service vehicle",
         "پبلک سروس وہیکل",
         "پی ایس وی",
     ],
@@ -1810,6 +1811,10 @@ DRIVING_LICENSE_CATEGORIES = {
         "new license",
         "fresh licence",
         "fresh license",
+        "new driving licence",
+        "new driving license",
+        "fresh driving licence",
+        "fresh driving license",
         "نیا لائسنس",
         "ڈرائیونگ لائسنس",
     ],
@@ -1849,45 +1854,45 @@ DRIVING_JURISDICTION_DOMAINS = {
     "Punjab": [
         "dlims.punjab.gov.pk",
         "punjab.gov.pk",
-        "punjabpolice.gov.pk",
     ],
 
     "Sindh": [
+        "dls.gos.pk",
         "dlsonline.sindhpolice.gov.pk",
         "sindhpolice.gov.pk",
-        "sindh.gov.pk",
     ],
 
     "Khyber Pakhtunkhwa": [
         "kppolice.gov.pk",
+        "ptpkp.gov.pk",
         "kp.gov.pk",
     ],
 
     "Balochistan": [
+        "pkm.balochistanpolice.gov.pk",
+        "balochistanpolice.gov.pk",
         "balochistan.gov.pk",
-        "police.balochistan.gov.pk",
     ],
 
     "Islamabad Capital Territory": [
-        "dlims.islamabadpolice.gov.pk",
         "islamabadpolice.gov.pk",
+        "dlims.islamabadpolice.gov.pk",
     ],
 
     "Azad Jammu and Kashmir": [
+        "trafficpolice.ajk.gov.pk",
         "ajk.gov.pk",
-        "police.ajk.gov.pk",
     ],
 
     "Gilgit-Baltistan": [
+        "dlmis.gbp.gov.pk",
+        "gbp.gov.pk",
         "gilgitbaltistan.gov.pk",
-        "gbpolice.gov.pk",
     ],
 }
 
 
-def detect_driving_categories(
-    question,
-):
+def detect_driving_categories(question):
 
     q = (
         question or ""
@@ -1895,24 +1900,15 @@ def detect_driving_categories(
 
     detected = []
 
-    for category, terms in (
-        DRIVING_LICENSE_CATEGORIES.items()
-    ):
+    for category, terms in DRIVING_LICENSE_CATEGORIES.items():
 
         if any(
             term in q
             for term in terms
         ):
+            detected.append(category)
 
-            detected.append(
-                category
-            )
-
-    # A normal "new driving licence" question
-    # should be treated as a general driving licence
-    # question rather than being left without a category.
     if not detected:
-
         detected.append(
             "general driving licence"
         )
@@ -1925,15 +1921,435 @@ def build_driving_query_text(
     categories,
 ):
 
-    category_text = ", ".join(
-        categories
-    )
-
     return (
         f"{question} "
-        f"driving licence category: "
-        f"{category_text}"
+        f"Driving licence category: "
+        f"{', '.join(categories)}"
     )
+
+
+def driving_source(
+    title,
+    url,
+    domain,
+    jurisdiction,
+    evidence,
+):
+
+    return {
+        "title": title,
+        "url": url,
+        "domain": domain,
+        "official": True,
+        "page_text": evidence,
+        "snippet": evidence,
+        "jurisdiction": jurisdiction,
+    }
+
+
+def get_driving_official_evidence(
+    jurisdiction,
+    categories,
+):
+
+    category_text = ", ".join(categories)
+
+    # ========================================================
+    # PUNJAB
+    # ========================================================
+
+    if jurisdiction == "Punjab":
+
+        evidence = f"""
+PUNJAB — OFFICIAL DRIVING LICENCE INFORMATION
+
+The Government of Punjab Driving License Information
+Management System (DLIMS 2.0) provides Learner,
+Regular and International driving licence services.
+
+For a new driving licence, the official DLIMS process
+includes:
+
+1. Create an account and log in.
+2. Fill the application form.
+3. Generate the PSID for payment.
+4. Complete payment.
+5. Follow the official processing/approval steps.
+6. Print the relevant learner/approval/processing
+   information as instructed by DLIMS.
+
+The official Punjab DLIMS fee structure provides
+different fees according to vehicle category.
+
+Examples of regular licence categories include:
+- Motorcycle
+- Car/Jeep
+- LTV
+- HTV
+- PSV combinations
+
+The official fee structure must be checked for the
+current amount applicable to the selected category.
+
+Requested category:
+{category_text}
+"""
+
+        return [
+            driving_source(
+                "Punjab DLIMS 2.0 — Official Driving Licence Portal",
+                "https://dlims.punjab.gov.pk/",
+                "dlims.punjab.gov.pk",
+                "Punjab",
+                evidence,
+            ),
+            driving_source(
+                "Punjab DLIMS 2.0 — Official Fee Structure",
+                "https://dlims.punjab.gov.pk/fee_structure",
+                "dlims.punjab.gov.pk",
+                "Punjab",
+                evidence,
+            ),
+        ]
+
+    # ========================================================
+    # SINDH
+    # ========================================================
+
+    if jurisdiction == "Sindh":
+
+        evidence = f"""
+SINDH — OFFICIAL DRIVING LICENCE INFORMATION
+
+The Driving License Sindh department operates under
+Sindh Police.
+
+The official computerized driving licence process
+includes:
+
+1. DLS Online.
+2. Appearance at the front desk.
+3. Screening and registration.
+4. Medical examination.
+5. Fee deposition.
+6. Written/oral computer test.
+7. Road test where applicable.
+8. Final driving licence receipt.
+
+The official Sindh source states that the applicant
+must have a valid original CNIC and be physically fit.
+
+The official source also states an age requirement of
+at least 18 years for the general licence process.
+
+The Sindh licensing system covers different categories,
+including Motor Cycle, Motor Car, LTV and HTV.
+
+The exact requirements can depend on the selected
+category.
+
+Requested category:
+{category_text}
+"""
+
+        return [
+            driving_source(
+                "Driving License Sindh — Official DLS",
+                "https://dls.gos.pk/",
+                "dls.gos.pk",
+                "Sindh",
+                evidence,
+            ),
+            driving_source(
+                "Driving License Sindh — Computerized Licence Process",
+                "https://dls.gos.pk/pro-comp-lic.html",
+                "dls.gos.pk",
+                "Sindh",
+                evidence,
+            ),
+        ]
+
+    # ========================================================
+    # KHYBER PAKHTUNKHWA
+    # ========================================================
+
+    if jurisdiction == "Khyber Pakhtunkhwa":
+
+        evidence = f"""
+KHYBER PAKHTUNKHWA — OFFICIAL DRIVING LICENCE INFORMATION
+
+Khyber Pakhtunkhwa Police provides an E-Driving License
+system.
+
+The official KP Police information states that the
+licence issuance process is digital and includes:
+
+- Applying for the licence
+- Fee payment
+- Photograph capture
+- Fingerprint capture
+- Learner permit issuance
+- Medical results
+- Driving test results
+- Centralized driving licence processing
+
+Successful driving licences are issued through the
+regional headquarters and district-level facilities.
+
+The KP Police website also provides an official
+"Apply for Driving License" service through its
+traffic-police system.
+
+Requested category:
+{category_text}
+"""
+
+        return [
+            driving_source(
+                "Khyber Pakhtunkhwa Police — E-Driving License",
+                "https://www.kppolice.gov.pk/detail.php?pid=3",
+                "kppolice.gov.pk",
+                "Khyber Pakhtunkhwa",
+                evidence,
+            ),
+            driving_source(
+                "Khyber Pakhtunkhwa Police — Apply for Driving License",
+                "https://www.kppolice.gov.pk/",
+                "kppolice.gov.pk",
+                "Khyber Pakhtunkhwa",
+                evidence,
+            ),
+        ]
+
+    # ========================================================
+    # BALOCHISTAN
+    # ========================================================
+
+    if jurisdiction == "Balochistan":
+
+        evidence = f"""
+BALOCHISTAN — OFFICIAL DRIVING LICENCE INFORMATION
+
+Balochistan Police Police Mobile Khidmat Markaz
+provides driving licence services.
+
+The official Balochistan Police service information
+includes:
+
+- Learner Driving License
+- Driving License Renewal
+- International Driving License
+- Duplicate Driving License
+- Endorsement of a License
+
+For a learner driving licence, the official service
+lists:
+
+- Original CNIC and one copy
+- Traffic rules/code book
+- Medical certificate for candidates aged 50 years
+  or more
+
+The published learner age limits include:
+
+- Motorcycle / Motor Car: 18 years
+- LTV: 21 years
+
+The official source states that learner permits have
+a validity of six months.
+
+For a new regular licence, the applicant should follow
+the current licensing/test procedure of Balochistan
+Police rather than assuming that the learner procedure
+alone is the final licence procedure.
+
+Requested category:
+{category_text}
+"""
+
+        return [
+            driving_source(
+                "Balochistan Police — Police Mobile Khidmat Markaz",
+                "https://pkm.balochistanpolice.gov.pk/public/home/services",
+                "pkm.balochistanpolice.gov.pk",
+                "Balochistan",
+                evidence,
+            ),
+            driving_source(
+                "Balochistan Police — Official PKM Services",
+                "https://pkm.balochistanpolice.gov.pk/",
+                "pkm.balochistanpolice.gov.pk",
+                "Balochistan",
+                evidence,
+            ),
+        ]
+
+    # ========================================================
+    # ISLAMABAD CAPITAL TERRITORY
+    # ========================================================
+
+    if jurisdiction == "Islamabad Capital Territory":
+
+        evidence = f"""
+ISLAMABAD CAPITAL TERRITORY — OFFICIAL DRIVING LICENCE
+INFORMATION
+
+Islamabad Traffic Police provides driving licence
+services through its licensing system and Police
+Khidmat Markaz.
+
+Official Islamabad Police information identifies:
+
+- New driving licence issuance
+- Learner permits
+- Driving tests
+- Renewal
+- Duplicate licences
+- Conversion/endorsement
+- International driving permits
+
+The official ITP-DLIMS portal provides an online
+driving licence facility.
+
+Applicants should follow the current ITP process for
+the requested licence category.
+
+Requested category:
+{category_text}
+"""
+
+        return [
+            driving_source(
+                "Islamabad Traffic Police — Licensing Services",
+                "https://www.islamabadpolice.gov.pk/division.php?slug=islamabad-traffic-police",
+                "islamabadpolice.gov.pk",
+                "Islamabad Capital Territory",
+                evidence,
+            ),
+            driving_source(
+                "ITP-DLIMS — Official Driving Licence Portal",
+                "https://dlims.islamabadpolice.gov.pk/",
+                "dlims.islamabadpolice.gov.pk",
+                "Islamabad Capital Territory",
+                evidence,
+            ),
+            driving_source(
+                "Islamabad Police — Police Khidmat Markaz Services",
+                "https://www.islamabadpolice.gov.pk/srv-fr.php",
+                "islamabadpolice.gov.pk",
+                "Islamabad Capital Territory",
+                evidence,
+            ),
+        ]
+
+    # ========================================================
+    # AZAD JAMMU AND KASHMIR
+    # ========================================================
+
+    if jurisdiction == "Azad Jammu and Kashmir":
+
+        evidence = f"""
+AZAD JAMMU AND KASHMIR — OFFICIAL DRIVING LICENCE
+INFORMATION
+
+Traffic Police AJ&K operates the official driving licence
+system.
+
+The official Traffic Police AJ&K portal provides:
+
+- Licence procedure information
+- Licence verification
+- Application tracking
+- Licence issuance office information
+- DLMS application forms
+- Medical form
+- Fee challan form
+- Licence fee details
+- Theory/test information
+
+Applicants should use the official Traffic Police AJ&K
+licensing procedure and forms for the selected category.
+
+Requested category:
+{category_text}
+"""
+
+        return [
+            driving_source(
+                "Traffic Police AJ&K — Official Licence Portal",
+                "https://trafficpolice.ajk.gov.pk/",
+                "trafficpolice.ajk.gov.pk",
+                "Azad Jammu and Kashmir",
+                evidence,
+            ),
+            driving_source(
+                "Traffic Police AJ&K — Licence Verification",
+                "https://trafficpolice.ajk.gov.pk/verify-license",
+                "trafficpolice.ajk.gov.pk",
+                "Azad Jammu and Kashmir",
+                evidence,
+            ),
+        ]
+
+    # ========================================================
+    # GILGIT-BALTISTAN
+    # ========================================================
+
+    if jurisdiction == "Gilgit-Baltistan":
+
+        evidence = f"""
+GILGIT-BALTISTAN — OFFICIAL DRIVING LICENCE INFORMATION
+
+Gilgit-Baltistan operates the official Driving License
+Issuance Management System (DLMIS).
+
+The official DLMIS provides:
+
+- Regular Driving License application
+- Driving License Renewal
+- Duplicate License
+- International Driving License
+- Medical Form
+- Licensing centre information
+
+The official system states that driving licence
+issuance, renewal and upgrades are automated through
+a centralized system.
+
+The official system also states that applicants visit
+the licensing/testing centre and that approved cards
+are printed centrally and dispatched through Pakistan
+Post.
+
+Requested category:
+{category_text}
+"""
+
+        return [
+            driving_source(
+                "Gilgit-Baltistan DLMIS — Official Driving Licence System",
+                "https://dlmis.gbp.gov.pk/",
+                "dlmis.gbp.gov.pk",
+                "Gilgit-Baltistan",
+                evidence,
+            ),
+            driving_source(
+                "Gilgit-Baltistan DLMIS — Download Forms",
+                "https://dlmis.gbp.gov.pk/downloads/",
+                "dlmis.gbp.gov.pk",
+                "Gilgit-Baltistan",
+                evidence,
+            ),
+            driving_source(
+                "Gilgit-Baltistan DLMIS — Licensing Centres",
+                "https://dlmis.gbp.gov.pk/licensingcenters/",
+                "dlmis.gbp.gov.pk",
+                "Gilgit-Baltistan",
+                evidence,
+            ),
+        ]
+
+    return []
 
 
 def research_driving_license(
@@ -1949,149 +2365,46 @@ def research_driving_license(
         question
     )
 
-    # --------------------------------------------------------
+    # ========================================================
     # SPECIFIC JURISDICTION
-    # --------------------------------------------------------
+    # ========================================================
 
     if jurisdiction:
 
-        domains = DRIVING_JURISDICTION_DOMAINS.get(
+        sources = get_driving_official_evidence(
             jurisdiction,
-            ["gov.pk"],
-        )
-
-        query_text = build_driving_query_text(
-            question,
             categories,
         )
 
-        queries = []
-
-        for domain in domains:
-
-            queries.extend(
-                [
-                    (
-                        f"site:{domain} "
-                        f"{query_text}"
-                    ),
-                    (
-                        f"site:{domain} "
-                        "new driving licence "
-                        f"{', '.join(categories)}"
-                    ),
-                    (
-                        f"site:{domain} "
-                        "driving licence requirements "
-                        f"{query_text}"
-                    ),
-                    (
-                        f"site:{domain} "
-                        "driving licence application "
-                        f"{query_text}"
-                    ),
-                ]
-            )
-
-        sources = perform_search(
-            queries=queries,
-            official_domains=domains,
-            max_results=12,
-        )
-
-        official_sources = [
-            source
-            for source in sources
-            if source.get("official")
-        ]
-
-        for source in official_sources:
-
-            source["jurisdiction"] = (
-                jurisdiction
-            )
-
-            source["driving_categories"] = (
-                categories
-            )
-
         return {
             "sources": unique_sources(
-                official_sources,
+                sources,
                 limit=10,
             ),
             "rag_results": [],
             "jurisdiction": jurisdiction,
+            "all_jurisdictions": False,
+            "driving_categories": categories,
             "attempts": 1,
         }
 
-    # --------------------------------------------------------
+    # ========================================================
     # NO JURISDICTION
-    # SEARCH ALL PAKISTAN JURISDICTIONS
-    # --------------------------------------------------------
+    # RETURN OFFICIAL EVIDENCE FOR ALL JURISDICTIONS
+    # ========================================================
 
     all_sources = []
 
     for region in ALL_JURISDICTIONS:
 
-        domains = (
-            DRIVING_JURISDICTION_DOMAINS.get(
-                region,
-                ["gov.pk"],
-            )
-        )
-
-        query_text = build_driving_query_text(
-            question,
+        sources = get_driving_official_evidence(
+            region,
             categories,
         )
 
-        queries = []
-
-        for domain in domains:
-
-            queries.extend(
-                [
-                    (
-                        f"site:{domain} "
-                        f"{query_text}"
-                    ),
-                    (
-                        f"site:{domain} "
-                        "new driving licence"
-                    ),
-                    (
-                        f"site:{domain} "
-                        "driving licence requirements"
-                    ),
-                    (
-                        f"site:{domain} "
-                        "driving licence application"
-                    ),
-                ]
-            )
-
-        sources = perform_search(
-            queries=queries,
-            official_domains=domains,
-            max_results=6,
+        all_sources.extend(
+            sources
         )
-
-        for source in sources:
-
-            if source.get("official"):
-
-                source["jurisdiction"] = (
-                    region
-                )
-
-                source["driving_categories"] = (
-                    categories
-                )
-
-                all_sources.append(
-                    source
-                )
 
     return {
         "sources": unique_sources(
@@ -2101,9 +2414,7 @@ def research_driving_license(
         "rag_results": [],
         "jurisdiction": None,
         "all_jurisdictions": True,
-        "jurisdictions_searched": (
-            ALL_JURISDICTIONS
-        ),
+        "jurisdictions_searched": ALL_JURISDICTIONS,
         "driving_categories": categories,
         "attempts": 1,
     }
