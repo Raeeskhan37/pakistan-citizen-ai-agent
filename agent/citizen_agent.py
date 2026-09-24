@@ -575,12 +575,13 @@ def ask_citizen_agent(
 
     if all_jurisdictions:
 
-        # Do not reduce to five here.
-        selected_sources = verified_sources
+    # Keep all official sources for the UI,
+    # but use only a controlled number for AI evidence.
+    selected_sources = verified_sources[:10]
 
-    else:
+else:
 
-        selected_sources = verified_sources[:8]
+    selected_sources = verified_sources[:8]
 
     # --------------------------------------------------------
     # Work visa fallback
@@ -747,43 +748,51 @@ VERIFIED OFFICIAL WEB EVIDENCE
     # --------------------------------------------------------
 
     return {
-        "department": department,
+    "department": department,
 
-        "jurisdiction": jurisdiction,
+    "jurisdiction": jurisdiction,
 
-        "answer": answer,
+    "answer": answer,
 
-        # Keep more sources available for all-province
-        # answers.
-        "sources": (
-            selected_sources
-            if all_jurisdictions
-            else selected_sources[:8]
-        ),
+    "sources": (
+        verified_sources
+        if all_jurisdictions
+        else selected_sources
+    ),
 
-        "source_count": len(
-            selected_sources
-        ),
+    "source_count": len(
+        verified_sources
+        if all_jurisdictions
+        else selected_sources
+    ),
 
-        "official_source_count": (
-            official_count
-        ),
+    "official_source_count": (
+        sum(
+            1
+            for source in (
+                verified_sources
+                if all_jurisdictions
+                else selected_sources
+            )
+            if source.get("official")
+        )
+    ),
 
-        "research_attempts": research.get(
-            "attempts",
-            1,
-        ),
+    "research_attempts": research.get(
+        "attempts",
+        1,
+    ),
 
-        "rag_result_count": len(
-            rag_results
-        ),
+    "rag_result_count": len(
+        rag_results
+    ),
 
-        "checked_date": datetime.now().strftime(
-            "%d %B %Y"
-        ),
+    "checked_date": datetime.now().strftime(
+        "%d %B %Y"
+    ),
 
-        "warning": verification.get(
-            "warning",
-            "",
-        ),
-    }
+    "warning": verification.get(
+        "warning",
+        "",
+    ),
+}
