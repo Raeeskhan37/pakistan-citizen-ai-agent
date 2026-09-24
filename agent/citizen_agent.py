@@ -410,7 +410,7 @@ def build_all_province_instruction(
     # --------------------------------------------------------
 
     if department == "Driving Licence":
-    return """
+        return """
 IMPORTANT ANSWERING RULE — DRIVING LICENCE
 
 The citizen did NOT specify a province or territory.
