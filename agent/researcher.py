@@ -2074,9 +2074,9 @@ USER REQUESTED CATEGORY:
     # KHYBER PAKHTUNKHWA
     # ========================================================
 
-    # KP
-if jurisdiction == "Khyber Pakhtunkhwa":
-    evidence = f"""
+    if jurisdiction == "Khyber Pakhtunkhwa":
+
+        evidence = f"""
 JURISDICTION: KHYBER PAKHTUNKHWA
 
 RESPONSIBLE AUTHORITIES:
@@ -2088,91 +2088,92 @@ PRIMARY DIGITAL APPLICATION:
 Dastak App
 
 OFFICIAL KP TRANSPORT DIGITAL LICENSING:
-The KP Transport Department is digitizing driving licence
-services and the official KP transport licensing workflow
-uses the Dastak App for online driving licence applications.
+The KP transport licensing workflow uses the Dastak App
+for online driving licence services.
 
-Dastak is therefore an important official digital route
-for KP driving licence services.
+Dastak is an important official digital route for
+KP driving licence applications and related services.
 
 LICENCE CATEGORIES:
 The official KP transport licensing system covers:
+
 - Learner Driving Licence
 - LTV Driving Licence
 - HTV Driving Licence
 - International Driving Licence
 
 NEW LICENCE:
-For new driving licences, applicants can use the
-digital Dastak workflow where the relevant service is
-available.
+For a new driving licence, applicants can use the
+Dastak digital workflow where the relevant service
+is available.
 
-The digital workflow includes user profiling, CNIC/NADRA
-verification, document/attachment verification, officer
-approval, payment and licence processing.
+The digital workflow may include:
+- Applicant profile
+- CNIC/NADRA verification
+- Required documents or attachments
+- Officer verification/approval
+- Payment
+- Licence processing
 
 RENEWAL:
-KP Transport Department officially lists:
-- LTV / PSV Driving Licence Renewal
-- HTV / PSV Driving Licence Renewal
-
-as notified public services.
+KP Transport Department also provides notified services
+for driving licence renewal, including LTV/PSV and
+HTV/PSV categories.
 
 IMPORTANT:
-The exact online steps shown to a citizen may depend on
-the licence category and the service currently available
-through Dastak.
+The exact online steps may vary according to the licence
+category and the service currently available through
+Dastak.
 
 POLICE SAHULAT MARKAZ:
-KP Police's official Police Sahulat Markaz application
-also provides driving-related services including:
+KP Police's official Police Sahulat Markaz also provides
+specific driving-related services including:
+
 - Learner permit
 - Traffic learner certificate
 - Duplicate driving licence
 
 Therefore:
-- Use Dastak as the primary digital route for the
-  KP Transport driving-licence workflow.
-- Mention Police Sahulat Markaz only for the specific
-  police services it officially provides.
-- Do not incorrectly state that Dastak is unrelated to
-  driving licences.
+- Dastak should be identified as the primary digital
+  route for the KP transport/driving licence workflow.
+- Police Sahulat Markaz may be mentioned for the specific
+  services it officially provides.
+- Do not state that Dastak is unrelated to driving licences.
 
 USER REQUESTED CATEGORY:
 {category_text}
 """
 
-    return [
-        driving_source(
-            "KP Transport Department — Official Public Services",
-            "https://transport.kp.gov.pk/public-service.php",
-            "transport.kp.gov.pk",
-            "Khyber Pakhtunkhwa",
-            evidence,
-        ),
-        driving_source(
-            "KP Government / KPITB — Transport License System",
-            "https://ecitizen.kp.gov.pk/storage/yearbook/KPITBAnnualReport2025.pdf",
-            "ecitizen.kp.gov.pk",
-            "Khyber Pakhtunkhwa",
-            evidence,
-        ),
-        driving_source(
-            "KP Government — Driving Licence Digitization / Dastak",
-            "https://dgipr.kp.gov.pk/09012025-11/",
-            "dgipr.kp.gov.pk",
-            "Khyber Pakhtunkhwa",
-            evidence,
-        ),
-        driving_source(
-            "KP Police — Police Sahulat Markaz",
-            "https://apipsm.kppolice.gov.pk/psm/VideoTutorial",
-            "apipsm.kppolice.gov.pk",
-            "Khyber Pakhtunkhwa",
-            evidence,
-        ),
-    ]
-
+        return [
+            driving_source(
+                "KP Transport Department — Official Public Services",
+                "https://transport.kp.gov.pk/public-service.php",
+                "transport.kp.gov.pk",
+                "Khyber Pakhtunkhwa",
+                evidence,
+            ),
+            driving_source(
+                "KP Government / KPITB — Transport License System",
+                "https://ecitizen.kp.gov.pk/storage/yearbook/KPITBAnnualReport2025.pdf",
+                "ecitizen.kp.gov.pk",
+                "Khyber Pakhtunkhwa",
+                evidence,
+            ),
+            driving_source(
+                "KP Government — Driving Licence Digitization / Dastak",
+                "https://dgipr.kp.gov.pk/09012025-11/",
+                "dgipr.kp.gov.pk",
+                "Khyber Pakhtunkhwa",
+                evidence,
+            ),
+            driving_source(
+                "KP Police — Police Sahulat Markaz",
+                "https://apipsm.kppolice.gov.pk/psm/VideoTutorial",
+                "apipsm.kppolice.gov.pk",
+                "Khyber Pakhtunkhwa",
+                evidence,
+            ),
+        ]
     # ========================================================
     # BALOCHISTAN
     # ========================================================
