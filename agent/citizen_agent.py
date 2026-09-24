@@ -401,7 +401,71 @@ def is_all_jurisdictions_research(
 # BUILD PROVINCE INSTRUCTION
 # ============================================================
 
-def build_all_province_instruction():
+def build_all_province_instruction(
+    department=None,
+):
+
+    # --------------------------------------------------------
+    # DRIVING LICENCE
+    # --------------------------------------------------------
+
+    if department == "Driving Licence":
+
+        return """
+IMPORTANT ANSWERING RULE — DRIVING LICENCE
+
+The citizen did NOT specify a province or territory.
+
+Therefore, provide the driving licence procedure
+separately for each jurisdiction.
+
+Use separate headings for:
+
+1. Punjab
+2. Sindh
+3. Khyber Pakhtunkhwa
+4. Balochistan
+5. Islamabad Capital Territory
+6. Azad Jammu and Kashmir
+7. Gilgit-Baltistan
+
+IMPORTANT:
+
+- Do NOT assume that the procedure is identical
+  across Pakistan.
+- Use only the evidence supplied for each jurisdiction.
+- Clearly identify the responsible authority.
+- Clearly identify the official online portal where
+  supported by the evidence.
+- Clearly identify learner versus regular licence.
+- Clearly identify the requested vehicle category,
+  such as:
+  - Motorcycle
+  - Motor Car / Car / Jeep
+  - LTV
+  - HTV
+  - PSV
+- Mention fees only when supported by official evidence.
+- Mention documents only when supported by official evidence.
+- Mention tests or medical requirements only when supported
+  by official evidence.
+- Do not copy Punjab requirements into KP.
+- Do not copy Sindh requirements into Balochistan.
+- Do not copy Islamabad requirements into Sindh.
+
+If official evidence for a jurisdiction is insufficient,
+say:
+
+"Official procedural details could not be fully verified
+from the government sources reviewed for this jurisdiction."
+
+Do NOT invent fees, documents, age requirements,
+testing requirements or processing times.
+"""
+
+    # --------------------------------------------------------
+    # BIRTH CERTIFICATE
+    # --------------------------------------------------------
 
     return """
 IMPORTANT ANSWERING RULE — ALL PROVINCES
@@ -452,7 +516,6 @@ CRC/B-Form is a separate NADRA identity document.
 The citizen asked about a BIRTH CERTIFICATE, so answer
 about CIVIL BIRTH REGISTRATION / BIRTH CERTIFICATE first.
 """
-
 
 # ============================================================
 # MAIN AGENT
@@ -645,7 +708,9 @@ def ask_citizen_agent(
     if all_jurisdictions:
 
         web_evidence = (
-            build_all_province_instruction()
+            build_all_province_instruction(
+                department
+            )
             + "\n\n"
             + web_evidence
         )
