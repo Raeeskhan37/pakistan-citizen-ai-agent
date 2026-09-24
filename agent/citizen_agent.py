@@ -636,9 +636,9 @@ def ask_citizen_agent(
 
     if all_jurisdictions:
 
-        # Keep a controlled number of official sources
-        # for the AI evidence/context.
-        selected_sources = verified_sources[:10]
+        # Driving licence without a jurisdiction requires
+        # evidence for all seven jurisdictions.
+        selected_sources = verified_sources[:20]
 
     else:
 
