@@ -1961,37 +1961,39 @@ def get_driving_official_evidence(
     if jurisdiction == "Punjab":
 
         evidence = f"""
-PUNJAB — OFFICIAL DRIVING LICENCE INFORMATION
+JURISDICTION: PUNJAB
 
-The Government of Punjab Driving License Information
-Management System (DLIMS 2.0) provides Learner,
-Regular and International driving licence services.
+RESPONSIBLE AUTHORITY:
+Government of Punjab — Driving Licence Information
+Management System (DLIMS 2.0).
 
-For a new driving licence, the official DLIMS process
-includes:
+OFFICIAL PORTAL:
+https://dlims.punjab.gov.pk/
+
+NEW DRIVING LICENCE:
+The official Punjab DLIMS provides Learner, Regular
+and International driving licence services.
+
+The online application process includes:
 
 1. Create an account and log in.
 2. Fill the application form.
-3. Generate the PSID for payment.
+3. Generate the PSID.
 4. Complete payment.
 5. Follow the official processing/approval steps.
 6. Print the relevant learner/approval/processing
    information as instructed by DLIMS.
 
-The official Punjab DLIMS fee structure provides
-different fees according to vehicle category.
+REGULAR LICENCE CATEGORIES:
+Motorcycle, Car/Jeep, LTV, HTV and PSV combinations
+are included in the official fee/category structure.
 
-Examples of regular licence categories include:
-- Motorcycle
-- Car/Jeep
-- LTV
-- HTV
-- PSV combinations
+IMPORTANT:
+The exact fee depends on the selected category and
+should be checked on the current official DLIMS fee
+structure.
 
-The official fee structure must be checked for the
-current amount applicable to the selected category.
-
-Requested category:
+USER REQUESTED CATEGORY:
 {category_text}
 """
 
@@ -2019,36 +2021,35 @@ Requested category:
     if jurisdiction == "Sindh":
 
         evidence = f"""
-SINDH — OFFICIAL DRIVING LICENCE INFORMATION
+JURISDICTION: SINDH
 
-The Driving License Sindh department operates under
-Sindh Police.
+RESPONSIBLE AUTHORITY:
+Sindh Police — Driving License Sindh (DLS).
 
-The official computerized driving licence process
-includes:
+OFFICIAL PORTAL:
+https://dls.gos.pk/
 
-1. DLS Online.
-2. Appearance at the front desk.
+NEW DRIVING LICENCE:
+The official computerized licence procedure includes:
+
+1. DLS online application/registration.
+2. Appearance at the DLS front desk.
 3. Screening and registration.
 4. Medical examination.
-5. Fee deposition.
+5. Fee payment.
 6. Written/oral computer test.
 7. Road test where applicable.
-8. Final driving licence receipt.
+8. Final licence receipt.
 
-The official Sindh source states that the applicant
-must have a valid original CNIC and be physically fit.
+GENERAL REQUIREMENTS:
+The official source identifies a valid original CNIC,
+physical fitness and a minimum age of 18 for the general
+licence process.
 
-The official source also states an age requirement of
-at least 18 years for the general licence process.
+CATEGORIES:
+Motorcycle, Motor Car, LTV and HTV are covered.
 
-The Sindh licensing system covers different categories,
-including Motor Cycle, Motor Car, LTV and HTV.
-
-The exact requirements can depend on the selected
-category.
-
-Requested category:
+USER REQUESTED CATEGORY:
 {category_text}
 """
 
@@ -2076,46 +2077,71 @@ Requested category:
     if jurisdiction == "Khyber Pakhtunkhwa":
 
         evidence = f"""
-KHYBER PAKHTUNKHWA — OFFICIAL DRIVING LICENCE INFORMATION
+JURISDICTION: KHYBER PAKHTUNKHWA
 
-Khyber Pakhtunkhwa Police provides an E-Driving License
-system.
+RESPONSIBLE AUTHORITY:
+Khyber Pakhtunkhwa Police / Traffic Police.
 
-The official KP Police information states that the
-licence issuance process is digital and includes:
+OFFICIAL POLICE WEBSITE:
+https://www.kppolice.gov.pk/
 
-- Applying for the licence
+E-DRIVING LICENCE:
+KP Police states that the driving licence issuance
+process is digital.
+
+The official E-Driving License information includes:
+
+- Apply for licence
 - Fee payment
 - Photograph capture
 - Fingerprint capture
 - Learner permit issuance
 - Medical results
 - Driving test results
-- Centralized driving licence processing
+- Centralized licence processing
+- Licence issuance at regional headquarters and
+  district-level facilities
 
-Successful driving licences are issued through the
-regional headquarters and district-level facilities.
+POLICE SAHULAT MARKAZ:
+The official KP Police Police Sahulat Markaz application
+provides digital services including:
 
-The KP Police website also provides an official
-"Apply for Driving License" service through its
-traffic-police system.
+- Learner permit
+- Learner driving licence
+- Traffic learner certificate
+- Duplicate driving licence
 
-Requested category:
+Therefore, for a person starting the driving process,
+the Police Sahulat Markaz service is relevant particularly
+to the learner-permit stage.
+
+IMPORTANT:
+Do NOT identify Dastak as the KP driving licence application.
+The official Dastak website is for arms licensing.
+
+USER REQUESTED CATEGORY:
 {category_text}
 """
 
         return [
             driving_source(
-                "Khyber Pakhtunkhwa Police — E-Driving License",
+                "KP Police — E-Driving License",
                 "https://www.kppolice.gov.pk/detail.php?pid=3",
                 "kppolice.gov.pk",
                 "Khyber Pakhtunkhwa",
                 evidence,
             ),
             driving_source(
-                "Khyber Pakhtunkhwa Police — Apply for Driving License",
+                "KP Police — Official Website",
                 "https://www.kppolice.gov.pk/",
                 "kppolice.gov.pk",
+                "Khyber Pakhtunkhwa",
+                evidence,
+            ),
+            driving_source(
+                "KP Police — Police Sahulat Markaz",
+                "https://apipsm.kppolice.gov.pk/psm/VideoTutorial",
+                "apipsm.kppolice.gov.pk",
                 "Khyber Pakhtunkhwa",
                 evidence,
             ),
@@ -2128,42 +2154,43 @@ Requested category:
     if jurisdiction == "Balochistan":
 
         evidence = f"""
-BALOCHISTAN — OFFICIAL DRIVING LICENCE INFORMATION
+JURISDICTION: BALOCHISTAN
 
-Balochistan Police Police Mobile Khidmat Markaz
-provides driving licence services.
+RESPONSIBLE AUTHORITY:
+Balochistan Police / Police Mobile Khidmat Markaz.
 
-The official Balochistan Police service information
-includes:
+OFFICIAL SERVICE:
+Police Mobile Khidmat Markaz provides driving licence
+services.
 
-- Learner Driving License
-- Driving License Renewal
-- International Driving License
-- Duplicate Driving License
-- Endorsement of a License
+The official service includes:
 
-For a learner driving licence, the official service
-lists:
+- Learner Driving Licence
+- Driving Licence Renewal
+- International Driving Licence
+- Duplicate Driving Licence
+- Endorsement of Licence
+
+LEARNER LICENCE:
+The official service lists:
 
 - Original CNIC and one copy
 - Traffic rules/code book
-- Medical certificate for candidates aged 50 years
-  or more
+- Medical certificate for applicants aged 50 or above
 
-The published learner age limits include:
+Published learner age requirements include:
 
 - Motorcycle / Motor Car: 18 years
 - LTV: 21 years
 
-The official source states that learner permits have
-a validity of six months.
+The learner licence is valid for six months.
 
-For a new regular licence, the applicant should follow
-the current licensing/test procedure of Balochistan
-Police rather than assuming that the learner procedure
-alone is the final licence procedure.
+IMPORTANT:
+Do not present learner requirements as the complete
+regular-licence procedure unless the official evidence
+supports the additional regular-licence steps.
 
-Requested category:
+USER REQUESTED CATEGORY:
 {category_text}
 """
 
@@ -2176,7 +2203,7 @@ Requested category:
                 evidence,
             ),
             driving_source(
-                "Balochistan Police — Official PKM Services",
+                "Balochistan Police — Official PKM",
                 "https://pkm.balochistanpolice.gov.pk/",
                 "pkm.balochistanpolice.gov.pk",
                 "Balochistan",
@@ -2185,36 +2212,40 @@ Requested category:
         ]
 
     # ========================================================
-    # ISLAMABAD CAPITAL TERRITORY
+    # ISLAMABAD
     # ========================================================
 
     if jurisdiction == "Islamabad Capital Territory":
 
         evidence = f"""
-ISLAMABAD CAPITAL TERRITORY — OFFICIAL DRIVING LICENCE
-INFORMATION
+JURISDICTION: ISLAMABAD CAPITAL TERRITORY
 
-Islamabad Traffic Police provides driving licence
-services through its licensing system and Police
-Khidmat Markaz.
+RESPONSIBLE AUTHORITY:
+Islamabad Traffic Police (ITP).
 
-Official Islamabad Police information identifies:
+OFFICIAL ONLINE PORTAL:
+https://dlims.islamabadpolice.gov.pk/
 
-- New driving licence issuance
-- Learner permits
+LICENSING SERVICES:
+Islamabad Traffic Police provides:
+
+- New driving licence
+- Learner permit
 - Driving tests
 - Renewal
-- Duplicate licences
-- Conversion/endorsement
-- International driving permits
+- Duplicate licence
+- International driving permit
 
-The official ITP-DLIMS portal provides an online
-driving licence facility.
+ONLINE SERVICE:
+The official ITP-DLIMS portal provides online driving
+licence facilities.
 
-Applicants should follow the current ITP process for
-the requested licence category.
+IMPORTANT:
+Specific documents, fees and processing times should only
+be stated when supported by the current official ITP
+evidence.
 
-Requested category:
+USER REQUESTED CATEGORY:
 {category_text}
 """
 
@@ -2233,44 +2264,40 @@ Requested category:
                 "Islamabad Capital Territory",
                 evidence,
             ),
-            driving_source(
-                "Islamabad Police — Police Khidmat Markaz Services",
-                "https://www.islamabadpolice.gov.pk/srv-fr.php",
-                "islamabadpolice.gov.pk",
-                "Islamabad Capital Territory",
-                evidence,
-            ),
         ]
 
     # ========================================================
-    # AZAD JAMMU AND KASHMIR
+    # AJK
     # ========================================================
 
     if jurisdiction == "Azad Jammu and Kashmir":
 
         evidence = f"""
-AZAD JAMMU AND KASHMIR — OFFICIAL DRIVING LICENCE
-INFORMATION
+JURISDICTION: AZAD JAMMU AND KASHMIR
 
-Traffic Police AJ&K operates the official driving licence
-system.
+RESPONSIBLE AUTHORITY:
+Traffic Police AJ&K.
+
+OFFICIAL PORTAL:
+https://trafficpolice.ajk.gov.pk/
 
 The official Traffic Police AJ&K portal provides:
 
-- Licence procedure information
+- Licence procedure
 - Licence verification
 - Application tracking
-- Licence issuance office information
+- Licence issuance office locations
 - DLMS application forms
 - Medical form
 - Fee challan form
 - Licence fee details
-- Theory/test information
+- Theory book for test
+- Traffic signs
 
 Applicants should use the official Traffic Police AJ&K
-licensing procedure and forms for the selected category.
+procedure and forms for the selected licence category.
 
-Requested category:
+USER REQUESTED CATEGORY:
 {category_text}
 """
 
@@ -2278,13 +2305,6 @@ Requested category:
             driving_source(
                 "Traffic Police AJ&K — Official Licence Portal",
                 "https://trafficpolice.ajk.gov.pk/",
-                "trafficpolice.ajk.gov.pk",
-                "Azad Jammu and Kashmir",
-                evidence,
-            ),
-            driving_source(
-                "Traffic Police AJ&K — Licence Verification",
-                "https://trafficpolice.ajk.gov.pk/verify-license",
                 "trafficpolice.ajk.gov.pk",
                 "Azad Jammu and Kashmir",
                 evidence,
@@ -2298,30 +2318,37 @@ Requested category:
     if jurisdiction == "Gilgit-Baltistan":
 
         evidence = f"""
-GILGIT-BALTISTAN — OFFICIAL DRIVING LICENCE INFORMATION
+JURISDICTION: GILGIT-BALTISTAN
 
-Gilgit-Baltistan operates the official Driving License
-Issuance Management System (DLMIS).
+RESPONSIBLE AUTHORITY:
+Gilgit-Baltistan Driving License Issuance Management
+System (DLMIS).
 
-The official DLMIS provides:
+OFFICIAL PORTAL:
+https://dlmis.gbp.gov.pk/
 
-- Regular Driving License application
-- Driving License Renewal
-- Duplicate License
-- International Driving License
-- Medical Form
+The official system provides:
+
+- Regular Driving Licence application
+- Driving Licence renewal
+- Duplicate licence
+- International driving licence
+- Medical form
 - Licensing centre information
 
-The official system states that driving licence
-issuance, renewal and upgrades are automated through
-a centralized system.
+The official regular licence application form includes
+categories such as:
 
-The official system also states that applicants visit
-the licensing/testing centre and that approved cards
-are printed centrally and dispatched through Pakistan
-Post.
+- Motorcycle
+- Motor Car
+- LTV
+- HTV
+- Motor Rickshaw
+- Tractor
+- Motor Cab
+- Other specified vehicle classes
 
-Requested category:
+USER REQUESTED CATEGORY:
 {category_text}
 """
 
@@ -2334,15 +2361,8 @@ Requested category:
                 evidence,
             ),
             driving_source(
-                "Gilgit-Baltistan DLMIS — Download Forms",
-                "https://dlmis.gbp.gov.pk/downloads/",
-                "dlmis.gbp.gov.pk",
-                "Gilgit-Baltistan",
-                evidence,
-            ),
-            driving_source(
-                "Gilgit-Baltistan DLMIS — Licensing Centres",
-                "https://dlmis.gbp.gov.pk/licensingcenters/",
+                "Gilgit-Baltistan DLMIS — Regular Licence Form",
+                "https://dlmis.gbp.gov.pk/public/downloads/regular.pdf",
                 "dlmis.gbp.gov.pk",
                 "Gilgit-Baltistan",
                 evidence,
@@ -2390,20 +2410,21 @@ def research_driving_license(
 
     # ========================================================
     # NO JURISDICTION
-    # RETURN OFFICIAL EVIDENCE FOR ALL JURISDICTIONS
     # ========================================================
 
     all_sources = []
 
     for region in ALL_JURISDICTIONS:
 
-        sources = get_driving_official_evidence(
-            region,
-            categories,
+        region_sources = (
+            get_driving_official_evidence(
+                region,
+                categories,
+            )
         )
 
         all_sources.extend(
-            sources
+            region_sources
         )
 
     return {
