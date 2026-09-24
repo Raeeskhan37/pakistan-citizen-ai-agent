@@ -347,7 +347,7 @@ def research_birth_specific(
 ):
 
     # --------------------------------------------------------
-    # KP
+    # KP — dedicated official route
     # --------------------------------------------------------
 
     if jurisdiction == "Khyber Pakhtunkhwa":
@@ -358,7 +358,281 @@ def research_birth_specific(
         )
 
     # --------------------------------------------------------
-    # Official domains
+    # PUNJAB — official evidence
+    # --------------------------------------------------------
+
+    if jurisdiction == "Punjab":
+
+        evidence = """
+PUNJAB — OFFICIAL GOVERNMENT INFORMATION
+
+Birth registration is handled through the relevant
+Union Council / local government authority.
+
+According to the official Punjab Local Government
+guidance:
+
+For normal birth registration:
+- Contact the relevant Union Council.
+- Birth registration should normally be completed
+  within 60 days.
+- Parents' CNIC/NIC copies are required.
+- A hospital or traditional birth attendant birth
+  certificate is required.
+- The prescribed Union Council form is completed
+  with signature/thumb impression.
+
+The official Punjab FAQ states that registration is
+free and the NADRA computerized birth registration
+certificate has a stated fee of Rs. 100.
+
+The official Punjab FAQ also specifies different
+processing periods for late registration.
+
+Source:
+Punjab Local Government & Community Development
+https://lgcd.punjab.gov.pk/faq
+"""
+
+        return {
+            "sources": [
+                {
+                    "title": (
+                        "Punjab Local Government — "
+                        "Registration of Birth"
+                    ),
+                    "url": (
+                        "https://lgcd.punjab.gov.pk/faq"
+                    ),
+                    "domain": "lgcd.punjab.gov.pk",
+                    "official": True,
+                    "page_text": evidence,
+                    "snippet": evidence,
+                    "jurisdiction": "Punjab",
+                }
+            ],
+            "rag_results": [],
+            "jurisdiction": "Punjab",
+            "attempts": 1,
+        }
+
+    # --------------------------------------------------------
+    # SINDH — guaranteed official evidence
+    # --------------------------------------------------------
+
+    if jurisdiction == "Sindh":
+
+        evidence = """
+SINDH — OFFICIAL GOVERNMENT INFORMATION
+
+Birth registration is part of the Sindh civil
+registration / vital statistics system and is handled
+through the local government system.
+
+The Government of Sindh has announced online
+registration of birth, death, marriage and divorce
+through the provincial CRMS mobile application.
+
+The Sindh Local Government Department is responsible
+for local-government services including civil
+registration services.
+
+Citizens should use the relevant local government /
+Union Council authority or the officially available
+Sindh CRMS service for birth registration.
+
+Official sources:
+
+Sindh Local Government Department:
+https://lgdsindh.gov.pk/wp/
+
+Government of Sindh:
+https://cm.sindh.gov.pk/news/
+snd-k-aaoam-kli-antthar-aor-ktar-ki-zhmt-
+khtm-pidaesh-amoat-nkah-aor-tlak-ki-rjsrishn-
+an-laen-ogei
+"""
+
+        return {
+            "sources": [
+                {
+                    "title": (
+                        "Sindh Local Government Department — "
+                        "Birth Registration / CRVS"
+                    ),
+                    "url": (
+                        "https://lgdsindh.gov.pk/wp/"
+                    ),
+                    "domain": "lgdsindh.gov.pk",
+                    "official": True,
+                    "page_text": evidence,
+                    "snippet": evidence,
+                    "jurisdiction": "Sindh",
+                },
+                {
+                    "title": (
+                        "Government of Sindh — "
+                        "Birth Registration Services"
+                    ),
+                    "url": (
+                        "https://cm.sindh.gov.pk/news/"
+                        "snd-k-aaoam-kli-antthar-aor-ktar-ki-"
+                        "zhmt-khtm-pidaesh-amoat-nkah-aor-"
+                        "tlak-ki-rjsrishn-an-laen-ogei"
+                    ),
+                    "domain": "cm.sindh.gov.pk",
+                    "official": True,
+                    "page_text": (
+                        "The Government of Sindh announced "
+                        "online registration of birth, death, "
+                        "marriage and divorce through the "
+                        "provincial CRMS mobile application."
+                    ),
+                    "snippet": (
+                        "Online birth registration is "
+                        "available through the Sindh CRMS "
+                        "system."
+                    ),
+                    "jurisdiction": "Sindh",
+                },
+            ],
+            "rag_results": [],
+            "jurisdiction": "Sindh",
+            "attempts": 1,
+        }
+
+    # --------------------------------------------------------
+    # BALOCHISTAN — guaranteed official evidence
+    # --------------------------------------------------------
+
+    if jurisdiction == "Balochistan":
+
+        evidence = """
+BALOCHISTAN — OFFICIAL GOVERNMENT INFORMATION
+
+Birth registration is handled through Local Councils
+under the Balochistan local-government framework.
+
+The Balochistan Local Government & Rural Development
+Department provides a dedicated Birth Certificate
+service.
+
+The department has also announced online registration
+and issuance of birth, death, marriage and divorce
+certificates through the CRMS / PakID system.
+
+NADRA and the Balochistan Local Government Department
+have also established one-window birth-registration
+facilities at Union Council level.
+
+Citizens should use the relevant Local Council /
+Union Council or the officially available CRMS service.
+
+Official sources:
+
+Balochistan Local Government & Rural Development:
+https://lgrd.gob.pk/birth-certificate/
+
+Online Birth Registration / CRMS:
+https://lgrd.gob.pk/launching-ceremony-birth-
+death-marriage-divorce-registration/
+"""
+
+        return {
+            "sources": [
+                {
+                    "title": (
+                        "Balochistan Local Government & "
+                        "Rural Development — Birth Certificate"
+                    ),
+                    "url": (
+                        "https://lgrd.gob.pk/birth-certificate/"
+                    ),
+                    "domain": "lgrd.gob.pk",
+                    "official": True,
+                    "page_text": evidence,
+                    "snippet": evidence,
+                    "jurisdiction": "Balochistan",
+                },
+                {
+                    "title": (
+                        "Balochistan Local Government — "
+                        "Online Birth Registration / CRMS"
+                    ),
+                    "url": (
+                        "https://lgrd.gob.pk/"
+                        "launching-ceremony-birth-death-"
+                        "marriage-divorce-registration/"
+                    ),
+                    "domain": "lgrd.gob.pk",
+                    "official": True,
+                    "page_text": evidence,
+                    "snippet": (
+                        "Balochistan announced online "
+                        "registration and issuance of "
+                        "birth, death, marriage and "
+                        "divorce certificates through "
+                        "CRMS / PakID."
+                    ),
+                    "jurisdiction": "Balochistan",
+                },
+            ],
+            "rag_results": [],
+            "jurisdiction": "Balochistan",
+            "attempts": 1,
+        }
+
+    # --------------------------------------------------------
+    # ISLAMABAD
+    # --------------------------------------------------------
+
+    if jurisdiction == "Islamabad Capital Territory":
+
+        evidence = """
+ISLAMABAD CAPITAL TERRITORY — OFFICIAL INFORMATION
+
+ICT Administration provides a dedicated Birth
+Certificate service.
+
+The service is available through the Citizen
+Facilitation Center, G-11/4, Islamabad.
+
+The official ICT Administration page lists the
+required information/documents, applicable fee and
+processing time.
+
+Official source:
+https://ictadministration.gov.pk/birth-certificate/
+"""
+
+        return {
+            "sources": [
+                {
+                    "title": (
+                        "ICT Administration — Birth Certificate"
+                    ),
+                    "url": (
+                        "https://ictadministration.gov.pk/"
+                        "birth-certificate/"
+                    ),
+                    "domain": "ictadministration.gov.pk",
+                    "official": True,
+                    "page_text": evidence,
+                    "snippet": evidence,
+                    "jurisdiction": (
+                        "Islamabad Capital Territory"
+                    ),
+                }
+            ],
+            "rag_results": [],
+            "jurisdiction": (
+                "Islamabad Capital Territory"
+            ),
+            "attempts": 1,
+        }
+
+    # --------------------------------------------------------
+    # OTHER JURISDICTIONS — LIVE OFFICIAL SEARCH
     # --------------------------------------------------------
 
     domains = JURISDICTION_DOMAINS.get(
@@ -378,11 +652,7 @@ def research_birth_specific(
                 ),
                 (
                     f"site:{domain} "
-                    f"birth registration {question}"
-                ),
-                (
-                    f"site:{domain} "
-                    "birth certificate requirements"
+                    "birth registration requirements"
                 ),
                 (
                     f"site:{domain} "
@@ -398,7 +668,7 @@ def research_birth_specific(
     sources = perform_search(
         queries=queries,
         official_domains=domains,
-        max_results=12,
+        max_results=10,
     )
 
     official_sources = [
@@ -407,21 +677,18 @@ def research_birth_specific(
         if source.get("official")
     ]
 
-    if official_sources:
+    for source in official_sources:
+        source["jurisdiction"] = jurisdiction
 
-        for source in official_sources:
-            source["jurisdiction"] = jurisdiction
-
-        return {
-            "sources": unique_sources(
-                official_sources,
-                limit=8,
-            ),
-            "rag_results": [],
-            "jurisdiction": jurisdiction,
-            "attempts": 1,
-        }
-
+    return {
+        "sources": unique_sources(
+            official_sources,
+            limit=6,
+        ),
+        "rag_results": [],
+        "jurisdiction": jurisdiction,
+        "attempts": 1,
+    }
     # --------------------------------------------------------
     # Fallback broader official search
     # --------------------------------------------------------
@@ -1620,39 +1887,28 @@ def research_question(
         ).strip().lower()
 
         birth_terms = [
-            "birth",
-            "birth certificate",
-            "birth registration",
-            "register birth",
-            "newborn",
-            "new born",
-            "child birth",
-            "registration of birth",
-            "new birth certificate",
-            "get birth certificate",
-            "obtain birth certificate",
-            "birth certificate procedure",
-            "birth certificate requirements",
-            "birth certificate documents",
-            "pidaish",
-            "پیدائش",
-            "پیدائش سرٹیفکیٹ",
-            "پیدائش رجسٹریشن",
-            "بچے کی پیدائش",
-            "پیدائش کا اندراج",
-            "نیا پیدائش سرٹیفکیٹ",
-            "پیدائش کا سرٹیفکیٹ",
-        ]
+    "birth certificate",
+    "birth registration",
+    "birth registration certificate",
+    "new birth certificate",
+    "newborn registration",
+    "child birth registration",
+    "register a birth",
+    "registration of birth",
+    "پیدائش سرٹیفکیٹ",
+    "پیدائش کا سرٹیفکیٹ",
+    "پیدائش رجسٹریشن",
+    "پیدائش کا اندراج",
+]
 
-        if any(
-            term in q
-            for term in birth_terms
-        ):
-
-            return research_birth_registration(
-                question,
-                language,
-            )
+if any(
+    term in q
+    for term in birth_terms
+):
+    return research_birth_registration(
+        question,
+        language,
+    )
 
         marriage_terms = [
             "marriage",
