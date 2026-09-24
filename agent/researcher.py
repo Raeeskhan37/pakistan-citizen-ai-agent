@@ -1886,29 +1886,43 @@ def research_question(
             question or ""
         ).strip().lower()
 
-        birth_terms = [
-    "birth certificate",
-    "birth registration",
-    "birth registration certificate",
-    "new birth certificate",
-    "newborn registration",
-    "child birth registration",
-    "register a birth",
-    "registration of birth",
-    "پیدائش سرٹیفکیٹ",
-    "پیدائش کا سرٹیفکیٹ",
-    "پیدائش رجسٹریشن",
-    "پیدائش کا اندراج",
-]
+        # ----------------------------------------------------
+        # BIRTH REGISTRATION / BIRTH CERTIFICATE
+        # ----------------------------------------------------
 
-if any(
-    term in q
-    for term in birth_terms
-):
-    return research_birth_registration(
-        question,
-        language,
-    )
+        birth_terms = [
+            "birth certificate",
+            "birth registration",
+            "birth registration certificate",
+            "new birth certificate",
+            "newborn registration",
+            "child birth registration",
+            "register a birth",
+            "registration of birth",
+            "birth certificate requirements",
+            "birth registration requirements",
+            "birth certificate documents",
+            "birth registration documents",
+            "پیدائش سرٹیفکیٹ",
+            "پیدائش کا سرٹیفکیٹ",
+            "پیدائش رجسٹریشن",
+            "پیدائش کا اندراج",
+            "پیدائش کی رجسٹریشن",
+        ]
+
+        if any(
+            term in q
+            for term in birth_terms
+        ):
+
+            return research_birth_registration(
+                question,
+                language,
+            )
+
+        # ----------------------------------------------------
+        # MARRIAGE REGISTRATION / MARRIAGE CERTIFICATE
+        # ----------------------------------------------------
 
         marriage_terms = [
             "marriage",
@@ -1916,16 +1930,20 @@ if any(
             "marriage registration",
             "register marriage",
             "registration of marriage",
+            "marriage registration requirements",
+            "marriage certificate requirements",
+            "marriage documents",
+            "marriage document",
             "nikah",
             "nikah registration",
             "nikah nama",
             "nikahnama",
             "nikah nama registration",
-            "marriage document",
-            "marriage documents",
+            "marriage registration certificate",
             "شادی",
             "شادی رجسٹریشن",
             "شادی کا سرٹیفکیٹ",
+            "شادی کی رجسٹریشن",
             "نکاح",
             "نکاح رجسٹریشن",
             "نکاح نامہ",
