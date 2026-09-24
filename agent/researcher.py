@@ -22,13 +22,31 @@ PROVINCES = {
 
 
 def detect_jurisdiction(question):
-    question_lower = question.lower()
+    question_lower = (question or "").lower()
 
     for keyword, jurisdiction in PROVINCES.items():
         if keyword in question_lower:
             return jurisdiction
 
     return None
+
+
+# ============================================================
+# OFFICIAL DOMAIN FOR JURISDICTION
+# ============================================================
+
+def get_jurisdiction_domain(jurisdiction):
+    domains = {
+        "Punjab": "punjab.gov.pk",
+        "Sindh": "sindh.gov.pk",
+        "Khyber Pakhtunkhwa": "kp.gov.pk",
+        "Balochistan": "balochistan.gov.pk",
+        "Islamabad Capital Territory": "islamabad.gov.pk",
+        "Azad Jammu and Kashmir": "ajk.gov.pk",
+        "Gilgit-Baltistan": "gilgitbaltistan.gov.pk",
+    }
+
+    return domains.get(jurisdiction)
 
 
 # ============================================================
@@ -142,6 +160,358 @@ according to the applicable local-government arrangement.
 
 
 # ============================================================
+# BIRTH REGISTRATION — DEDICATED OFFICIAL RESEARCH
+# ============================================================
+
+def research_birth_registration(
+    question,
+    language,
+):
+    """
+    Dedicated research route for birth registration and
+    birth certificate questions.
+
+    KP uses the tested direct official evidence route.
+    Other jurisdictions use focused searches against
+    official government domains.
+    """
+
+    jurisdiction = detect_jurisdiction(question)
+
+    # --------------------------------------------------------
+    # KP — PRESERVE TESTED DIRECT ROUTE
+    # --------------------------------------------------------
+
+    if jurisdiction == "Khyber Pakhtunkhwa":
+
+        return research_kp_birth_registration(
+            question,
+            language,
+        )
+
+    # --------------------------------------------------------
+    # OFFICIAL DOMAIN
+    # --------------------------------------------------------
+
+    jurisdiction_domain = get_jurisdiction_domain(
+        jurisdiction
+    )
+
+    official_domains = []
+
+    if jurisdiction_domain:
+        official_domains.append(
+            jurisdiction_domain
+        )
+
+    official_domains.extend(
+        [
+            "gov.pk",
+            "punjab.gov.pk",
+            "sindh.gov.pk",
+            "kp.gov.pk",
+            "balochistan.gov.pk",
+            "ajk.gov.pk",
+            "gilgitbaltistan.gov.pk",
+            "islamabad.gov.pk",
+        ]
+    )
+
+    # Remove duplicates
+    official_domains = list(
+        dict.fromkeys(official_domains)
+    )
+
+    # --------------------------------------------------------
+    # FOCUSED SEARCH
+    # --------------------------------------------------------
+
+    queries = [
+        f"birth registration {question}",
+        f"birth certificate {question}",
+        f"birth registration requirements {question}",
+        f"birth certificate documents {question}",
+        f"birth registration procedure {question}",
+        f"newborn birth registration {question}",
+    ]
+
+    if jurisdiction_domain:
+
+        queries = [
+            f"site:{jurisdiction_domain} birth registration {question}",
+            f"site:{jurisdiction_domain} birth certificate {question}",
+            (
+                f"site:{jurisdiction_domain} "
+                "birth registration requirements"
+            ),
+            (
+                f"site:{jurisdiction_domain} "
+                "birth certificate documents"
+            ),
+            (
+                f"site:{jurisdiction_domain} "
+                "birth registration procedure"
+            ),
+        ]
+
+    sources = perform_search(
+        queries=queries,
+        official_domains=official_domains,
+        max_results=8,
+    )
+
+    official_sources = [
+        source
+        for source in sources
+        if source.get("official")
+    ]
+
+    if official_sources:
+
+        return {
+            "sources": unique_sources(
+                official_sources,
+                limit=5,
+            ),
+            "rag_results": [],
+            "jurisdiction": jurisdiction,
+            "attempts": 1,
+        }
+
+    # --------------------------------------------------------
+    # FALLBACK SEARCH
+    # --------------------------------------------------------
+
+    fallback_queries = [
+        f"birth registration Pakistan {question}",
+        f"birth certificate Pakistan {question}",
+        f"government birth registration {question}",
+        f"official birth certificate requirements {question}",
+    ]
+
+    if jurisdiction:
+
+        fallback_queries.insert(
+            0,
+            (
+                f"{jurisdiction} "
+                f"birth registration "
+                f"{question}"
+            ),
+        )
+
+    sources = perform_search(
+        queries=fallback_queries,
+        official_domains=official_domains,
+        max_results=8,
+    )
+
+    official_sources = [
+        source
+        for source in sources
+        if source.get("official")
+    ]
+
+    return {
+        "sources": unique_sources(
+            official_sources,
+            limit=5,
+        ),
+        "rag_results": [],
+        "jurisdiction": jurisdiction,
+        "attempts": 2,
+    }
+
+
+# ============================================================
+# MARRIAGE REGISTRATION — DEDICATED OFFICIAL RESEARCH
+# ============================================================
+
+def research_marriage_registration(
+    question,
+    language,
+):
+    """
+    Dedicated research route for marriage registration,
+    Nikah registration and marriage certificate questions.
+    """
+
+    jurisdiction = detect_jurisdiction(question)
+
+    # --------------------------------------------------------
+    # OFFICIAL DOMAINS
+    # --------------------------------------------------------
+
+    jurisdiction_domain = get_jurisdiction_domain(
+        jurisdiction
+    )
+
+    official_domains = []
+
+    if jurisdiction_domain:
+        official_domains.append(
+            jurisdiction_domain
+        )
+
+    # KP Local Government has a dedicated official
+    # local-government domain.
+    if jurisdiction == "Khyber Pakhtunkhwa":
+        official_domains.insert(
+            0,
+            "lgkp.gov.pk",
+        )
+
+    official_domains.extend(
+        [
+            "gov.pk",
+            "punjab.gov.pk",
+            "sindh.gov.pk",
+            "kp.gov.pk",
+            "balochistan.gov.pk",
+            "ajk.gov.pk",
+            "gilgitbaltistan.gov.pk",
+            "islamabad.gov.pk",
+        ]
+    )
+
+    official_domains = list(
+        dict.fromkeys(official_domains)
+    )
+
+    # --------------------------------------------------------
+    # FOCUSED SEARCH TERMS
+    # --------------------------------------------------------
+
+    queries = [
+        f"marriage registration {question}",
+        f"marriage certificate {question}",
+        f"nikah registration {question}",
+        f"nikah nama registration {question}",
+        f"marriage registration requirements {question}",
+        f"marriage certificate documents {question}",
+        f"marriage registration procedure {question}",
+    ]
+
+    # --------------------------------------------------------
+    # JURISDICTION-SPECIFIC SEARCH
+    # --------------------------------------------------------
+
+    if jurisdiction_domain:
+
+        queries = [
+            (
+                f"site:{jurisdiction_domain} "
+                f"marriage registration {question}"
+            ),
+            (
+                f"site:{jurisdiction_domain} "
+                f"marriage certificate {question}"
+            ),
+            (
+                f"site:{jurisdiction_domain} "
+                f"nikah registration {question}"
+            ),
+            (
+                f"site:{jurisdiction_domain} "
+                "marriage registration requirements"
+            ),
+            (
+                f"site:{jurisdiction_domain} "
+                "marriage certificate documents"
+            ),
+        ]
+
+    # KP-specific local-government searches
+    if jurisdiction == "Khyber Pakhtunkhwa":
+
+        queries = [
+            f"site:lgkp.gov.pk marriage registration {question}",
+            f"site:lgkp.gov.pk marriage certificate {question}",
+            f"site:lgkp.gov.pk nikah registration {question}",
+            (
+                "site:lgkp.gov.pk "
+                "registration marriage divorce"
+            ),
+            (
+                "site:lgkp.gov.pk "
+                "marriage registration requirements"
+            ),
+        ]
+
+    # --------------------------------------------------------
+    # SEARCH OFFICIAL SOURCES
+    # --------------------------------------------------------
+
+    sources = perform_search(
+        queries=queries,
+        official_domains=official_domains,
+        max_results=8,
+    )
+
+    official_sources = [
+        source
+        for source in sources
+        if source.get("official")
+    ]
+
+    if official_sources:
+
+        return {
+            "sources": unique_sources(
+                official_sources,
+                limit=5,
+            ),
+            "rag_results": [],
+            "jurisdiction": jurisdiction,
+            "attempts": 1,
+        }
+
+    # --------------------------------------------------------
+    # FALLBACK SEARCH
+    # --------------------------------------------------------
+
+    fallback_queries = [
+        f"marriage registration Pakistan {question}",
+        f"marriage certificate Pakistan {question}",
+        f"nikah registration Pakistan {question}",
+        f"official marriage registration requirements {question}",
+    ]
+
+    if jurisdiction:
+
+        fallback_queries.insert(
+            0,
+            (
+                f"{jurisdiction} "
+                f"marriage registration "
+                f"{question}"
+            ),
+        )
+
+    sources = perform_search(
+        queries=fallback_queries,
+        official_domains=official_domains,
+        max_results=8,
+    )
+
+    official_sources = [
+        source
+        for source in sources
+        if source.get("official")
+    ]
+
+    return {
+        "sources": unique_sources(
+            official_sources,
+            limit=5,
+        ),
+        "rag_results": [],
+        "jurisdiction": jurisdiction,
+        "attempts": 2,
+    }
+
+
+# ============================================================
 # PASSPORT — DEDICATED OFFICIAL DGI&P RESEARCH
 # ============================================================
 
@@ -153,17 +523,12 @@ def research_passport(
     Dedicated Passport research path.
 
     Fresh/new/first-time passport questions are searched
-    directly against the official DGI&P domain instead of
-    relying on the generic department-search logic.
+    directly against the official DGI&P domain.
     """
 
     question_lower = (
         question or ""
     ).strip().lower()
-
-    # --------------------------------------------------------
-    # QUESTION TYPE
-    # --------------------------------------------------------
 
     fresh_terms = [
         "fresh passport",
@@ -224,49 +589,36 @@ def research_passport(
         for term in modification_terms
     )
 
-    # --------------------------------------------------------
-    # OFFICIAL DOMAIN
-    # --------------------------------------------------------
-
     official_domains = [
         "dgip.gov.pk",
     ]
-
-    # --------------------------------------------------------
-    # FRESH / NEW / FIRST-TIME PASSPORT
-    # --------------------------------------------------------
 
     if is_fresh:
 
         queries = [
             f"site:dgip.gov.pk {question}",
-
             (
                 "site:dgip.gov.pk "
                 "new passport "
                 "first time applicant "
                 "requirements"
             ),
-
             (
                 "site:dgip.gov.pk "
                 "ordinary passport "
                 "first time "
                 "documents required"
             ),
-
             (
                 "site:dgip.gov.pk "
                 "new passport "
                 "application process"
             ),
-
             (
                 "site:dgip.gov.pk "
                 "ordinary passport "
                 "requirements Pakistan"
             ),
-
             (
                 "site:dgip.gov.pk "
                 "passport process "
@@ -274,27 +626,20 @@ def research_passport(
             ),
         ]
 
-    # --------------------------------------------------------
-    # RENEWAL
-    # --------------------------------------------------------
-
     elif is_renewal:
 
         queries = [
             f"site:dgip.gov.pk {question}",
-
             (
                 "site:dgip.gov.pk "
                 "passport renewal "
                 "requirements"
             ),
-
             (
                 "site:dgip.gov.pk "
                 "passport renewal "
                 "documents"
             ),
-
             (
                 "site:dgip.gov.pk "
                 "passport renewal "
@@ -302,27 +647,20 @@ def research_passport(
             ),
         ]
 
-    # --------------------------------------------------------
-    # MODIFICATION
-    # --------------------------------------------------------
-
     elif is_modification:
 
         queries = [
             f"site:dgip.gov.pk {question}",
-
             (
                 "site:dgip.gov.pk "
                 "passport modification "
                 "requirements"
             ),
-
             (
                 "site:dgip.gov.pk "
                 "passport modification "
                 "documents"
             ),
-
             (
                 "site:dgip.gov.pk "
                 "passport correction "
@@ -330,37 +668,26 @@ def research_passport(
             ),
         ]
 
-    # --------------------------------------------------------
-    # GENERAL PASSPORT QUESTION
-    # --------------------------------------------------------
-
     else:
 
         queries = [
             f"site:dgip.gov.pk {question}",
-
             (
                 "site:dgip.gov.pk "
                 "passport requirements "
                 f"{question}"
             ),
-
             (
                 "site:dgip.gov.pk "
                 "passport process "
                 f"{question}"
             ),
-
             (
                 "site:dgip.gov.pk "
                 "ordinary passport "
                 f"{question}"
             ),
         ]
-
-    # --------------------------------------------------------
-    # SEARCH OFFICIAL DGI&P SOURCES
-    # --------------------------------------------------------
 
     sources = perform_search(
         queries=queries,
@@ -386,24 +713,17 @@ def research_passport(
             "attempts": 1,
         }
 
-    # --------------------------------------------------------
-    # FALLBACK OFFICIAL SEARCH
-    # --------------------------------------------------------
-
     fallback_queries = [
         f"site:dgip.gov.pk passport {question}",
-
         (
             "site:dgip.gov.pk "
             "ordinary passport "
             "requirements Pakistan"
         ),
-
         (
             "site:dgip.gov.pk "
             "passport application process Pakistan"
         ),
-
         (
             "site:dgip.gov.pk "
             "passport documents requirements"
@@ -880,28 +1200,9 @@ def research_department(
 
     if jurisdiction:
 
-        jurisdiction_domain = None
-
-        if jurisdiction == "Khyber Pakhtunkhwa":
-            jurisdiction_domain = "kp.gov.pk"
-
-        elif jurisdiction == "Punjab":
-            jurisdiction_domain = "punjab.gov.pk"
-
-        elif jurisdiction == "Sindh":
-            jurisdiction_domain = "sindh.gov.pk"
-
-        elif jurisdiction == "Balochistan":
-            jurisdiction_domain = "balochistan.gov.pk"
-
-        elif jurisdiction == "Azad Jammu and Kashmir":
-            jurisdiction_domain = "ajk.gov.pk"
-
-        elif jurisdiction == "Gilgit-Baltistan":
-            jurisdiction_domain = "gilgitbaltistan.gov.pk"
-
-        elif jurisdiction == "Islamabad Capital Territory":
-            jurisdiction_domain = "islamabad.gov.pk"
+        jurisdiction_domain = get_jurisdiction_domain(
+            jurisdiction
+        )
 
         if jurisdiction_domain:
 
@@ -1073,47 +1374,84 @@ def research_question(
         )
 
     # ========================================================
-    # KP BIRTH REGISTRATION DIRECT PATH
+    # UNION COUNCIL / LOCAL GOVERNMENT
     # ========================================================
 
-    question_lower = (
-        question or ""
-    ).strip().lower()
+    if department == "Union Council / Local Government":
 
-    is_kp = (
-        "khyber pakhtunkhwa" in question_lower
-        or "kpk" in question_lower
-        or "kp" in question_lower
-    )
+        question_lower = (
+            question or ""
+        ).strip().lower()
 
-    is_birth_question = (
-        "birth" in question_lower
-        or "newborn" in question_lower
-        or "new born" in question_lower
-        or "بچے کی پیدائش" in question_lower
-        or "پیدائش" in question_lower
-    )
+        # ----------------------------------------------------
+        # BIRTH
+        # ----------------------------------------------------
 
-    is_certificate_or_registration = (
-        "certificate" in question_lower
-        or "registration" in question_lower
-        or "register" in question_lower
-        or "birth certificate" in question_lower
-        or "سرٹیفکیٹ" in question_lower
-        or "رجسٹریشن" in question_lower
-    )
+        birth_terms = [
+            "birth",
+            "birth certificate",
+            "birth registration",
+            "register birth",
+            "newborn",
+            "new born",
+            "child birth",
+            "registration of birth",
+            "پیدائش",
+            "پیدائش سرٹیفکیٹ",
+            "پیدائش رجسٹریشن",
+            "بچے کی پیدائش",
+            "پیدائش کا اندراج",
+        ]
 
-    if (
-        department == "Union Council / Local Government"
-        and is_kp
-        and is_birth_question
-        and is_certificate_or_registration
-    ):
-
-        return research_kp_birth_registration(
-            question,
-            language,
+        is_birth_question = any(
+            term in question_lower
+            for term in birth_terms
         )
+
+        if is_birth_question:
+
+            return research_birth_registration(
+                question,
+                language,
+            )
+
+        # ----------------------------------------------------
+        # MARRIAGE
+        # ----------------------------------------------------
+
+        marriage_terms = [
+            "marriage",
+            "marriage certificate",
+            "marriage registration",
+            "register marriage",
+            "registration of marriage",
+            "nikah",
+            "nikah registration",
+            "nikah nama",
+            "nikahnama",
+            "nikah nama registration",
+            "marriage document",
+            "marriage documents",
+            "شادی",
+            "شادی رجسٹریشن",
+            "شادی کا سرٹیفکیٹ",
+            "نکاح",
+            "نکاح رجسٹریشن",
+            "نکاح نامہ",
+            "نکاح نامہ رجسٹریشن",
+        ]
+
+        is_marriage_question = any(
+            term in question_lower
+            for term in marriage_terms
+        )
+
+        if is_marriage_question:
+
+            return research_marriage_registration(
+                question,
+                language,
+            )
 
     # ========================================================
     # GENERAL DEPARTMENT
