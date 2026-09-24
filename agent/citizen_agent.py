@@ -573,15 +573,12 @@ def ask_citizen_agent(
     # jurisdiction sources.
     # --------------------------------------------------------
 
-if all_jurisdictions:
-
-    # Keep all official sources for the UI,
-    # but use only a controlled number for AI evidence.
-    selected_sources = verified_sources[:10]
-
-else:
-
-    selected_sources = verified_sources[:8]
+    if all_jurisdictions:
+        # Keep all official sources for the UI,
+        # but use only a controlled number for AI evidence.
+        selected_sources = verified_sources[:10]
+    else:
+        selected_sources = verified_sources[:8]
 
     # --------------------------------------------------------
     # Work visa fallback
@@ -748,25 +745,25 @@ VERIFIED OFFICIAL WEB EVIDENCE
     # --------------------------------------------------------
 
     return {
-    "department": department,
+        "department": department,
 
-    "jurisdiction": jurisdiction,
+        "jurisdiction": jurisdiction,
 
-    "answer": answer,
+        "answer": answer,
 
-    "sources": (
+        "sources": (
         verified_sources
         if all_jurisdictions
         else selected_sources
     ),
 
-    "source_count": len(
+        "source_count": len(
         verified_sources
         if all_jurisdictions
         else selected_sources
     ),
 
-    "official_source_count": (
+        "official_source_count": (
         sum(
             1
             for source in (
@@ -778,20 +775,20 @@ VERIFIED OFFICIAL WEB EVIDENCE
         )
     ),
 
-    "research_attempts": research.get(
+        "research_attempts": research.get(
         "attempts",
         1,
     ),
 
-    "rag_result_count": len(
+        "rag_result_count": len(
         rag_results
     ),
 
-    "checked_date": datetime.now().strftime(
+        "checked_date": datetime.now().strftime(
         "%d %B %Y"
     ),
 
-    "warning": verification.get(
+        "warning": verification.get(
         "warning",
         "",
     ),
