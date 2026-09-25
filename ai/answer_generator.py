@@ -594,9 +594,9 @@ Balochistan Police PKM for the current regular-licence
 procedure.
 """
 
-        if specific_jurisdiction == "Islamabad Capital Territory":
+    if specific_jurisdiction == "Islamabad Capital Territory":
 
-            return f"""
+        return f"""
 ### اسلام آباد کیپیٹل ٹیریٹری
 
 **کیٹیگری:** {category}
