@@ -508,64 +508,64 @@ KP Transport Department سے چیک کریں۔
 
         if specific_jurisdiction == "Balochistan":
 
-    if "quetta" in q:
+            if "quetta" in q:
 
-        return f"""
-### Quetta, Balochistan
+                return f"""
+        ### Quetta, Balochistan
 
-**Requested category:** {category}
+        **Requested category:** {category}
 
-Balochistan Police operates Police Mobile Khidmat
-Markaz (PKM) facilities in Quetta.
+        Balochistan Police operates Police Mobile Khidmat
+        Markaz (PKM) facilities in Quetta.
 
-For a new Motor Car licence, the official Balochistan
-Police information establishes the following process:
+        For a new Motor Car licence, the official Balochistan
+        Police information establishes the following process:
 
-**1. Obtain the learner permit**
+        **1. Obtain the learner permit**
 
-The official PKM service states that a learner driving
-licence can be obtained from Police Mobile Khidmat
-Markaz.
+        The official PKM service states that a learner driving
+        licence can be obtained from Police Mobile Khidmat
+        Markaz.
 
-For Motor Car:
-- Minimum learner age: 18 years
-- Original CNIC and one copy
-- Traffic Rules & Regulations Code Book
-- Medical Certificate for applicants aged 50 or above
-- Learner permit validity: 6 months
-- Published learner fee: Rs. 60 Post Office ticket
-- Published turnaround: about 15 minutes
+        For Motor Car:
+        - Minimum learner age: 18 years
+        - Original CNIC and one copy
+        - Traffic Rules & Regulations Code Book
+        - Medical Certificate for applicants aged 50 or above
+        - Learner permit validity: 6 months
+        - Published learner fee: Rs. 60 Post Office ticket
+        - Published turnaround: about 15 minutes
 
-**2. Complete the learner period**
+        **2. Complete the learner period**
 
-The official PKM endorsement requirements specify an
-original learner permit of at least six weeks.
+        The official PKM endorsement requirements specify an
+        original learner permit of at least six weeks.
 
-**3. Follow the regular-licence / endorsement process**
+        **3. Follow the regular-licence / endorsement process**
 
-The official PKM information lists the following for
-endorsement:
+        The official PKM information lists the following for
+        endorsement:
 
-- Medical Certificate copy
-- CNIC copy
-- Two attested fresh photographs
-- Original learner permit of at least six weeks
-- Driving tickets according to the applicable schedule
+        - Medical Certificate copy
+        - CNIC copy
+        - Two attested fresh photographs
+        - Original learner permit of at least six weeks
+        - Driving tickets according to the applicable schedule
 
-**Important:**
+        **Important:**
 
-The official PKM website does not publish a complete
-step-by-step regular Motor Car licence procedure on
-the same page. Therefore, the agent must not invent
-additional tests, fees or processing steps.
+        The official PKM website does not publish a complete
+        step-by-step regular Motor Car licence procedure on
+        the same page. Therefore, the agent must not invent
+        additional tests, fees or processing steps.
 
-For the current Quetta procedure, use the official
-Balochistan Police Police Mobile Khidmat Markaz /
-Traffic Police service.
+        For the current Quetta procedure, use the official
+        Balochistan Police Police Mobile Khidmat Markaz /
+        Traffic Police service.
 
-**Official source:**
-Balochistan Police — Police Mobile Khidmat Markaz
-https://pkm.balochistanpolice.gov.pk/
+        **Official source:**
+        Balochistan Police — Police Mobile Khidmat Markaz
+        https://pkm.balochistanpolice.gov.pk/
 """
 
     return f"""
