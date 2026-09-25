@@ -508,24 +508,90 @@ KP Transport Department سے چیک کریں۔
 
         if specific_jurisdiction == "Balochistan":
 
-            return f"""
-### بلوچستان
+    if "quetta" in q:
 
-**کیٹیگری:** {category}
+        return f"""
+### Quetta, Balochistan
 
-بلوچستان پولیس کے Police Mobile Khidmat Markaz
-کے ذریعے ڈرائیونگ لائسنس سے متعلق سرکاری
-سروسز دستیاب ہیں۔
+**Requested category:** {category}
 
-سرکاری شواہد میں Learner Licence، Renewal،
-International Licence، Duplicate Licence اور
-Endorsement جیسی سروسز شامل ہیں۔
+Balochistan Police operates Police Mobile Khidmat
+Markaz (PKM) facilities in Quetta.
 
-نئے Regular {category} لائسنس کے مکمل مراحل
-موجودہ سرکاری شواہد میں مکمل طور پر واضح نہیں
-ہیں، اس لیے اضافی مراحل فرض نہیں کیے جا رہے۔
+For a new Motor Car licence, the official Balochistan
+Police information establishes the following process:
 
-متعلقہ PKM سے موجودہ طریقہ کار کی تصدیق کریں۔
+**1. Obtain the learner permit**
+
+The official PKM service states that a learner driving
+licence can be obtained from Police Mobile Khidmat
+Markaz.
+
+For Motor Car:
+- Minimum learner age: 18 years
+- Original CNIC and one copy
+- Traffic Rules & Regulations Code Book
+- Medical Certificate for applicants aged 50 or above
+- Learner permit validity: 6 months
+- Published learner fee: Rs. 60 Post Office ticket
+- Published turnaround: about 15 minutes
+
+**2. Complete the learner period**
+
+The official PKM endorsement requirements specify an
+original learner permit of at least six weeks.
+
+**3. Follow the regular-licence / endorsement process**
+
+The official PKM information lists the following for
+endorsement:
+
+- Medical Certificate copy
+- CNIC copy
+- Two attested fresh photographs
+- Original learner permit of at least six weeks
+- Driving tickets according to the applicable schedule
+
+**Important:**
+
+The official PKM website does not publish a complete
+step-by-step regular Motor Car licence procedure on
+the same page. Therefore, the agent must not invent
+additional tests, fees or processing steps.
+
+For the current Quetta procedure, use the official
+Balochistan Police Police Mobile Khidmat Markaz /
+Traffic Police service.
+
+**Official source:**
+Balochistan Police — Police Mobile Khidmat Markaz
+https://pkm.balochistanpolice.gov.pk/
+"""
+
+    return f"""
+### Balochistan
+
+**Requested category:** {category}
+
+Balochistan Police provides driving-licence services
+through Police Mobile Khidmat Markaz (PKM).
+
+Officially documented services include:
+
+- Learner Driving Licence
+- Driving Licence Renewal
+- International Driving Licence
+- Duplicate Driving Licence
+- Endorsement of a Licence
+
+For a new regular {category}, the official evidence
+available to the agent does not publish every step of
+the complete regular-licence procedure.
+
+Therefore, the agent should provide only the documented
+requirements and direct the citizen to the official
+Balochistan Police PKM for the current regular-licence
+procedure.
 """
 
         if specific_jurisdiction == "Islamabad Capital Territory":
@@ -866,13 +932,54 @@ def generate_answer(
     language,
 ):
 
-    # --------------------------------------------------------
+        # --------------------------------------------------------
     # DRIVING LICENCE
     #
-    # We still try the AI first.
-    # If the AI fails, the evidence-based fallback
-    # guarantees that the citizen receives an answer.
+    # For an unspecified jurisdiction, use the deterministic
+    # seven-jurisdiction answer. This prevents Groq's token
+    # limit from cutting the answer after Punjab/KP.
     # --------------------------------------------------------
+
+    if department == "Driving Licence":
+
+        q_lower = (
+            question or ""
+        ).strip().lower()
+
+        has_specific_jurisdiction = any(
+            term in q_lower
+            for term in [
+                "punjab",
+                "lahore",
+                "sindh",
+                "karachi",
+                "khyber pakhtunkhwa",
+                "kpk",
+                "kp",
+                "peshawar",
+                "balochistan",
+                "quetta",
+                "islamabad",
+                "ajk",
+                "azad kashmir",
+                "muzaffarabad",
+                "gilgit-baltistan",
+                "gilgit baltistan",
+                "gilgit",
+                "skardu",
+            ]
+        )
+
+        # If no jurisdiction was specified, ALWAYS use the
+        # complete seven-jurisdiction fallback. Do not send
+        # this long answer through the LLM.
+        if not has_specific_jurisdiction:
+
+            return build_driving_fallback(
+                question=question,
+                evidence=evidence,
+                language=language,
+            )
 
     client = get_client()
 
